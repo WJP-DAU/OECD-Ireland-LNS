@@ -164,7 +164,11 @@ forvalues i=1/9 {
 
 rename q29_2_it11_* AJR_drm_res_11_*
 
+*-------- Fair
+
 rename q30 AJR_fair
+
+*-------- Evaluation of process
 
 rename q31_1 AJE_legalrights
 rename q31_2 AJE_infosource
@@ -175,17 +179,17 @@ rename q31_4 AJE_fairoutcome
 					IMPACT
 =================================================================================================================*/	
 
+*-------- Impact
 rename q32_1 AJE_impact
 
-
+*-------- Hardships
 forvalues i=1/9 {
 	rename q32_0`i' AJE_hardship_`i'
 }
 forvalues i=10/16 {
 	rename q32_`i' AJE_hardship_`i'
 }
-	
-	
+
 /*=================================================================================================================
 					DEMOGRAPHICS
 =================================================================================================================*/	
@@ -227,7 +231,6 @@ rename Q24_2_year AJR_year_start
 
 rename Q24_3_month AJR_month_end
 rename Q24_3_year AJR_year_end
-
 
 rename Q25_3_oth AJD_noadvice_reason_oth
 rename Q25_4 AJD_noadvice_reason_other_org

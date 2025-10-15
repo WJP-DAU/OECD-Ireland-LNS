@@ -973,11 +973,11 @@ foreach v in q32_1 q32_01 q32_02 q32_03 q32_04 q32_05 q32_06 q32_07 q32_08 q32_0
 =================================================================================================================*/		
 
 * Skip
-cap: inspect q19_3 if q19_2<=1 & q19_2!=.
+cap: inspect q19_3 if q19_2actual==0 & q19_2actual!=.
 di as text "SKIP - obs: " as error r(N) as text "; values: " as error r(N_unique)	
 
 * Non-skip
-qui count if q19_3 == . & q19_2>=1 
+qui count if q19_3 == . & q19_2actual>=1 
 di as text "NO-SKIP - obs: " as error r(N)
 
 	
