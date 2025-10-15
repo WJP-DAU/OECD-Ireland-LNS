@@ -47,12 +47,14 @@ data_subset <- master_data %>%
   mutate(
     prevalence = had_dispute,
     
+    #Access to adequate information
     access2info = case_when(
       had_dispute == 0   ~ NA_real_,
       AJE_infosource == 1 | AJE_infosource ==2 ~ 1,
       AJE_infosource == 3 | AJE_infosource ==4 ~ 0
     ), 
     
+    #Access to adequate assistance and representation
     access2rep = case_when(
       had_dispute == 0   ~ NA_real_,
       AJD_adviser_1 ==1 | AJD_adviser_2 == 1 | AJD_adviser_3 == 1 | AJD_adviser_4 == 1 | 
@@ -65,17 +67,18 @@ data_subset <- master_data %>%
       AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 | AJD_adviser_12 ==2 |
       AJD_adviser_13 == 2 ~ 0,
       
-      AJD_noadvice_reason_1 == 1 | AJD_noadvice_reason_2 ==1 | AJD_noadvice_reason_3 ==1 | 
-      AJD_noadvice_reason_4 == 1 | AJD_noadvice_reason_5 == 1 | AJD_noadvice_reason_6 == 1 |
-      AJD_noadvice_reason_11 == 1 ~ 1,
+      #AJD_noadvice_reason_1 == 1 | AJD_noadvice_reason_2 ==1 | AJD_noadvice_reason_3 ==1 | 
+      #AJD_noadvice_reason_4 == 1 | AJD_noadvice_reason_5 == 1 | AJD_noadvice_reason_6 == 1 |
+      #AJD_noadvice_reason_11 == 1 ~ 1,
       
-      AJD_noadvice_reason_7 == 1 | AJD_noadvice_reason_8 == 1 | AJD_noadvice_reason_9 == 1 |
-      AJD_noadvice_reason_10 == 1 | AJD_noadvice_reason_12 == 1 | AJD_noadvice_reason_13 == 1 | 
-      AJD_noadvice_reason_14 == 1 | AJD_noadvice_reason_15 == 1 | AJD_noadvice_reason_16 == 1 | 
-      AJD_noadvice_reason_17 == 1  ~ 0,
-      AJD_noadvice_reason_18 == 1 | AJD_noadvice_reason_19 == 1 ~ NA_real_ 
+      #AJD_noadvice_reason_7 == 1 | AJD_noadvice_reason_8 == 1 | AJD_noadvice_reason_9 == 1 |
+      #AJD_noadvice_reason_10 == 1 | AJD_noadvice_reason_12 == 1 | AJD_noadvice_reason_13 == 1 | 
+      #AJD_noadvice_reason_14 == 1 | AJD_noadvice_reason_15 == 1 | AJD_noadvice_reason_16 == 1 | 
+      #AJD_noadvice_reason_17 == 1  ~ 0,
+      #AJD_noadvice_reason_18 == 1 | AJD_noadvice_reason_19 == 1 ~ NA_real_ 
     ),
     
+    # Access to a dispute resolution mechanism
     access2drm = case_when(
       had_dispute == 0   ~ NA_real_,
       AJR_drm_1_bin == 1 | AJR_drm_2_bin == 1 | AJR_drm_3_bin == 1 | AJR_drm_4_bin == 1 | 
@@ -85,17 +88,18 @@ data_subset <- master_data %>%
       AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 & 
       AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 & 
       AJR_drm_9_bin == 0 & AJR_drm_11_bin == 0 ~ 0 ,
-      
     ),
     
     #barriers_drm = case_when() ??????
     
+    #Fairness
     fair = case_when(
       had_dispute == 0   ~ NA_real_,
       AJR_fair == 1 ~ 1,
       AJR_fair == 2 ~ 0
       ),
     
+    #Timeliness
     start_date = make_date(AJR_year_start, AJR_month_start, 1),
     end_date   = make_date(AJR_year_end, AJR_month_end, 1),
     months_diff = interval(start_date, end_date) %/% months(1),
@@ -107,6 +111,7 @@ data_subset <- master_data %>%
       months_diff> 12 ~ 0,
     ),
     
+    #Problem Status
     outcome_done = case_when(
       AJR_status == 1 ~ NA_real_,
       AJR_status == 2 ~ 0 ,
