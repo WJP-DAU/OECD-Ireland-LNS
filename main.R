@@ -45,40 +45,113 @@ master_data <- read_dta(
 
 data_subset <- master_data %>%
   mutate(
+    #Prevalence
     prevalence = had_dispute,
     
-    #Access to adequate information
+    #Co-occurence
+    cooccurence_group = case_when(
+      ndisputes == 0 ~ NA_character_,
+      ndisputes == 1 ~ "1 problem",
+      ndisputes <= 3 ~ "2-3 problems",
+      ndisputes <= 5 ~ "4-5 problems",
+      ndisputes >= 6 ~ "5 or more problems"
+    ),
+    
+    #Access to appropriate information and advice
     access2info = case_when(
       had_dispute == 0   ~ NA_real_,
       AJE_infosource == 1 | AJE_infosource ==2 ~ 1,
       AJE_infosource == 3 | AJE_infosource ==4 ~ 0
     ), 
     
-    #Access to adequate assistance and representation
+    #Contacted an adviser (ALL)
+    contact_adviser = case_when(
+      had_dispute == 0   ~ NA_real_,
+      AJD_adviser_1 == 1 | AJD_adviser_2 == 1 | AJD_adviser_3 == 1 | AJD_adviser_4 == 1 | 
+        AJD_adviser_5 == 1 | AJD_adviser_6 == 1 | AJD_adviser_7 == 1 | AJD_adviser_8 == 1 |
+        AJD_adviser_9 == 1 | AJD_adviser_10 == 1 | AJD_adviser_11 == 1 | AJD_adviser_12 == 1 |
+        AJD_adviser_13 == 1 | AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 |
+        AJD_adviser_17 == 1 ~ 1,
+      AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2  & AJD_adviser_4 == 2 & 
+        AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & 
+        AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 & 
+        AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 & 
+        AJD_adviser_17 == 2 ~ 0
+    ),
+    
+    #Appropriate advisor
+    approp_adv = case_when(
+      had_dispute == 0   ~ NA_real_,
+      AJD_adviser_1 ==1 | AJD_adviser_2 == 1 | AJD_adviser_3 == 1 | AJD_adviser_4 == 1 | 
+        AJD_adviser_5 == 1 | AJD_adviser_6 == 1 | AJD_adviser_7 == 1 | AJD_adviser_8 == 1 |
+        AJD_adviser_9 == 1 | AJD_adviser_10 == 1 | AJD_adviser_11 == 1 | AJD_adviser_12 ==1 |
+        AJD_adviser_13 == 1 ~ 1,
+      AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+        AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
+        AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 | AJD_adviser_12 ==2 |
+        AJD_adviser_13 == 2 ~ 0
+    ),
+    
+    #Access to appropriate/professional assistance and representation
     access2rep = case_when(
       had_dispute == 0   ~ NA_real_,
       AJD_adviser_1 ==1 | AJD_adviser_2 == 1 | AJD_adviser_3 == 1 | AJD_adviser_4 == 1 | 
       AJD_adviser_5 == 1 | AJD_adviser_6 == 1 | AJD_adviser_7 == 1 | AJD_adviser_8 == 1 |
       AJD_adviser_9 == 1 | AJD_adviser_10 == 1 | AJD_adviser_11 == 1 | AJD_adviser_12 ==1 |
       AJD_adviser_13 == 1 ~ 1,
-      
-      AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+    
+      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
       AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
       AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 | AJD_adviser_12 ==2 |
-      AJD_adviser_13 == 2 ~ 0,
+      AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 &
+      AJD_adviser_17 == 2) 
+      & 
+      (AJR_noaction_1 == 1 | AJR_noaction_2 ==1 | AJR_noaction_6 ==1 | AJR_noaction_7 ==1 | 
+      AJR_noaction_9 ==1 | AJR_noaction_10 ==1 | AJR_noaction_12 ==1) ~ 1,
       
-      #AJD_noadvice_reason_1 == 1 | AJD_noadvice_reason_2 ==1 | AJD_noadvice_reason_3 ==1 | 
-      #AJD_noadvice_reason_4 == 1 | AJD_noadvice_reason_5 == 1 | AJD_noadvice_reason_6 == 1 |
-      #AJD_noadvice_reason_11 == 1 ~ 1,
-      
-      #AJD_noadvice_reason_7 == 1 | AJD_noadvice_reason_8 == 1 | AJD_noadvice_reason_9 == 1 |
-      #AJD_noadvice_reason_10 == 1 | AJD_noadvice_reason_12 == 1 | AJD_noadvice_reason_13 == 1 | 
-      #AJD_noadvice_reason_14 == 1 | AJD_noadvice_reason_15 == 1 | AJD_noadvice_reason_16 == 1 | 
-      #AJD_noadvice_reason_17 == 1  ~ 0,
-      #AJD_noadvice_reason_18 == 1 | AJD_noadvice_reason_19 == 1 ~ NA_real_ 
+      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+      AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
+      AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 | AJD_adviser_12 ==2 |
+      AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 &
+      AJD_adviser_17 == 2) 
+      &
+      (AJR_noaction_3 ==1 | AJR_noaction_4 ==1 | AJR_noaction_5 ==1 | AJR_noaction_8 ==1 | 
+      AJR_noaction_11 ==1 | AJR_noaction_13 ==1) ~ 0
     ),
     
-    # Access to a dispute resolution mechanism
+    #Helpfulness by adviser
+    across(
+      c(AJD_adviser_help_1, AJD_adviser_help_2, AJD_adviser_help_3, AJD_adviser_help_4, 
+        AJD_adviser_help_5, AJD_adviser_help_6, AJD_adviser_help_7, AJD_adviser_help_8, 
+        AJD_adviser_help_9, AJD_adviser_help_10, AJD_adviser_help_11, AJD_adviser_help_12, 
+        AJD_adviser_help_13, AJD_adviser_help_14, AJD_adviser_help_15, AJD_adviser_help_16, 
+        AJD_adviser_help_17),
+      \(x) case_when(
+        had_dispute == 0   ~ NA_real_,
+        (x == 1 | x == 2) ~ 0,
+        (x == 3 | x == 4) ~ 1,
+        (x == 5 | x == 6) ~ NA_real_,
+      ),
+      .names = "{str_remove(.col, 'AJD_')}_bin"
+    ),
+    
+    #Non-seekers’ intention (People that did not access ANY advisor)
+    
+    #Contacted a DRM
+    contacted_drm = case_when(
+      AJR_drm_1_bin == 1 | AJR_drm_2_bin == 1 | AJR_drm_3_bin == 1 | AJR_drm_4_bin == 1 | 
+      AJR_drm_5_bin == 1 | AJR_drm_6_bin == 1 | AJR_drm_7_bin == 1 | AJR_drm_8_bin == 1 | 
+      AJR_drm_9_bin == 1 | AJR_drm_11_bin == 1 ~ 1,
+      
+      AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 1 & 
+        AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 & 
+        AJR_drm_9_bin == 0 & AJR_drm_11_bin == 0 ~ 0,
+    ),
+    
+    #Barriers of access to a DRM
+    
+    
+    #Access to a dispute resolution mechanism
     access2drm = case_when(
       had_dispute == 0   ~ NA_real_,
       AJR_drm_1_bin == 1 | AJR_drm_2_bin == 1 | AJR_drm_3_bin == 1 | AJR_drm_4_bin == 1 | 
@@ -90,16 +163,11 @@ data_subset <- master_data %>%
       AJR_drm_9_bin == 0 & AJR_drm_11_bin == 0 ~ 0 ,
     ),
     
-    #barriers_drm = case_when() ??????
+    #Reasons for not accessing a DRM
     
-    #Fairness
-    fair = case_when(
-      had_dispute == 0   ~ NA_real_,
-      AJR_fair == 1 ~ 1,
-      AJR_fair == 2 ~ 0
-      ),
     
-    #Timeliness
+    
+    #Timeliness of the process
     start_date = make_date(AJR_year_start, AJR_month_start, 1),
     end_date   = make_date(AJR_year_end, AJR_month_end, 1),
     months_diff = interval(start_date, end_date) %/% months(1),
@@ -109,17 +177,45 @@ data_subset <- master_data %>%
       AJR_status ==1 | AJR_status == 4 | AJR_status == 5 ~ NA_real_,
       months_diff<= 12 ~ 1,
       months_diff> 12 ~ 0,
-    ),
+    ),    
+ 
+    #Fairness of the process
+    fair = case_when(
+      had_dispute == 0   ~ NA_real_,
+      AJR_fair == 1 ~ 1,
+      AJR_fair == 2 ~ 0
+      ),
     
-    #Problem Status
+    # Fairness by each mechanism 
+    
+    # Efficiency by each mechanism 
+    
+    # Affordability by each mechanism 
+    
+    # Duration by each mechanism 
+    
+    # Fairness by each mechanism 
+    
+    # Helpfulness by each mechanism 
+    
+    # Outcome
     outcome_done = case_when(
       AJR_status == 1 ~ NA_real_,
       AJR_status == 2 ~ 0 ,
       AJR_status == 3 ~ 1 ,
       AJR_status == 4 ~ NA_real_,
       AJR_status == 5 ~ NA_real_
-    )
+    ),
+    
+    #Severity of impact
+
+    #Type of impact    
+    
+    
   )
+
+
+View(data_subset[, c("adviser_help_1_bin", "AJD_adviser_help_1")])
 
 
 
