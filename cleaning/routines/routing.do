@@ -574,9 +574,10 @@ foreach v in Q24_3_month Q24_3_year  {
 	di as text "SKIP - obs: " as error r(N) as text "; values: " as error r(N_unique)
 	
 	* Non-skip
-	qui count if `v' == . & (q24 == 2 | q24 == 3 ) & Q24_3_DKNA!=1
+	qui count if `v' == . & (q24 == 2 | q24 == 3 ) & q24_3!=4
 	di as text "NO-SKIP - obs: " as error r(N)	
 }
+/*
 foreach v in Q24_3_DKNA  {
 	di as result "`: variable label `v' '"
 
@@ -590,10 +591,10 @@ foreach v in Q24_3_DKNA  {
 	di as text "SKIP - obs: " as error r(N) as text "; values: " r(N_unique)
 	
 	* Non-skip
-	qui count if `v' == . & (q24 == 2 | q24 == 3 ) & (Q24_3_month==. & Q24_3_year==.)
+	qui count if `v' == . & (q24 == 2 | q24 == 3 ) & (Q24_3_month==. & Q24_3_year==. & q24_3==4)
 	di as text "NO-SKIP - obs: " as error r(N)	
 }
-
+*/
 
 /*=================================================================================================================
 					ASSISTANCE
@@ -821,7 +822,7 @@ foreach v in q27_02 {
 	di as input "Specific routing check"
 	cap: inspect `v' if q24!=3 & q24!=. & prof_resolution==0
 	di as text "SKIP - obs: " as error r(N) as text "; values: " as error r(N_unique)	
-	replace `v'=. if q24!=3 & q24!=. & prof_resolution==0
+	*replace `v'=. if q24!=3 & q24!=. & prof_resolution==0
 	
 	* Non-skip
 	qui count if `v' == . & q24==3 & prof_resolution==0 & had_dispute==1
@@ -836,7 +837,7 @@ foreach v in q27_04 {
 	di as input "Specific routing check"
 	cap: inspect `v' if assistance==0 & prof_resolution==0
 	di as text "SKIP - obs: " as error r(N) as text "; values: " as error r(N_unique)	
-	replace `v'=. if assistance==0 & prof_resolution==0
+	*replace `v'=. if assistance==0 & prof_resolution==0
 	
 	* Non-skip
 	qui count if `v' == . & assistance==1 & prof_resolution==0
@@ -936,7 +937,7 @@ foreach v in q30 {
 	
 	
 *-------- had_dispute -> q31
-foreach v in q31_1 q31_2 q31_3 q31_4 q32_1 {
+foreach v in q31a_1 q31a_2 q31a_3 q31a_4 q31b_1 q31b_2 q31b_3 q31b_4 {
 	di as result "`: variable label `v' '"
 
 	* Skip

@@ -170,10 +170,16 @@ rename q30 AJR_fair
 
 *-------- Evaluation of process
 
-rename q31_1 AJE_legalrights
-rename q31_2 AJE_infosource
-rename q31_3 AJE_advice
-rename q31_4 AJE_fairoutcome
+rename q31a_1 AJE_legalrights_done 
+rename q31a_2 AJE_infosource_done 
+rename q31a_3 AJE_advice_done 
+rename q31a_4 AJE_fairoutcome_done 
+
+rename q31b_1 AJE_legalrights_ongoing
+rename q31b_2 AJE_infosource_ongoing
+rename q31b_3 AJE_advice_ongoing
+rename q31b_4 AJE_fairoutcome_ongoing
+
 
 /*=================================================================================================================
 					IMPACT
@@ -225,6 +231,9 @@ rename q19_2actual A1_children
 rename Q17_oth emp_other
 
 rename Q24_1_oth AJR_status_cur_oth
+
+rename q24_2 AJR_year_start_cat
+rename q24_3 AJR_year_end_cat
 
 rename Q24_2_month AJR_month_start
 rename Q24_2_year AJR_year_start

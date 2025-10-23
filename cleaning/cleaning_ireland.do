@@ -40,23 +40,22 @@ global path2dos  "${path2SP}/cleaning/routines"
 /*=================================================================================================================
 					1. Data Import
 =================================================================================================================*/
-/*
+
 *----- Importing the original dataset
-import excel "${path2SP}\data\7861-2025 OECD LJN survey INTERIM data.xlsx", sheet("OECD-LEGAL_IncludingVerbatims_d") firstrow
+import spss using "${path2SP}\data\original\OECD-LEGAL_IncludingVerbatims.sav"
 
 save "${path2SP}\data\ireland_lns_2025_raw.dta", replace
-*/
 
-use "${path2SP}\data\ireland_lns_2025_raw.dta", clear
+*use "${path2SP}\data\ireland_lns_2025_raw.dta", clear
 
 /*=================================================================================================================
 					2. Country wrangling
 =================================================================================================================*/
-
+/*
 *----- Include standard labels:
 cls
 do "${path2dos}/variable_labels.do"
-
+*/
 
 /*=================================================================================================================
 					3. Routing
@@ -75,6 +74,7 @@ do "${path2dos}/routing.do"
 
 cls
 do "${path2dos}/renaming.do"
+
 
 /*=================================================================================================================
 					5. Value labels
