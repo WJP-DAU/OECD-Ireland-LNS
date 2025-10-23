@@ -45,8 +45,25 @@ master_data <- read_dta(
 
 data_subset <- master_data %>%
   mutate(
+    
     #Prevalence
     prevalence = had_dispute,
+    
+    #Problem category
+    category = case_when(
+      AJP_cat_selected == 1 ~ "Land",
+      AJP_cat_selected == 2 ~ "Neighbors",
+      AJP_cat_selected == 3 ~ "Housing",
+      AJP_cat_selected == 4 ~ "Family/ relationship",
+      AJP_cat_selected == 5 ~ "Injury",
+      AJP_cat_selected == 6 ~ "Citizenship or migration",
+      AJP_cat_selected == 7 ~ "Government benefits and payments",
+      AJP_cat_selected == 8 ~ "Public services",
+      AJP_cat_selected == 9 ~ "Products",
+      AJP_cat_selected == 10 ~ "Services",
+      AJP_cat_selected == 11 ~ "Money/ debt",
+      AJP_cat_selected == 12 ~ "Employment",
+    ),
     
     #Co-occurence
     cooccurence_group = case_when(
@@ -145,7 +162,7 @@ data_subset <- master_data %>%
       
       AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 1 & 
         AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 & 
-        AJR_drm_9_bin == 0 & AJR_drm_11_bin == 0 ~ 0,
+        AJR_drm_9_bin == 0 & AJR_drm_11_bin == 0 ~ 0
     ),
     
     #Barriers of access to a DRM
@@ -164,7 +181,7 @@ data_subset <- master_data %>%
       &
       (AJR_noresol_reason_7 == 1 | AJR_noresol_reason_8 ==1 | AJR_noresol_reason_9 == 1  | 
       AJR_noresol_reason_10 == 1 | AJR_noresol_reason_11 ==1 | AJR_noresol_reason_12 ==1 | 
-      AJR_noresol_reason_13 ==1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1 ) ~ 0 ,
+      AJR_noresol_reason_13 ==1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1 ) ~ 0
     ),
     
     #Reasons for not accessing a DRM
@@ -180,7 +197,7 @@ data_subset <- master_data %>%
       had_dispute == 0   ~ NA_real_,
       AJR_status ==1 | AJR_status == 4 | AJR_status == 5 ~ NA_real_,
       months_diff<= 12 ~ 1,
-      months_diff> 12 ~ 0,
+      months_diff> 12 ~ 0
     ),    
  
     #Fairness of the process
@@ -213,7 +230,7 @@ data_subset <- master_data %>%
     
     #Severity of impact
     impact = case_when(
-      (AJE_impact == 1 | AJE_impact == 2) ~ 0
+      (AJE_impact == 1 | AJE_impact == 2) ~ 0,
       (AJE_impact == 3 | AJE_impact == 4| AJE_impact == 5) ~ 1
     ),
     
@@ -222,26 +239,28 @@ data_subset <- master_data %>%
     #Legal capability
     legal_rights = case.when(
       (AJE_legalrights_done == 1 | AJE_legalrights_done == 2 | AJE_legalrights_ongoing == 1 | 
-         AJE_legalrights_ongoing == 2 ) ~ 1
+         AJE_legalrights_ongoing == 2 ) ~ 1,
       (AJE_legalrights_done == 3 | AJE_legalrights_done == 4 | AJE_legalrights_ongoing == 3 | 
           AJE_legalrights_ongoing == 4 ) ~ 0
     ),
     
     expert_help = case.when(
-      (AJE_advice_done == 1 | AJE_advice_done == 2 | AJE_advice_ongoing == 1 | AJE_advice_ongoing == 2) ~ 1
+      (AJE_advice_done == 1 | AJE_advice_done == 2 | AJE_advice_ongoing == 1 | AJE_advice_ongoing == 2) ~ 1,
       (AJE_advice_done == 3 | AJE_advice_done == 4 | AJE_advice_ongoing == 3 | AJE_advice_ongoing == 4) ~ 0
     )
   )
 
     
-###Demographics
+### Demographics
     
 demographics <- master_data %>%
   mutate(
+    
     gender = case_when(
       gend == 1 ~ "Male",
       gend == 2 ~ "Female"
     ),
+    #gender = factor(gender, levels = c("Female", "Male")),
     
     age_group = case_when(
     age == 1 | (age >= 18 & age <= 24)  ~ "18-24",
@@ -256,24 +275,41 @@ demographics <- master_data %>%
     edu_2 == 1 ~ "Lower Education",
     edu_2 == 2 ~ "Higher Education"
   ),
-  edu_level = factor(edu_level, levels = c("No Higher Education", "Higher Education")),
+  #edu_level = factor(edu_level, levels = c("No Higher Education", "Higher Education")),
   
-  marital_status = case_when(
-    marital %in% c(2,3) ~ "Married",
-    marital %in% c(1,4,5,98) ~ "Not married"
+  ethnic_majority = case_when(
+    ethni == 1 ~ "Ethnic majority",
+    ethni %in% c(2,3,4,5,6,7,8,9,10,11,12,13,14) ~ "Ethnic minority"
   ),
-  marital_status = factor(marital_status, levels = c("Married", "Not married")),
+  
+  disability = case_when(
+    (disability == 1 | disability == 2) ~ 1,
+     disability == 3 ~ 0
+  ),
+  
+  income = case_when(
+    income == 1 ~ "Less than Ç30,000 a year",
+    income == 2 ~ "Between Ç30,000 and Ç70,000 a year",
+    income == 3 ~ "Between Ç70,000 and Ç120,000 a year",
+    income == 4 ~ "More than Ç120,000 a year"
+  ),
+  
+  emp_status = case_when(
+    emp %in% c(1,2) ~ "Employed",
+    emp %in% c(3,4,5,6,7,8) ~ "Not employed",
+  ),
   
   nationality = case_when(
     nation == 1 ~ "National",
     nation == 2 ~ "Foreigner",
   ),
-  nationality = factor(nationality, levels = c("Foreigner", "National")),
+  #nationality = factor(nationality, levels = c("Foreigner", "National")),
   
-  emp_status = case_when(
-    emp %in% c(1,2) ~ "Employed",
-    emp %in% c(3,4,5,6,7,8,98) ~ "Not employed",
+  marital_status = case_when(
+    marital %in% c(2,3) ~ "Married",
+    marital %in% c(1,4,5,6) ~ "Not married"
   ),
+  #marital_status = factor(marital_status, levels = c("Married", "Not married")),
 )
 
 
