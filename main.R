@@ -65,6 +65,20 @@ data_subset <- master_data %>%
       AJP_cat_selected == 12 ~ "Employment",
     ),
     
+    #Categories as unique vars
+    problem_cat_land       = if_else(AJP_cat_selected== 1, 1 , 0),
+    problem_cat_neighbors  = if_else(AJP_cat_selected== 2, 1 , 0),
+    problem_cat_housing    = if_else(AJP_cat_selected== 3, 1 , 0),
+    problem_cat_family     = if_else(AJP_cat_selected== 4, 1 , 0),
+    problem_cat_injury     = if_else(AJP_cat_selected== 5, 1 , 0),
+    problem_cat_citizen    = if_else(AJP_cat_selected== 6, 1 , 0),
+    problem_cat_gov        = if_else(AJP_cat_selected== 7, 1 , 0),
+    problem_cat_public     = if_else(AJP_cat_selected== 8, 1 , 0),
+    problem_cat_products   = if_else(AJP_cat_selected== 9, 1 , 0),
+    problem_cat_services   = if_else(AJP_cat_selected== 10, 1 , 0),
+    problem_cat_money      = if_else(AJP_cat_selected== 11, 1 , 0),
+    problem_cat_employment = if_else(AJP_cat_selected== 12, 1 , 0),
+
     #Co-occurence
     cooccurence_group = case_when(
       ndisputes == 0 ~ NA_character_,
@@ -77,8 +91,10 @@ data_subset <- master_data %>%
     #Access to appropriate information and advice
     access2info = case_when(
       had_dispute == 0   ~ NA_real_,
-      AJE_infosource == 1 | AJE_infosource ==2 ~ 1,
-      AJE_infosource == 3 | AJE_infosource ==4 ~ 0
+      AJE_infosource_done == 1 | AJE_infosource_done ==2 | 
+      AJE_infosource_ongoing == 1 | AJE_infosource_ongoing ==2  ~ 1,
+      AJE_infosource_done == 3 | AJE_infosource_done ==4 | 
+      AJE_infosource_ongoing == 3 | AJE_infosource_ongoing ==4  ~ 0,    
     ), 
     
     #Contacted an adviser (ALL)
@@ -237,14 +253,14 @@ data_subset <- master_data %>%
     #Type of impact    
     
     #Legal capability
-    legal_rights = case.when(
+    legal_rights = case_when(
       (AJE_legalrights_done == 1 | AJE_legalrights_done == 2 | AJE_legalrights_ongoing == 1 | 
          AJE_legalrights_ongoing == 2 ) ~ 1,
       (AJE_legalrights_done == 3 | AJE_legalrights_done == 4 | AJE_legalrights_ongoing == 3 | 
           AJE_legalrights_ongoing == 4 ) ~ 0
     ),
     
-    expert_help = case.when(
+    expert_help = case_when(
       (AJE_advice_done == 1 | AJE_advice_done == 2 | AJE_advice_ongoing == 1 | AJE_advice_ongoing == 2) ~ 1,
       (AJE_advice_done == 3 | AJE_advice_done == 4 | AJE_advice_ongoing == 3 | AJE_advice_ongoing == 4) ~ 0
     )
@@ -308,7 +324,7 @@ demographics <- master_data %>%
   marital_status = case_when(
     marital %in% c(2,3) ~ "Married",
     marital %in% c(1,4,5,6) ~ "Not married"
-  ),
+  )
   #marital_status = factor(marital_status, levels = c("Married", "Not married")),
 )
 
@@ -329,7 +345,34 @@ plot1 <- data_subset %>%
     prevalence=mean(prevalence,na.rm=TRUE)
   )
 
+# 2. Prevalence of Justice Problems in Ireland, by Problem Category 
 
+plot2 <- data_subset %>%
+  summarise(
+    total_sample = n(),
+    problem_cat_land        = sum(problem_cat_land, na.rm = TRUE)/total_sample,
+    problem_cat_neighbors   = sum(problem_cat_neighbors, na.rm = TRUE)/total_sample,
+    problem_cat_housing     = sum(problem_cat_housing, na.rm = TRUE)/total_sample,
+    problem_cat_family      = sum(problem_cat_family, na.rm = TRUE)/total_sample,
+    problem_cat_injury      = sum(problem_cat_injury, na.rm = TRUE)/total_sample,
+    problem_cat_citizen     = sum(problem_cat_citizen, na.rm = TRUE)/total_sample,
+    problem_cat_gov         = sum(problem_cat_gov, na.rm = TRUE)/total_sample,
+    problem_cat_public      = sum(problem_cat_public, na.rm = TRUE)/total_sample,
+    problem_cat_products    = sum(problem_cat_products, na.rm = TRUE)/total_sample,
+    problem_cat_services    = sum(problem_cat_services, na.rm = TRUE)/total_sample,
+    problem_cat_money       = sum(problem_cat_money, na.rm = TRUE)/total_sample,
+    problem_cat_employment  = sum(problem_cat_employment, na.rm = TRUE)/total_sample,
+  )
 
+# 3 .Co-occurrence of Non-Trivial Justice Problems in Ireland 
+
+plot3 <- data_subset %>%
+  summarise(
+    coocurrence=mean(ndisputes,na.rm=TRUE)
+  )
   
+
+# 4. Dispute Resolution Processes that Finalized in Less than One Year, in Ireland 
+
+# 5. Pathways to Accessing Dispute Resolution Mechanisms (DRM) in Ireland 
   
