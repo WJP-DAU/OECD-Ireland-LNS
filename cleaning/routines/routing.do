@@ -822,7 +822,7 @@ foreach v in q27_02 {
 	di as input "Specific routing check"
 	cap: inspect `v' if q24!=3 & q24!=. & prof_resolution==0
 	di as text "SKIP - obs: " as error r(N) as text "; values: " as error r(N_unique)	
-	*replace `v'=. if q24!=3 & q24!=. & prof_resolution==0
+	replace `v'=. if q24!=3 & q24!=. & prof_resolution==0
 	
 	* Non-skip
 	qui count if `v' == . & q24==3 & prof_resolution==0 & had_dispute==1
@@ -837,7 +837,7 @@ foreach v in q27_04 {
 	di as input "Specific routing check"
 	cap: inspect `v' if assistance==0 & prof_resolution==0
 	di as text "SKIP - obs: " as error r(N) as text "; values: " as error r(N_unique)	
-	*replace `v'=. if assistance==0 & prof_resolution==0
+	replace `v'=. if assistance==0 & prof_resolution==0
 	
 	* Non-skip
 	qui count if `v' == . & assistance==1 & prof_resolution==0
