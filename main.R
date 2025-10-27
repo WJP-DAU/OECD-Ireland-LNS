@@ -269,6 +269,7 @@ data_subset <- master_data %>%
       (AJE_advice_done == 1 | AJE_advice_done == 2 | AJE_advice_ongoing == 1 | AJE_advice_ongoing == 2) ~ 1,
       (AJE_advice_done == 3 | AJE_advice_done == 4 | AJE_advice_ongoing == 3 | AJE_advice_ongoing == 4) ~ 0
     )
+    
   )
 
     
@@ -347,6 +348,107 @@ data_subset.df <- data_subset %>%
     ),
   cooccurence_group = as.character(cooccurence_group)
 )
+
+# Special wrangling
+
+# 1) Fix the name typo and keep values in 0–1 (means already are proportions)
+data_drm <- data_subset.df %>%
+  mutate(
+    affordable_court             = case_when(AJR_drm_1_d %in% c(1,2) ~ 1,
+                                             AJR_drm_1_d %in% c(3,4) ~ 0,
+                                             TRUE ~ NA_real_),
+    affordable_tribunal          = case_when(AJR_drm_2_d %in% c(1,2) ~ 1,
+                                             AJR_drm_2_d %in% c(3,4) ~ 0,
+                                             TRUE ~ NA_real_),
+    affordable_ombudsman         = case_when(AJR_drm_3_d %in% c(1,2) ~ 1,
+                                             AJR_drm_3_d %in% c(3,4) ~ 0,
+                                             TRUE ~ NA_real_),
+    affordable_police            = case_when(AJR_drm_4_d %in% c(1,2) ~ 1,
+                                             AJR_drm_4_d %in% c(3,4) ~ 0,
+                                             TRUE ~ NA_real_),
+    affordable_mediation         = case_when(AJR_drm_5_d %in% c(1,2) ~ 1,
+                                             AJR_drm_5_d %in% c(3,4) ~ 0,
+                                             TRUE ~ NA_real_),
+    affordable_lawyer            = case_when(AJR_drm_6_d %in% c(1,2) ~ 1,
+                                             AJR_drm_6_d %in% c(3,4) ~ 0,
+                                             TRUE ~ NA_real_),
+    affordable_gov_department    = case_when(AJR_drm_7_d %in% c(1,2) ~ 1,
+                                             AJR_drm_7_d %in% c(3,4) ~ 0,
+                                             TRUE ~ NA_real_),
+    affordable_community_leader  = case_when(AJR_drm_8_d %in% c(1,2) ~ 1,
+                                             AJR_drm_8_d %in% c(3,4) ~ 0,
+                                             TRUE ~ NA_real_),
+    
+    fair_court             = case_when(AJR_drm_1_f %in% c(1,2) ~ 1,
+                                       AJR_drm_1_f %in% c(3,4) ~ 0,
+                                       TRUE ~ NA_real_),
+    fair_tribunal          = case_when(AJR_drm_2_f %in% c(1,2) ~ 1,
+                                       AJR_drm_2_f %in% c(3,4) ~ 0,
+                                       TRUE ~ NA_real_),
+    fair_ombudsman         = case_when(AJR_drm_3_f %in% c(1,2) ~ 1,
+                                       AJR_drm_3_f %in% c(3,4) ~ 0,
+                                       TRUE ~ NA_real_),
+    fair_police            = case_when(AJR_drm_4_f %in% c(1,2) ~ 1,
+                                       AJR_drm_4_f %in% c(3,4) ~ 0,
+                                       TRUE ~ NA_real_),
+    fair_mediation         = case_when(AJR_drm_5_f %in% c(1,2) ~ 1,
+                                       AJR_drm_5_f %in% c(3,4) ~ 0,
+                                       TRUE ~ NA_real_),
+    fair_lawyer            = case_when(AJR_drm_6_f %in% c(1,2) ~ 1,
+                                       AJR_drm_6_f %in% c(3,4) ~ 0,
+                                       TRUE ~ NA_real_),
+    fair_gov_department    = case_when(AJR_drm_7_f %in% c(1,2) ~ 1,
+                                       AJR_drm_7_f %in% c(3,4) ~ 0,
+                                       TRUE ~ NA_real_),
+    fair_community_leader  = case_when(AJR_drm_8_f %in% c(1,2) ~ 1,
+                                       AJR_drm_8_f %in% c(3,4) ~ 0,
+                                       TRUE ~ NA_real_)
+  ) %>%
+  summarise(
+    # promedios por ítem
+    across(starts_with("affordable_"), ~ mean(.x, na.rm = TRUE)),
+    across(starts_with("fair_"),       ~ mean(.x, na.rm = TRUE))
+  ) %>%
+  # separa "measure" y "category": e.g. "affordable_court" -> measure=affordable, category=court
+  tidyr::pivot_longer(
+    cols = everything(),
+    names_to  = c("measure", "category"),
+    names_sep = "_",
+    values_to = "value2plot"
+  )
+
+# 2) Etiquetas bonitas + orden explícito y dos series (Affordable vs Fair)
+axis_order <- c("Courts","Tribunals","Ombudsman","Police",
+                "Mediation","Lawyer","Gov. Department","Community Leader")
+
+radar_df <- data_drm %>%
+  mutate(
+    axis_clean = dplyr::recode(
+      category,
+      "court"            = "Courts",
+      "tribunal"         = "Tribunals",
+      "ombudsman"        = "Ombudsman",
+      "police"           = "Police",
+      "mediation"        = "Mediation",
+      "lawyer"           = "Lawyer",
+      "gov" = "Gov. Department",             # por si te llega "gov"
+      "gov_department"   = "Gov. Department",
+      "community" = "Community Leader",
+      .default = category
+    ),
+    axis_clean = factor(axis_clean, levels = axis_order),
+    color_var  = dplyr::recode(measure,
+                               "affordable" = "Affordable",
+                               "fair"       = "Fair")
+  ) %>%
+  arrange(axis_clean) %>%
+  transmute(
+    axis_var   = as.character(axis_clean),
+    target_var = value2plot,            # (0–1)
+    label_var  = as.character(axis_clean),
+    color_var,
+    order_var  = as.integer(axis_clean) # 1..N consistente para ambas series
+  ) 
 
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

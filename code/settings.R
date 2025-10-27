@@ -34,7 +34,7 @@ p_load(char = c(
   # Data Loading and Saving
   "haven", "readxl", "writexl", "openxlsx", "lubridate", "rlang",
   # Viz
-  "showtext", "forcats", "stringr",
+  "showtext", "forcats", "stringr", "ggtext",
   # Good 'ol Tidyverse
   "tidyverse"
   
