@@ -7,9 +7,6 @@
 ##
 ## Dependencies:      World Justice Project
 ##
-## Creation date:     October 14th, 2025
-##
-## This version:      October 14th, 2025
 ##
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ##
@@ -35,8 +32,9 @@ library(pacman)
 p_load(char = c(
   
   # Data Loading and Saving
-  "haven", "readxl", "writexl", "openxlsx", "lubridate",
-  
+  "haven", "readxl", "writexl", "openxlsx", "lubridate", "rlang",
+  # Viz
+  "showtext", "forcats", "stringr",
   # Good 'ol Tidyverse
   "tidyverse"
   
@@ -55,10 +53,22 @@ if (Sys.info()["user"] == "nrodriguez") {
 }
 if (Sys.info()["user"] == "santiagopardo") {
   path2SP <- "/Users/santiagopardo/OneDrive - World Justice Project/Data Analytics/6. Country Reports/OECD-Ireland-LNS/"
+  path2fonts <- "/Users/santiagopardo/OneDrive - World Justice Project/Data Analytics/6. Country Reports/0. Fonts/"
+  
   
 }
 
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+##
+## 3.  Fonts                                                                                    ----
+##
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-
-
+#Loading fonts
+font_add(family     = "Inter",
+         regular    = paste0(path2fonts, "Inter_24pt-Regular.ttf"),
+         italic     = paste0(path2fonts, "Inter_24pt-Italic.ttf"),
+         bold       = paste0(path2fonts, "Inter_24pt-Bold.ttf"),
+         bolditalic = paste0(path2fonts, "Inter_24pt-BoldItalic.ttf"))
+showtext_auto()
 

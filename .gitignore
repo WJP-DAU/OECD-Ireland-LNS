@@ -26,3 +26,15 @@
 .Rproj.user/F33598E2/sources/per/t/F4ADE97D-contents
 code/.Rhistory
 data/original/OECD-LEGAL_IncludingVerbatims.sav
+.Rproj.user
+.DS_Store
+output/access2DRM.svg
+output/access2rep.svg
+output/access2info.svg
+output/coocurrence.svg
+output/DRM.svg
+output/fairness.svg
+output/contacted_DRM.svg
+output/prevalence.svg
+output/timeliness.svg
+output/outcome_done.svg

@@ -24,6 +24,8 @@
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 source("code/settings.R")
+source("code/functions.R")
+source("code/bars_group.R")
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ##
@@ -172,13 +174,16 @@ data_subset <- master_data %>%
     
     #Contacted a DRM
     contacted_drm = case_when(
+      had_dispute == 0 ~ NA_real_,
       AJR_drm_1_bin == 1 | AJR_drm_2_bin == 1 | AJR_drm_3_bin == 1 | AJR_drm_4_bin == 1 | 
       AJR_drm_5_bin == 1 | AJR_drm_6_bin == 1 | AJR_drm_7_bin == 1 | AJR_drm_8_bin == 1 | 
       AJR_drm_9_bin == 1 | AJR_drm_11_bin == 1 ~ 1,
       
-      AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 1 & 
+      AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 & 
         AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 & 
-        AJR_drm_9_bin == 0 & AJR_drm_11_bin == 0 ~ 0
+        AJR_drm_9_bin == 0 & AJR_drm_11_bin == 0 ~ 0,
+      
+      AJR_drm_10_bin == 0 ~ 0
     ),
     
     #Barriers of access to a DRM
@@ -269,7 +274,7 @@ data_subset <- master_data %>%
     
 ### Demographics
     
-demographics <- master_data %>%
+data_subset.df <- data_subset %>%
   mutate(
     
     gender = case_when(
@@ -299,8 +304,8 @@ demographics <- master_data %>%
   ),
   
   disability = case_when(
-    (disability == 1 | disability == 2) ~ 1,
-     disability == 3 ~ 0
+    (disability == 1 | disability == 2) ~ "With disability",
+     disability == 3 ~ "Without disability"
   ),
   
   income = case_when(
@@ -324,12 +329,24 @@ demographics <- master_data %>%
   marital_status = case_when(
     marital %in% c(2,3) ~ "Married",
     marital %in% c(1,4,5,6) ~ "Not married"
-  )
+  ),
   #marital_status = factor(marital_status, levels = c("Married", "Not married")),
+  
+  NUTS = 
+    case_when(
+      region == 1 ~ "Dublin",
+      region == 2 ~ "Leinster",
+      region == 3 ~ "Munster",
+      region == 4 ~ "Ulster"
+    ),
+  
+  level_impact = 
+    case_when(
+      impact == 1 ~ "High impact",
+      impact == 0 ~ "Low impact"
+    ),
+  cooccurence_group = as.character(cooccurence_group)
 )
-
-
-View(data_subset[, c("adviser_help_1_bin", "AJD_adviser_help_1")])
 
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -338,51 +355,207 @@ View(data_subset[, c("adviser_help_1_bin", "AJD_adviser_help_1")])
 ##
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-# 1. Prevalence of justice problems
+## =========================================================
+## Configuración (fuente única)
+## =========================================================
 
-plot1 <- data_subset %>%
-  summarize(
-    prevalence=mean(prevalence,na.rm=TRUE)
-  )
+# Etiquetas de facets (clave = nombre de columna, valor = etiqueta legible)
+full_group_cfg <- c(
+  "Overall"           = "National Average",
+  "gender"            = "Gender",
+  "age_group"         = "Age Group",
+  "edu_level"         = "Education Level",
+  "income"            = "Income",
+  "NUTS"              = "Region",
+  "level_impact"      = "Impact Level",
+  "cooccurence_group" = "Co-occurrent Problems",  # Nota: mantener la misma clave usada en tus datos
+  "disability"        = "Disability"
+)
 
-# 2. Prevalence of Justice Problems in Ireland, by Problem Category 
+# Niveles dentro de cada grupo para el eje Y
+levels_map <- list(
+  "National Average"      = "All",
+  "Gender"                = c("Female", "Male"),
+  "Age Group"             = c("18-24", "25-34", "35-44", "45-54", "55-64", "65-100"),
+  "Education Level"       = c("Lower Education", "Higher Education"),
+  "Income"                = c("Less than Ç30,000 a year",
+                              "Between Ç30,000 and Ç70,000 a year",
+                              "Between Ç70,000 and Ç120,000 a year",
+                              "More than Ç120,000 a year"),
+  "Impact Level"          = c("High impact", "Low impact"),
+  "Co-occurrent Problems" = c("1 problem", "2-3 problems", "4-5 problems", "5 or more problems"),
+  "Disability"            = c("With disability", "Without disability")
+)
 
-plot2 <- data_subset %>%
-  summarise(
-    total_sample = n(),
-    problem_cat_land        = sum(problem_cat_land, na.rm = TRUE)/total_sample,
-    problem_cat_neighbors   = sum(problem_cat_neighbors, na.rm = TRUE)/total_sample,
-    problem_cat_housing     = sum(problem_cat_housing, na.rm = TRUE)/total_sample,
-    problem_cat_family      = sum(problem_cat_family, na.rm = TRUE)/total_sample,
-    problem_cat_injury      = sum(problem_cat_injury, na.rm = TRUE)/total_sample,
-    problem_cat_citizen     = sum(problem_cat_citizen, na.rm = TRUE)/total_sample,
-    problem_cat_gov         = sum(problem_cat_gov, na.rm = TRUE)/total_sample,
-    problem_cat_public      = sum(problem_cat_public, na.rm = TRUE)/total_sample,
-    problem_cat_products    = sum(problem_cat_products, na.rm = TRUE)/total_sample,
-    problem_cat_services    = sum(problem_cat_services, na.rm = TRUE)/total_sample,
-    problem_cat_money       = sum(problem_cat_money, na.rm = TRUE)/total_sample,
-    problem_cat_employment  = sum(problem_cat_employment, na.rm = TRUE)/total_sample,
-  )
+# Helper para seleccionar solo algunos grupos por gráfico
+select_groups <- function(cfg, ...) {
+  keys <- c(...)
+  cfg[intersect(keys, names(cfg))]
+}
 
-# 3 .Co-occurrence of Non-Trivial Justice Problems in Ireland 
+## =========================================================
+## Helper general para correr cada bloque (compute → plot → save)
+## =========================================================
 
-plot3 <- data_subset %>%
-  summarise(
-    coocurrence=mean(ndisputes,na.rm=TRUE)
+run_block <- function(data, value, group_cfg, levels_cfg, outfile, width = 7.5, height = 7.5) {
+  val <- rlang::enexpr(value)
+  
+  # 1) calcular resumen por grupos elegidos
+  df_sum <- summarize_by_vars(
+    data      = data,
+    value     = !!val,
+    group_cfg = group_cfg
   )
   
-
-# 4. Dispute Resolution Processes that Finalized in Less than One Year, in Ireland 
-
-plot4 <- data_subset %>%
-  summarise(
-    timeliness=mean(timeliness,na.rm=TRUE)
+  # 2) plot usando las mismas configs
+  p <- plot_by_group(
+    data_frame = df_sum,
+    group_cfg  = group_cfg,
+    levels_cfg = levels_cfg
   )
+  
+  # 3) guardar
+  dir.create(dirname(outfile), showWarnings = FALSE, recursive = TRUE)
+  ggplot2::ggsave(plot = p, filename = outfile, width = width, height = height)
+  
+  invisible(p)
+}
 
-# 5. Pathways to Accessing Dispute Resolution Mechanisms (DRM) in Ireland 
+## =========================================================
+## 1. Prevalence of justice problems
+##    (usa un subconjunto de grupos)
+## =========================================================
 
-plot5 <- data_subset %>%
-  summarise(
-    access2drm=mean(access2drm,na.rm=TRUE)
-  )
+grp_prev <- select_groups(
+  full_group_cfg,
+  "Overall", "gender", "age_group", "edu_level", "income", "NUTS", "disability"
+)
 
+plot1 <- run_block(
+  data      = data_subset.df,
+  value     = prevalence,
+  group_cfg = grp_prev,
+  levels_cfg= levels_map,
+  outfile   = paste0(path2SP, "output/prevalence.svg"),
+  width     = 7.5,
+  height    = 7.5
+)
+
+## =========================================================
+## 4. Timeliness (finalized < 1 year)
+##    (incluye impacto y co-ocurrencia)
+## =========================================================
+
+grp_timeliness <- select_groups(
+  full_group_cfg,
+  "Overall", "gender", "age_group", "edu_level", "income", "NUTS",
+  "level_impact", "cooccurence_group", "disability"
+)
+
+plot4 <- run_block(
+  data      = data_subset.df,
+  value     = timeliness,
+  group_cfg = grp_timeliness,
+  levels_cfg= levels_map,
+  outfile   = paste0(path2SP, "output/timeliness.svg"),
+  width     = 7.5,
+  height    = 7.5
+)
+
+## =========================================================
+## 5. Pathways to Accessing DRM (contacted_drm)
+##    (incluye impacto y co-ocurrencia)
+## =========================================================
+
+grp_contacted <- grp_timeliness  # mismo set de grupos
+
+plot5 <- run_block(
+  data      = data_subset.df,
+  value     = contacted_drm,
+  group_cfg = grp_contacted,
+  levels_cfg= levels_map,
+  outfile   = paste0(path2SP, "output/contacted_DRM.svg"),
+  width     = 7.5,
+  height    = 7.5
+)
+
+## =========================================================
+## Access to DRM (access2drm) 
+## =========================================================
+
+grp_access2 <- grp_timeliness  # mismo set de grupos
+
+plot6 <- run_block(
+  data      = data_subset.df,
+  value     = access2drm,
+  group_cfg = grp_access2,
+  levels_cfg= levels_map,
+  outfile   = paste0(path2SP, "output/access2DRM.svg"),
+  width     = 7.5,
+  height    = 7.5
+)
+
+## =========================================================
+## Access to info (access2info) 
+## =========================================================
+
+grp_info <- grp_timeliness  # mismo set de grupos
+
+plot7 <- run_block(
+  data      = data_subset.df,
+  value     = access2info,
+  group_cfg = grp_info,
+  levels_cfg= levels_map,
+  outfile   = paste0(path2SP, "output/access2info.svg"),
+  width     = 7.5,
+  height    = 7.5
+)
+
+## =========================================================
+## Access to representation (access2rep) 
+## =========================================================
+
+grp_rep <- grp_timeliness  # mismo set de grupos
+
+plot8 <- run_block(
+  data      = data_subset.df,
+  value     = access2rep,
+  group_cfg = grp_rep,
+  levels_cfg= levels_map,
+  outfile   = paste0(path2SP, "output/access2rep.svg"),
+  width     = 7.5,
+  height    = 7.5
+)
+
+## =========================================================
+## fairness 
+## =========================================================
+
+grp_fair <- grp_timeliness  # mismo set de grupos
+
+plot9 <- run_block(
+  data      = data_subset.df,
+  value     = fair,
+  group_cfg = grp_fair,
+  levels_cfg= levels_map,
+  outfile   = paste0(path2SP,"output/fairness.svg"),
+  width     = 7.5,
+  height    = 7.5
+)
+
+
+## =========================================================
+## Outcome 
+## =========================================================
+
+grp_outcome <- grp_timeliness  # mismo set de grupos
+
+plot10 <- run_block(
+  data      = data_subset.df,
+  value     = outcome_done,
+  group_cfg = grp_outcome,
+  levels_cfg= levels_map,
+  outfile   = paste0(path2SP,"output/outcome_done.svg"),
+  width     = 7.5,
+  height    = 7.5
+)
