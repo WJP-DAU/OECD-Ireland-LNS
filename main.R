@@ -396,166 +396,124 @@ select_groups <- function(cfg, ...) {
 ## =========================================================
 ## Helper general para correr cada bloque (compute → plot → save)
 ## =========================================================
+# Config (única)
+full_group_cfg <- c(
+  "Overall"           = "National Average",
+  "gender"            = "Gender",
+  "age_group"         = "Age Group",
+  "edu_level"         = "Education Level",
+  "income"            = "Income",
+  "NUTS"              = "Region",
+  "level_impact"      = "Impact Level",
+  "cooccurence_group" = "Co-occurrent Problems",
+  "disability"        = "Disability"
+)
+
+levels_map <- list(
+  "National Average"      = "All",
+  "Gender"                = c("Female", "Male"),
+  "Age Group"             = c("18-24", "25-34", "35-44", "45-54", "55-64", "65-100"),
+  "Education Level"       = c("Lower Education", "Higher Education"),
+  "Income"                = c("Less than Ç30,000 a year",
+                              "Between Ç30,000 and Ç70,000 a year",
+                              "Between Ç70,000 and Ç120,000 a year",
+                              "More than Ç120,000 a year"),
+  "Impact Level"          = c("High impact", "Low impact"),
+  "Co-occurrent Problems" = c("1 problem","2-3 problems","4-5 problems","5 or more problems"),
+  "Disability"            = c("With disability", "Without disability")
+)
+
+select_groups <- function(cfg, ...) {
+  keys <- c(...)
+  cfg[intersect(keys, names(cfg))]
+}
 
 run_block <- function(data, value, group_cfg, levels_cfg, outfile, width = 7.5, height = 7.5) {
   val <- rlang::enexpr(value)
-  
-  # 1) calcular resumen por grupos elegidos
-  df_sum <- summarize_by_vars(
-    data      = data,
-    value     = !!val,
-    group_cfg = group_cfg
-  )
-  
-  # 2) plot usando las mismas configs
-  p <- plot_by_group(
-    data_frame = df_sum,
-    group_cfg  = group_cfg,
-    levels_cfg = levels_cfg
-  )
-  
-  # 3) guardar
+  df_sum <- summarize_by_vars(data = data, value = !!val, group_cfg = group_cfg)
+  p <- plot_by_group(data_frame = df_sum, group_cfg = group_cfg, levels_cfg = levels_cfg)
   dir.create(dirname(outfile), showWarnings = FALSE, recursive = TRUE)
   ggplot2::ggsave(plot = p, filename = outfile, width = width, height = height)
-  
   invisible(p)
 }
 
-## =========================================================
-## 1. Prevalence of justice problems
-##    (usa un subconjunto de grupos)
-## =========================================================
+# Prevalence
+grp_prev <- select_groups(full_group_cfg, "Overall","gender","age_group","edu_level","income","NUTS","disability")
+plot1 <- run_block(data_subset.df, prevalence, grp_prev, levels_map, paste0(path2SP, "output/prevalence.svg"))
 
-grp_prev <- select_groups(
-  full_group_cfg,
-  "Overall", "gender", "age_group", "edu_level", "income", "NUTS", "disability"
+grp_selected <- select_groups(full_group_cfg,
+                              "Overall",
+                              "gender",
+                              "age_group",
+                              "edu_level",
+                              "income",
+                              "NUTS",
+                              "level_impact",
+                              "cooccurence_group",
+                              "disability"
 )
 
-plot1 <- run_block(
-  data      = data_subset.df,
-  value     = prevalence,
-  group_cfg = grp_prev,
-  levels_cfg= levels_map,
-  outfile   = paste0(path2SP, "output/prevalence.svg"),
-  width     = 7.5,
-  height    = 7.5
-)
+# Timeliness (< 1 year)
 
-## =========================================================
-## 4. Timeliness (finalized < 1 year)
-##    (incluye impacto y co-ocurrencia)
-## =========================================================
+plot2 <- run_block(
+  data_subset.df, 
+  timeliness, 
+  grp_selected, 
+  levels_map, 
+  paste0(path2SP, "output/timeliness.svg")
+  )
 
-grp_timeliness <- select_groups(
-  full_group_cfg,
-  "Overall", "gender", "age_group", "edu_level", "income", "NUTS",
-  "level_impact", "cooccurence_group", "disability"
-)
+# Contacted DRM
 
+plot3 <- run_block(
+  data_subset.df, 
+  contacted_drm, 
+  grp_selected, 
+  levels_map, 
+  paste0(path2SP, "output/contacted_DRM.svg")
+  )
+
+# Access to DRM
 plot4 <- run_block(
-  data      = data_subset.df,
-  value     = timeliness,
-  group_cfg = grp_timeliness,
-  levels_cfg= levels_map,
-  outfile   = paste0(path2SP, "output/timeliness.svg"),
-  width     = 7.5,
-  height    = 7.5
-)
+  data_subset.df, 
+  access2drm, 
+  grp_selected, 
+  levels_map, 
+  paste0(path2SP, "output/access2DRM.svg")
+  )
 
-## =========================================================
-## 5. Pathways to Accessing DRM (contacted_drm)
-##    (incluye impacto y co-ocurrencia)
-## =========================================================
-
-grp_contacted <- grp_timeliness  # mismo set de grupos
-
+# Access to info
 plot5 <- run_block(
-  data      = data_subset.df,
-  value     = contacted_drm,
-  group_cfg = grp_contacted,
-  levels_cfg= levels_map,
-  outfile   = paste0(path2SP, "output/contacted_DRM.svg"),
-  width     = 7.5,
-  height    = 7.5
-)
+  data_subset.df, 
+  access2info, 
+  grp_selected, 
+  levels_map, 
+  paste0(path2SP, "output/access2info.svg")
+  )
 
-## =========================================================
-## Access to DRM (access2drm) 
-## =========================================================
-
-grp_access2 <- grp_timeliness  # mismo set de grupos
-
+# Access to representation
 plot6 <- run_block(
-  data      = data_subset.df,
-  value     = access2drm,
-  group_cfg = grp_access2,
-  levels_cfg= levels_map,
-  outfile   = paste0(path2SP, "output/access2DRM.svg"),
-  width     = 7.5,
-  height    = 7.5
-)
+  data_subset.df, 
+  access2rep, 
+  grp_selected, 
+  levels_map, 
+  paste0(path2SP, "output/access2rep.svg")
+  )
 
-## =========================================================
-## Access to info (access2info) 
-## =========================================================
-
-grp_info <- grp_timeliness  # mismo set de grupos
-
+# Fairness
 plot7 <- run_block(
-  data      = data_subset.df,
-  value     = access2info,
-  group_cfg = grp_info,
-  levels_cfg= levels_map,
-  outfile   = paste0(path2SP, "output/access2info.svg"),
-  width     = 7.5,
-  height    = 7.5
-)
+  data_subset.df, 
+  fair, 
+  grp_selected, 
+  levels_map, 
+  paste0(path2SP, "output/fairness.svg")
+  )
 
-## =========================================================
-## Access to representation (access2rep) 
-## =========================================================
-
-grp_rep <- grp_timeliness  # mismo set de grupos
-
+# Outcome
 plot8 <- run_block(
-  data      = data_subset.df,
-  value     = access2rep,
-  group_cfg = grp_rep,
-  levels_cfg= levels_map,
-  outfile   = paste0(path2SP, "output/access2rep.svg"),
-  width     = 7.5,
-  height    = 7.5
-)
-
-## =========================================================
-## fairness 
-## =========================================================
-
-grp_fair <- grp_timeliness  # mismo set de grupos
-
-plot9 <- run_block(
-  data      = data_subset.df,
-  value     = fair,
-  group_cfg = grp_fair,
-  levels_cfg= levels_map,
-  outfile   = paste0(path2SP,"output/fairness.svg"),
-  width     = 7.5,
-  height    = 7.5
-)
-
-
-## =========================================================
-## Outcome 
-## =========================================================
-
-grp_outcome <- grp_timeliness  # mismo set de grupos
-
-plot10 <- run_block(
-  data      = data_subset.df,
-  value     = outcome_done,
-  group_cfg = grp_outcome,
-  levels_cfg= levels_map,
-  outfile   = paste0(path2SP,"output/outcome_done.svg"),
-  width     = 7.5,
-  height    = 7.5
-)
+  data_subset.df, 
+  outcome_done, 
+  grp_selected, 
+  levels_map, 
+  paste0(path2SP, "output/outcome_done.svg")
+  )
