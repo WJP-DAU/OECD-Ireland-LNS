@@ -34,7 +34,7 @@ p_load(char = c(
   # Data Loading and Saving
   "haven", "readxl", "writexl", "openxlsx", "lubridate", "rlang",
   # Viz
-  "showtext", "forcats", "stringr", "ggtext",
+  "showtext", "forcats", "stringr", "ggtext", 
   # Good 'ol Tidyverse
   "tidyverse"
   
@@ -66,7 +66,7 @@ if (Sys.info()["user"] == "santiagopardo") {
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #Loading fonts
-font_add(family     = "Inter",
+font_add(family     = "inter",
          regular    = paste0(path2fonts, "Inter_24pt-Regular.ttf"),
          italic     = paste0(path2fonts, "Inter_24pt-Italic.ttf"),
          bold       = paste0(path2fonts, "Inter_24pt-Bold.ttf"),

@@ -710,10 +710,10 @@ data_subset.df <- data_subset %>%
   ),
   
   income = case_when(
-    income == 1 ~ "Less than Ç30,000 a year",
-    income == 2 ~ "Between Ç30,000 and Ç70,000 a year",
-    income == 3 ~ "Between Ç70,000 and Ç120,000 a year",
-    income == 4 ~ "More than Ç120,000 a year"
+    income == 1 ~ "> Ç30k a year",
+    income == 2 ~ "Ç30k–Ç70 a year",
+    income == 3 ~ "Ç70k–Ç120k a year",
+    income == 4 ~ "< Ç120k a year"
   ),
   
   emp_status = case_when(
@@ -863,34 +863,6 @@ radar_df <- data_drm %>%
 ## Configuración (fuente única)
 ## =========================================================
 
-# Etiquetas de facets (clave = nombre de columna, valor = etiqueta legible)
-full_group_cfg <- c(
-  "Overall"           = "National Average",
-  "gender"            = "Gender",
-  "age_group"         = "Age Group",
-  "edu_level"         = "Education Level",
-  "income"            = "Income",
-  "NUTS"              = "Region",
-  "level_impact"      = "Impact Level",
-  "cooccurence_group" = "Co-occurrent Problems",  # Nota: mantener la misma clave usada en tus datos
-  "disability"        = "Disability"
-)
-
-# Niveles dentro de cada grupo para el eje Y
-levels_map <- list(
-  "National Average"      = "All",
-  "Gender"                = c("Female", "Male"),
-  "Age Group"             = c("18-24", "25-34", "35-44", "45-54", "55-64", "65-100"),
-  "Education Level"       = c("Lower Education", "Higher Education"),
-  "Income"                = c("Less than Ç30,000 a year",
-                              "Between Ç30,000 and Ç70,000 a year",
-                              "Between Ç70,000 and Ç120,000 a year",
-                              "More than Ç120,000 a year"),
-  "Impact Level"          = c("High impact", "Low impact"),
-  "Co-occurrent Problems" = c("1 problem", "2-3 problems", "4-5 problems", "5 or more problems"),
-  "Disability"            = c("With disability", "Without disability")
-)
-
 # Helper para seleccionar solo algunos grupos por gráfico
 select_groups <- function(cfg, ...) {
   keys <- c(...)
@@ -918,32 +890,54 @@ levels_map <- list(
   "Gender"                = c("Female", "Male"),
   "Age Group"             = c("18-24", "25-34", "35-44", "45-54", "55-64", "65-100"),
   "Education Level"       = c("Lower Education", "Higher Education"),
-  "Income"                = c("Less than Ç30,000 a year",
-                              "Between Ç30,000 and Ç70,000 a year",
-                              "Between Ç70,000 and Ç120,000 a year",
-                              "More than Ç120,000 a year"),
+  "Income"                = c("> Ç30k a year",
+                              "Ç30k–Ç70 a year",
+                              "Ç70k–Ç120k a year",
+                              "< Ç120k a year"),
   "Impact Level"          = c("High impact", "Low impact"),
   "Co-occurrent Problems" = c("1 problem","2-3 problems","4-5 problems","5 or more problems"),
   "Disability"            = c("With disability", "Without disability")
 )
 
-select_groups <- function(cfg, ...) {
-  keys <- c(...)
-  cfg[intersect(keys, names(cfg))]
-}
-
-run_block <- function(data, value, group_cfg, levels_cfg, outfile, width = 7.5, height = 7.5) {
+run_block <- function(data, 
+                      value, 
+                      group_cfg, 
+                      levels_cfg, 
+                      outfile, 
+                      width = 300, height = 280) {
   val <- rlang::enexpr(value)
-  df_sum <- summarize_by_vars(data = data, value = !!val, group_cfg = group_cfg)
-  p <- plot_by_group(data_frame = df_sum, group_cfg = group_cfg, levels_cfg = levels_cfg)
+  df_sum <- summarize_by_vars(data = data, 
+                              value = !!val, 
+                              group_cfg = group_cfg)
+  p <- plot_by_group(data_frame = df_sum, 
+                     group_cfg = group_cfg, 
+                     levels_cfg = levels_cfg)
   dir.create(dirname(outfile), showWarnings = FALSE, recursive = TRUE)
-  ggplot2::ggsave(plot = p, filename = outfile, width = width, height = height)
+  ggplot2::ggsave(plot = p, 
+                  filename = outfile, 
+                  width = 300, 
+                  height = 280, 
+                  units = "mm", 
+                  scale = 0.75)
   invisible(p)
 }
 
 # Prevalence
-grp_prev <- select_groups(full_group_cfg, "Overall","gender","age_group","edu_level","income","NUTS","disability")
-plot1 <- run_block(data_subset.df, prevalence, grp_prev, levels_map, paste0(path2SP, "output/prevalence.svg"))
+grp_prev <- select_groups(full_group_cfg, 
+                          "Overall",
+                          "gender",
+                          "age_group",
+                          "edu_level",
+                          "income",
+                          "NUTS",
+                          "disability")
+
+plot1 <- run_block(data_subset.df, 
+                   prevalence, 
+                   grp_prev, 
+                   levels_map, 
+                   paste0(path2SP, 
+                          "output/prevalence.svg"))
 
 grp_selected <- select_groups(full_group_cfg,
                               "Overall",

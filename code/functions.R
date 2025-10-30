@@ -22,12 +22,12 @@
 
 summarize_by_vars <- function(data,
                               value,
-                              group_cfg = group_labels,   # <- NEW: usa este mismo objeto
+                              group_cfg,   
                               include_overall = TRUE) {
   val <- rlang::ensym(value)
   
-  # Deriva los grupos desde group_labels (fuente única) y valida que existan en data
-  groups <- setdiff(names(group_labels), "Overall")
+  # Deriva los grupos desde group_cfg (fuente única) y valida que existan en data
+  groups <- setdiff(names(group_cfg), "Overall")
   groups <- intersect(groups, names(data))
   grp_syms <- rlang::syms(groups)
   

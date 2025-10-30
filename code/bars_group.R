@@ -21,7 +21,7 @@
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 plot_by_group <- function(data_frame,
-                          group_cfg  = group_labels,
+                          group_cfg  = full_group_cfg,
                           levels_cfg = levels_map
 ) {
   force(group_cfg); force(levels_cfg)
@@ -44,14 +44,35 @@ plot_by_group <- function(data_frame,
   )
   
   # 1) Preparación de datos
-  facet_order <- unname(group_cfg)  # orden visual según group_cfg
+  facet_order <- unname(group_cfg)  
+  facet_order2 <- unique(c(" ", facet_order))
+  
   data2plot <- data_frame %>%
-    dplyr::mutate(primary = mean, secondary = 1 - mean) %>%
-    tidyr::pivot_longer(c(primary, secondary), names_to = "color", values_to = "value") %>%
     dplyr::mutate(
+      primary = mean,
+      secondary = 1 - mean,
+      grouping = case_when(
+        grouping == "Overall" ~ " ",
+        TRUE ~ grouping
+        ),
+      level = case_when(
+        grouping == " " ~ "National Average",
+        TRUE ~ level
+        )) %>%
+    tidyr::pivot_longer(c(primary, secondary), 
+                        names_to = "color", 
+                        values_to = "value") %>%
+    dplyr::mutate(
+      level = if_else(
+        grouping == " ",
+        glue::glue("<span style='color:#575796;'><b><i>{level}</b></i></span>"),
+        level
+      ),
       grouping = dplyr::recode(grouping, !!!group_cfg),  # recodifica con group_cfg (no global)
-      grouping = factor(grouping, levels = facet_order),
-      label_value = dplyr::if_else(color == "primary", paste0(round(value * 100, 0), "%"), NA_character_)
+      grouping = factor(grouping, levels = facet_order2),
+      label_value = dplyr::if_else(color == "primary", 
+                                   paste0(round(value * 100, 0), "%"), 
+                                   NA_character_)
     )
   
   # Grupos realmente presentes en los datos (tras recodificación)
@@ -108,15 +129,18 @@ plot_by_group <- function(data_frame,
   data2plot <- data2plot %>%
     dplyr::mutate(
       y_key = paste(grouping, level, sep = " | "),
-      y_key = factor(y_key, levels = levels_all)
+      y_key = if_else(grouping == " ", 
+                      glue::glue("<span style='color:#575796;'><b><i>{level}</i></b></span>"),
+                      y_key),
+      y_key = factor(y_key, levels = levels_all),
     )
   
-  ggplot2::ggplot(data2plot, ggplot2::aes(x = value * 100, y = y_key, fill = color)) +
+  ggplot2::ggplot(data2plot, ggplot2::aes(x = value * 100, y = level, fill = color)) +
     ggplot2::geom_col(position = ggplot2::position_stack(reverse = TRUE), width = 0.9, na.rm = TRUE) +
     ggplot2::geom_text(
       ggplot2::aes(x = 101, label = label_value),
       family = "inter", fontface = "bold", color = "#575796",
-      hjust = 0, size = 3, na.rm = TRUE
+      hjust = 0, size = 3.5, na.rm = TRUE
     ) +
     ggplot2::facet_grid(
       rows = ggplot2::vars(grouping),
@@ -125,6 +149,7 @@ plot_by_group <- function(data_frame,
     ggplot2::scale_y_discrete(labels = function(x) sub(".*\\|\\s*", "", x)) +
     ggplot2::scale_fill_manual(values = c("primary" = "#575796", "secondary" = "#e5e8e8")) +
     ggplot2::scale_x_continuous(expand = c(0, 0), limits = c(0, 115), position = "top") +
+    ggplot2::coord_cartesian(clip = "off") +
     ggplot2::theme_minimal() +
     ggplot2::theme(
       strip.placement = "outside",
@@ -132,13 +157,23 @@ plot_by_group <- function(data_frame,
       axis.title.x = element_blank(),
       axis.title.y = element_blank(),
       axis.text.x = element_blank(),
-      axis.text.y = ggplot2::element_text(size = 8, hjust = 0, family = "inter", face = "plain", color = "#1a1a1a"),
+      axis.text.y = ggtext::element_markdown(size = 10, 
+                                          hjust = 1, 
+                                          family = "inter", 
+                                          face = "plain"),
       panel.grid.major.y = element_blank(),
       panel.grid.major.x = element_blank(),
       panel.grid.minor.x = element_blank(),
       panel.spacing = grid::unit(12, "mm"),
-      strip.text.y.left = ggplot2::element_text(angle = 0, size = 10, color = "#575796", hjust = 0, vjust = 1, family = "inter", face = "bold"),
-      strip.switch.pad.grid = grid::unit(1.5, "cm"),
+      strip.text.y.left = ggplot2::element_text(angle = 0, 
+                                                size = 10, 
+                                                color = "#575796", 
+                                                hjust = 1, 
+                                                vjust = 1, 
+                                                family = "inter", 
+                                                face = "bold", 
+                                                margin = margin(-20,-35,0,55)),
+      strip.switch.pad.grid = grid::unit(-35, "mm"),
       strip.clip = "off",
       legend.position = "none"
     )
