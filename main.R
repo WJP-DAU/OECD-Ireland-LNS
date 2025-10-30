@@ -23,9 +23,9 @@
 ##
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-source("code/settings.R")
-source("code/functions.R")
-source("code/bars_group.R")
+#source("code/settings.R")
+#source("code/functions.R")
+#source("code/bars_group.R")
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ##
@@ -51,7 +51,57 @@ data_subset <- master_data %>%
     #Prevalence
     prevalence = had_dispute,
     
-    #Problem category
+    
+    #Problem categories (ALL MENTIONED PROBLEMS)
+    problem_cat_land = if_else(
+      AJP_A1 == 1
+      , 1 , 0),
+    problem_cat_neighbors = if_else(
+      (AJP_B1 == 1 | AJP_B2 == 1 | AJP_B3 == 1)
+      , 1 , 0),
+    problem_cat_housing = if_else(
+      (AJP_C1 == 1 | AJP_C2 == 1 | AJP_C3 == 1 | AJP_D1 == 1 | AJP_D2 == 1 | AJP_D3 == 1 | 
+         AJP_E1 == 1 | AJP_E2 == 1 | AJP_E3 == 1 | AJP_E4 == 1 | AJP_E5 == 1 | AJP_E6 == 1 | 
+         AJP_E7 == 1 )
+      , 1 , 0),
+    problem_cat_family = if_else(
+      (AJP_F1 == 1 | AJP_F2 == 1 | AJP_F3 == 1 | AJP_F4 == 1 | AJP_F5 == 1 | AJP_F6 == 1)
+      , 1 , 0),
+    problem_cat_injury = if_else(
+      (AJP_H1 == 1 | AJP_H2 == 1 | AJP_H3 == 1 | AJP_H4 == 1 | AJP_H5 == 1)
+      , 1 , 0),
+    problem_cat_citizen = if_else(
+      (AJP_G1 == 1 | AJP_G2 == 1 | AJP_G3 == 1 | AJP_G4 == 1 | AJP_G5 == 1)
+      , 1 , 0),
+    problem_cat_gov = if_else(
+      (AJP_I1 == 1 | AJP_I2 == 1 | AJP_I3 == 1 | AJP_I4 == 1 | AJP_I5 == 1 | AJP_I6 == 1)
+      , 1 , 0),
+    problem_cat_public = if_else(
+      (AJP_J1 == 1 | AJP_J2 == 1 | AJP_J3 == 1 | AJP_J4 == 1)
+      , 1 , 0),
+    problem_cat_products = if_else(
+      (AJP_K1 == 1 | AJP_K2 == 1)
+      , 1 , 0),
+    problem_cat_services = if_else(
+      (AJP_L1 == 1 | AJP_L2 == 1)
+      , 1 , 0),
+    problem_cat_money = if_else(
+      (AJP_M1 == 1 | AJP_M2 == 1 | AJP_M3 == 1 | AJP_M4 == 1 | AJP_M5 == 1)
+      , 1 , 0),
+    problem_cat_employment = if_else(
+      (AJP_N1 == 1 | AJP_N2 == 1 | AJP_N3 == 1 | AJP_N4 == 1)
+      , 1 , 0),
+
+    #Co-occurence
+    cooccurence_group = case_when(
+      ndisputes == 0 ~ NA_character_,
+      ndisputes == 1 ~ "1 problem",
+      ndisputes <= 3 ~ "2-3 problems",
+      ndisputes <= 5 ~ "4-5 problems",
+      ndisputes >= 6 ~ "5 or more problems"
+    ),
+    
+    #Problem category (SELECTED PROBLEM)
     category = case_when(
       AJP_cat_selected == 1 ~ "Land",
       AJP_cat_selected == 2 ~ "Neighbors",
@@ -65,29 +115,6 @@ data_subset <- master_data %>%
       AJP_cat_selected == 10 ~ "Services",
       AJP_cat_selected == 11 ~ "Money/ debt",
       AJP_cat_selected == 12 ~ "Employment",
-    ),
-    
-    #Categories as unique vars
-    problem_cat_land       = if_else(AJP_cat_selected== 1, 1 , 0),
-    problem_cat_neighbors  = if_else(AJP_cat_selected== 2, 1 , 0),
-    problem_cat_housing    = if_else(AJP_cat_selected== 3, 1 , 0),
-    problem_cat_family     = if_else(AJP_cat_selected== 4, 1 , 0),
-    problem_cat_injury     = if_else(AJP_cat_selected== 5, 1 , 0),
-    problem_cat_citizen    = if_else(AJP_cat_selected== 6, 1 , 0),
-    problem_cat_gov        = if_else(AJP_cat_selected== 7, 1 , 0),
-    problem_cat_public     = if_else(AJP_cat_selected== 8, 1 , 0),
-    problem_cat_products   = if_else(AJP_cat_selected== 9, 1 , 0),
-    problem_cat_services   = if_else(AJP_cat_selected== 10, 1 , 0),
-    problem_cat_money      = if_else(AJP_cat_selected== 11, 1 , 0),
-    problem_cat_employment = if_else(AJP_cat_selected== 12, 1 , 0),
-
-    #Co-occurence
-    cooccurence_group = case_when(
-      ndisputes == 0 ~ NA_character_,
-      ndisputes == 1 ~ "1 problem",
-      ndisputes <= 3 ~ "2-3 problems",
-      ndisputes <= 5 ~ "4-5 problems",
-      ndisputes >= 6 ~ "5 or more problems"
     ),
     
     #Access to appropriate information and advice
@@ -115,7 +142,7 @@ data_subset <- master_data %>%
     ),
     
     #Appropriate advisor
-    approp_adv = case_when(
+    appropriate_adviser = case_when(
       had_dispute == 0   ~ NA_real_,
       AJD_adviser_1 ==1 | AJD_adviser_2 == 1 | AJD_adviser_3 == 1 | AJD_adviser_4 == 1 | 
         AJD_adviser_5 == 1 | AJD_adviser_6 == 1 | AJD_adviser_7 == 1 | AJD_adviser_8 == 1 |
@@ -123,36 +150,187 @@ data_subset <- master_data %>%
         AJD_adviser_13 == 1 ~ 1,
       AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
-        AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 | AJD_adviser_12 ==2 |
+        AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
         AJD_adviser_13 == 2 ~ 0
+    ),
+    
+    #Non-appropriate advisor
+    no_appropriate_adviser = case_when(
+      had_dispute == 0   ~ NA_real_,
+      (AJD_adviser_14==1 | AJD_adviser_15==1 | AJD_adviser_16==1 | AJD_adviser_17==1) 
+      & 
+       (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+           AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
+           AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
+           AJD_adviser_13 == 2) ~ 1,
+      (AJD_adviser_1 ==1 | AJD_adviser_2 == 1 | AJD_adviser_3 == 1 | AJD_adviser_4 == 1 | 
+         AJD_adviser_5 == 1 | AJD_adviser_6 == 1 | AJD_adviser_7 == 1 | AJD_adviser_8 == 1 |
+         AJD_adviser_9 == 1 | AJD_adviser_10 == 1 | AJD_adviser_11 == 1 | AJD_adviser_12 ==1 |
+         AJD_adviser_13 == 1) ~ 0,
+      had_dispute == 1 ~ 0
     ),
     
     #Access to appropriate/professional assistance and representation
     access2rep = case_when(
       had_dispute == 0   ~ NA_real_,
-      AJD_adviser_1 ==1 | AJD_adviser_2 == 1 | AJD_adviser_3 == 1 | AJD_adviser_4 == 1 | 
-      AJD_adviser_5 == 1 | AJD_adviser_6 == 1 | AJD_adviser_7 == 1 | AJD_adviser_8 == 1 |
-      AJD_adviser_9 == 1 | AJD_adviser_10 == 1 | AJD_adviser_11 == 1 | AJD_adviser_12 ==1 |
-      AJD_adviser_13 == 1 ~ 1,
-    
-      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
-      AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
-      AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 | AJD_adviser_12 ==2 |
-      AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 &
-      AJD_adviser_17 == 2) 
-      & 
-      (AJR_noaction_1 == 1 | AJR_noaction_2 ==1 | AJR_noaction_6 ==1 | AJR_noaction_7 ==1 | 
-      AJR_noaction_9 ==1 | AJR_noaction_10 ==1 | AJR_noaction_12 ==1) ~ 1,
       
+      #YES to any Professional adviser
+      AJD_adviser_1 ==1 | AJD_adviser_2 == 1 | AJD_adviser_3 == 1 | AJD_adviser_4 == 1 | 
+        AJD_adviser_5 == 1 | AJD_adviser_6 == 1 | AJD_adviser_7 == 1 | AJD_adviser_8 == 1 |
+        AJD_adviser_9 == 1 | AJD_adviser_10 == 1 | AJD_adviser_11 == 1 | AJD_adviser_12 ==1 |
+        AJD_adviser_13 == 1 ~ 1,
+      
+      #No advisers (ALL) - reasons: opting out 
       (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
-      AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
-      AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 | AJD_adviser_12 ==2 |
-      AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 &
-      AJD_adviser_17 == 2) 
+         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
+         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
+         AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 &
+         AJD_adviser_17 == 2) 
+      & 
+        (AJR_noaction_1 == 1 | AJR_noaction_2 ==1 | AJR_noaction_6 ==1 | AJR_noaction_10 ==1 
+         | AJR_noaction_12 ==1) ~ 1,
+      
+      #No prof advisers - reasons: opting out
+      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
+         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
+         AJD_adviser_13 == 2) 
       &
-      (AJR_noaction_3 ==1 | AJR_noaction_4 ==1 | AJR_noaction_5 ==1 | AJR_noaction_8 ==1 | 
-      AJR_noaction_11 ==1 | AJR_noaction_13 ==1) ~ 0
+        (AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1 )
+      &
+        (AJD_noadvice_reason_1 ==1 | AJD_noadvice_reason_2==1 | AJD_noadvice_reason_3==1 | 
+           AJD_noadvice_reason_4==1 | AJD_noadvice_reason_5==1 | AJD_noadvice_reason_6==1 ) ~ 1,
+      
+      # No action (No, as it has resolved itself or is no longer an issue) as opting out
+      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
+         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
+         AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 &
+         AJD_adviser_17 == 2) 
+      & 
+        AJR_action == 4 ~ 1,
+      
+      # Needed access and did not get it - ALL advisers (reasons for no action = barriers)
+      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
+         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
+         AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 &
+         AJD_adviser_17 == 2)
+      &
+        (AJR_noaction_3 ==1 | AJR_noaction_4 ==1 | AJR_noaction_5 ==1 | AJR_noaction_7 ==1 | 
+           AJR_noaction_8 ==1 | AJR_noaction_9 ==1 | AJR_noaction_11 ==1 | AJR_noaction_13 ==1) ~ 0,
+      
+      #Needed access and did not get it - prof advisers (reasons for not going to a prof adviser = barriers)
+      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & 
+         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & 
+         AJD_adviser_13 == 2) 
+      & 
+        (AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1 ) 
+      &
+        (AJD_noadvice_reason_7== 1 | AJD_noadvice_reason_8== 1 | AJD_noadvice_reason_9== 1 | 
+           AJD_noadvice_reason_10== 1 | AJD_noadvice_reason_11== 1 | AJD_noadvice_reason_12== 1 | 
+           AJD_noadvice_reason_13== 1 | AJD_noadvice_reason_14== 1 |  AJD_noadvice_reason_15== 1 | 
+           AJD_noadvice_reason_16 == 1 ) ~ 0,
+      
+      #Unknown reasons - prof advisers (reasons for no contact a prof adviser = other reason)
+      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & 
+         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & 
+         AJD_adviser_13 == 2) 
+      &
+        (AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1 ) 
+      &
+        AJD_noadvice_reason_17 == 1 ~ 0, 
+      
+      #Unknown reasons (AJR_action == 3, "Have done something")
+      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
+         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
+         AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 &
+         AJD_adviser_17 == 2) 
+      & 
+        AJR_action == 3 ~ 1
     ),
+    
+    #Did not need assistance (ALL advisers)
+    no_need_assistance = case_when(
+      (AJR_noaction_1 == 1 | AJR_noaction_2 ==1 | AJR_noaction_6 ==1 | AJR_noaction_10 ==1 
+       | AJR_noaction_12 ==1) 
+      &
+        (AJR_noaction_3 ==0 & AJR_noaction_4 ==0 &  AJR_noaction_5 ==0 &  AJR_noaction_7 ==0 & 
+           AJR_noaction_8 ==0 &  AJR_noaction_9 ==0 &  AJR_noaction_11 ==0 & AJR_noaction_13 ==0) ~ 1,
+      AJR_action ==4 ~ 1 ,
+      had_dispute == 1 ~ 0
+    ),
+    
+    #Needed but did not have access to an adviser
+    needed_assistance = case_when(
+      (AJR_noaction_3 ==1 | AJR_noaction_4 ==1 | AJR_noaction_5 ==1 | AJR_noaction_7 ==1 | 
+         AJR_noaction_8 ==1 | AJR_noaction_9 ==1 | AJR_noaction_11 ==1 | AJR_noaction_13 ==1) ~ 1,
+      had_dispute == 1 ~ 0
+    ),
+    
+    #Unknown reason 
+    unknown = case_when(
+      AJR_action ==3 ~ 1,
+      had_dispute == 1 ~ 0
+    ),
+    
+    #Did not need assistance - prof advisers
+    no_need_assistance_prof = case_when(
+      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
+         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
+         AJD_adviser_13 == 2) 
+      &
+        (AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1 )
+      &
+        (AJD_noadvice_reason_1 ==1 | AJD_noadvice_reason_2==1 | AJD_noadvice_reason_3==1 | 
+           AJD_noadvice_reason_4==1 | AJD_noadvice_reason_5==1 | AJD_noadvice_reason_6==1 ) &
+        (AJD_noadvice_reason_7== 0 & AJD_noadvice_reason_8== 0 & AJD_noadvice_reason_9== 0 & 
+           AJD_noadvice_reason_10== 0 & AJD_noadvice_reason_11== 0 & AJD_noadvice_reason_12== 0 & 
+           AJD_noadvice_reason_13== 0 & AJD_noadvice_reason_14== 0 &  AJD_noadvice_reason_15== 0 & 
+           AJD_noadvice_reason_16 == 0) ~ 1,
+      had_dispute == 1 ~ 0
+    ),
+    
+    #Needed assistance - prof advisers
+    needed_assistance_prof = case_when(
+      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & 
+         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & 
+         AJD_adviser_13 == 2) 
+      & 
+        (AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1 ) 
+      &
+        (AJD_noadvice_reason_7== 1 | AJD_noadvice_reason_8== 1 | AJD_noadvice_reason_9== 1 | 
+           AJD_noadvice_reason_10== 1 | AJD_noadvice_reason_11== 1 | AJD_noadvice_reason_12== 1 | 
+           AJD_noadvice_reason_13== 1 | AJD_noadvice_reason_14== 1 |  AJD_noadvice_reason_15== 1 | 
+           AJD_noadvice_reason_16 == 1 ) ~ 1,
+      had_dispute == 1 ~ 0
+    ),
+    
+    #Unknown prof help
+    unknown_prof = case_when(
+      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & 
+         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & 
+         AJD_adviser_13 == 2) 
+      & 
+        (AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1 ) 
+      &
+        (AJD_noadvice_reason_1 ==0 & AJD_noadvice_reason_2==0 &  AJD_noadvice_reason_3==0 &  
+           AJD_noadvice_reason_4==0 &  AJD_noadvice_reason_5==0 &  AJD_noadvice_reason_6==0 & 
+           AJD_noadvice_reason_7== 0 & AJD_noadvice_reason_8== 0 & AJD_noadvice_reason_9== 0 & 
+           AJD_noadvice_reason_10== 0 & AJD_noadvice_reason_11== 0 & AJD_noadvice_reason_12== 0 & 
+           AJD_noadvice_reason_13== 0 & AJD_noadvice_reason_14== 0 &  AJD_noadvice_reason_15== 0 & 
+           AJD_noadvice_reason_16 == 0 ) 
+      &
+        AJD_noadvice_reason_17 == 1 ~1,
+      had_dispute == 1 ~ 0
+    ),
+    
     
     #Helpfulness by adviser
     across(
@@ -170,26 +348,116 @@ data_subset <- master_data %>%
       .names = "{str_remove(.col, 'AJD_')}_bin"
     ),
     
+    #Barriers in the Access to Assistance and Representation (for professional help)
+    reason_no_need = case_when(
+      (AJD_noadvice_reason_1 == 1 | AJD_noadvice_reason_2 == 1 | AJD_noadvice_reason_3 == 1 | 
+        AJD_noadvice_reason_5 == 1 | AJD_noadvice_reason_6 == 1) ~ 1,
+      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+           AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
+           AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
+           AJD_adviser_13 == 2) ~ 0,
+    ),
+    reason_had_help = case_when(
+      (AJD_noadvice_reason_4 ==1 | AJD_noadvice_reason_7 ==1 | AJD_noadvice_reason_8 ==1 | 
+         AJD_noadvice_reason_9 ==1) ~ 1,
+      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
+         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
+         AJD_adviser_13 == 2) ~ 0, 
+    ),
+    reason_info_bar = case_when(
+      AJD_noadvice_reason_13 == 1 ~ 1,
+      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
+         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
+         AJD_adviser_13 == 2) ~ 0, 
+    ),
+    reason_relation_bar = case_when(
+      (AJD_noadvice_reason_11 == 1 | AJD_noadvice_reason_12 == 1) ~ 1,
+      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
+         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
+         AJD_adviser_13 == 2) ~ 0, 
+    ),
+    reason_psycho_bar = case_when(
+      (AJD_noadvice_reason_10== 1 | AJD_noadvice_reason_14 == 1) ~ 1,
+      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
+         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
+         AJD_adviser_13 == 2) ~ 0, 
+    ),
+    reason_prior = case_when(
+      AJD_noadvice_reason_15 == 1 ~ 1,
+      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
+         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
+         AJD_adviser_13 == 2) ~ 0,
+    ),
+    reason_social = case_when(
+      AJD_noadvice_reason_16==1 ~ 1,
+      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
+         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
+         AJD_adviser_13 == 2) ~ 0, 
+      ),
+    reason_other = case_when(
+      AJD_noadvice_reason_17==1 ~ 1,
+      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
+         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
+         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
+         AJD_adviser_13 == 2) ~ 0, 
+    ),
+    
     #Non-seekers’ intention (People that did not access ANY advisor)
+    AJR_action_1 = case_when(
+      AJR_action==1 ~ 1,
+      AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2  & AJD_adviser_4 == 2 & 
+        AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & 
+        AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 & 
+        AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 & 
+        AJD_adviser_17 == 2 ~ 0
+    ),
+    AJR_action_2 = case_when(
+      AJR_action==2 ~ 1,
+      AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2  & AJD_adviser_4 == 2 & 
+        AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & 
+        AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 & 
+        AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 & 
+        AJD_adviser_17 == 2 ~ 0
+    ),
+    AJR_action_3 = case_when(
+      AJR_action==3 ~ 1,
+      AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2  & AJD_adviser_4 == 2 & 
+        AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & 
+        AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 & 
+        AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 & 
+        AJD_adviser_17 == 2 ~ 0
+    ),
+    AJR_action_4 = case_when(
+      AJR_action==4 ~ 1,
+      AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2  & AJD_adviser_4 == 2 & 
+        AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & 
+        AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 & 
+        AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 & 
+        AJD_adviser_17 == 2 ~ 0
+    ),
+    
+    #Reasons for not seeking help (NO to ALL advisers)
+    #These are variables AJR_noaction_1-AJR_noaction_13. No need to do extra calculations 
     
     #Contacted a DRM
     contacted_drm = case_when(
       had_dispute == 0 ~ NA_real_,
-      AJR_drm_1_bin == 1 | AJR_drm_2_bin == 1 | AJR_drm_3_bin == 1 | AJR_drm_4_bin == 1 | 
+      (AJR_drm_1_bin == 1 | AJR_drm_2_bin == 1 | AJR_drm_3_bin == 1 | AJR_drm_4_bin == 1 | 
       AJR_drm_5_bin == 1 | AJR_drm_6_bin == 1 | AJR_drm_7_bin == 1 | AJR_drm_8_bin == 1 | 
-      AJR_drm_9_bin == 1 | AJR_drm_11_bin == 1 ~ 1,
-      
-      AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 & 
+      AJR_drm_9_bin == 1 | AJR_drm_11_bin == 1) ~ 1,
+      (AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 & 
         AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 & 
-        AJR_drm_9_bin == 0 & AJR_drm_11_bin == 0 ~ 0,
-      
-      AJR_drm_10_bin == 0 ~ 0
+        AJR_drm_9_bin == 0 & AJR_drm_11_bin == 0) ~ 0,
+      had_dispute == 1 ~ 0
     ),
     
-    #Barriers of access to a DRM
-    
-    
-    #Access to a dispute resolution mechanism
+    #Access to a dispute resolution mechanism (SDG 16.3.3)
     access2drm = case_when(
       had_dispute == 0   ~ NA_real_,
       AJR_drm_1_bin == 1 | AJR_drm_2_bin == 1 | AJR_drm_3_bin == 1 | AJR_drm_4_bin == 1 | 
@@ -205,8 +473,130 @@ data_subset <- master_data %>%
       AJR_noresol_reason_13 ==1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1 ) ~ 0
     ),
     
-    #Reasons for not accessing a DRM
+    #Needed but didn't have access to a DRM
+    needed_drm = case_when(
+      had_dispute == 0 ~ NA_real_,
+      (AJR_noresol_reason_7 == 1 | AJR_noresol_reason_8 ==1 | AJR_noresol_reason_9 == 1  | 
+         AJR_noresol_reason_10 == 1 | AJR_noresol_reason_11 ==1 | AJR_noresol_reason_12 ==1 | 
+         AJR_noresol_reason_13 ==1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1 ) ~ 1,
+      (AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 & 
+         AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 & 
+         AJR_drm_9_bin == 0 & AJR_drm_11_bin == 0) ~ 0,
+      (AJR_noresol_reason_7 == 0  & AJR_noresol_reason_8 == 0 & AJR_noresol_reason_9 == 0  & 
+         AJR_noresol_reason_10 == 0 & AJR_noresol_reason_11 ==0 & AJR_noresol_reason_12 ==0  & 
+         AJR_noresol_reason_13 ==0 & AJR_noresol_reason_14 == 0 & AJR_noresol_reason_15 == 0 ) ~ 0
+    ),
     
+    #Did not need to turn to a DRM
+    no_need_drm = case_when(
+      had_dispute == 0 ~ NA_real_,
+      (AJR_noresol_reason_1 == 1 | AJR_noresol_reason_2== 1 | AJR_noresol_reason_3== 1 | 
+         AJR_noresol_reason_4== 1 | AJR_noresol_reason_5== 1 | AJR_noresol_reason_6== 1) 
+      &
+      (AJR_noresol_reason_7 == 0  & AJR_noresol_reason_8 == 0 & AJR_noresol_reason_9 == 0  & 
+         AJR_noresol_reason_10 == 0 & AJR_noresol_reason_11 ==0 & AJR_noresol_reason_12 ==0  & 
+         AJR_noresol_reason_13 ==0 & AJR_noresol_reason_14 == 0 & AJR_noresol_reason_15 == 0 ) ~ 1,
+    
+      (AJR_noresol_reason_7 == 1 | AJR_noresol_reason_8 ==1 | AJR_noresol_reason_9 == 1  | 
+         AJR_noresol_reason_10 == 1 | AJR_noresol_reason_11 ==1 | AJR_noresol_reason_12 ==1 | 
+         AJR_noresol_reason_13 ==1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1 ) ~ 0,
+      
+      AJR_noresol_reason_16 == 1 ~ 0,
+      
+      (AJR_noresol_reason_1 == 0 & AJR_noresol_reason_2== 0 & AJR_noresol_reason_3== 0 & 
+         AJR_noresol_reason_4== 0 & AJR_noresol_reason_5== 0 & AJR_noresol_reason_6== 0) ~ 0,
+      
+      (AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 & 
+         AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 & 
+         AJR_drm_9_bin == 0 & AJR_drm_11_bin == 0) ~ 0
+    ),
+    
+    #Unknown
+    unknown_drm = case_when(
+      had_dispute == 0 ~ NA_real_,
+      AJR_noresol_reason_16 ==1 & 
+      (AJR_noresol_reason_7 == 0  & AJR_noresol_reason_8 == 0 & AJR_noresol_reason_9 == 0 & 
+        AJR_noresol_reason_10 == 0 & AJR_noresol_reason_11 ==0 & AJR_noresol_reason_12 ==0 & 
+        AJR_noresol_reason_13 ==0 & AJR_noresol_reason_14 == 0 & AJR_noresol_reason_15 == 0 ) ~ 1,
+      
+      (AJR_noresol_reason_1 == 1 | AJR_noresol_reason_2== 1 | AJR_noresol_reason_3== 1 | 
+         AJR_noresol_reason_4== 1 | AJR_noresol_reason_5== 1 | AJR_noresol_reason_6== 1 |
+         AJR_noresol_reason_7 == 1 | AJR_noresol_reason_8 ==1 | AJR_noresol_reason_9 == 1  | 
+         AJR_noresol_reason_10 == 1 | AJR_noresol_reason_11 ==1 | AJR_noresol_reason_12 ==1 | 
+         AJR_noresol_reason_13 ==1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1) ~ 0,
+      
+      (AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 & 
+         AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 & 
+         AJR_drm_9_bin == 0 & AJR_drm_11_bin == 0) ~ 0
+    ),
+    
+    #Reasons for not accessing a DRM
+    #These are variables AJR_noresol_reason_1- AJR_noresol_reason_16. No calculations needed
+
+    # Efficiency by each mechanism 
+    across(
+      c(AJR_drm_1_c, AJR_drm_2_c, AJR_drm_3_c, AJR_drm_4_c, AJR_drm_5_c, AJR_drm_6_c, AJR_drm_7_c, 
+        AJR_drm_8_c, AJR_drm_9_c, AJR_drm_11_c),
+      \(x) case_when(
+        had_dispute == 0   ~ NA_real_,
+        (x == 1 | x == 2) ~ 1,
+        (x == 3 | x == 4) ~ 0,
+        (x == 5 | x == 6) ~ NA_real_,
+      ),
+      .names = "{str_remove(.col, 'AJR_')}_bin"
+    ),
+    
+    # Fairness of the dispute resolution process by each mechanism 
+    across(
+      c(AJR_drm_1_f, AJR_drm_2_f, AJR_drm_3_f, AJR_drm_4_f, AJR_drm_5_f, AJR_drm_6_f, AJR_drm_7_f, 
+        AJR_drm_8_f, AJR_drm_9_f, AJR_drm_11_f),
+      \(x) case_when(
+        had_dispute == 0   ~ NA_real_,
+        (x == 1 | x == 2) ~ 1,
+        (x == 3 | x == 4) ~ 0,
+        (x == 5 | x == 6) ~ NA_real_,
+      ),
+      .names = "{str_remove(.col, 'AJR_')}_bin"
+    ),
+  
+    # Affordability by each mechanism 
+    across(
+      c(AJR_drm_1_d, AJR_drm_2_d, AJR_drm_3_d, AJR_drm_4_d, AJR_drm_5_d, AJR_drm_6_d, AJR_drm_7_d, 
+        AJR_drm_8_d, AJR_drm_9_d, AJR_drm_11_d),
+      \(x) case_when(
+        had_dispute == 0   ~ NA_real_,
+        (x == 1 | x == 2) ~ 1,
+        (x == 3 | x == 4) ~ 0,
+        (x == 5 | x == 6) ~ NA_real_,
+      ),
+      .names = "{str_remove(.col, 'AJR_')}_bin"
+    ),
+    
+    # Duration by each mechanism
+    across(
+      c(AJR_drm_1_e, AJR_drm_2_e, AJR_drm_3_e, AJR_drm_4_e, AJR_drm_5_e, AJR_drm_6_e, AJR_drm_7_e, 
+        AJR_drm_8_e, AJR_drm_9_e, AJR_drm_11_e),
+      \(x) case_when(
+        had_dispute == 0   ~ NA_real_,
+        (x == 1 | x == 2) ~ 1,
+        (x == 3 | x == 4) ~ 0,
+        (x == 5 | x == 6) ~ NA_real_,
+      ),
+      .names = "{str_remove(.col, 'AJR_')}_bin"
+    ),
+    
+    # Helpfulness by each mechanism   
+    across(
+      c(AJR_drm_1_h, AJR_drm_2_h, AJR_drm_3_h, AJR_drm_4_h, AJR_drm_5_h, AJR_drm_6_h, AJR_drm_7_h, 
+        AJR_drm_8_h, AJR_drm_9_h, AJR_drm_11_h),
+      \(x) case_when(
+        had_dispute == 0   ~ NA_real_,
+        (x == 1 | x == 2) ~ 1,
+        (x == 3 | x == 4) ~ 0,
+        (x == 5 | x == 6) ~ NA_real_,
+      ),
+      .names = "{str_remove(.col, 'AJR_')}_bin"
+    ),   
     
     
     #Timeliness of the process
@@ -228,18 +618,6 @@ data_subset <- master_data %>%
       AJR_fair == 2 ~ 0
       ),
     
-    # Fairness by each mechanism 
-    
-    # Efficiency by each mechanism 
-    
-    # Affordability by each mechanism 
-    
-    # Duration by each mechanism 
-    
-    # Fairness by each mechanism 
-    
-    # Helpfulness by each mechanism 
-    
     # Outcome
     outcome_done = case_when(
       AJR_status == 1 ~ NA_real_,
@@ -255,8 +633,20 @@ data_subset <- master_data %>%
       (AJE_impact == 3 | AJE_impact == 4| AJE_impact == 5) ~ 1
     ),
     
-    #Type of impact    
-    
+    #Hardships
+    across(
+      c(AJE_hardship_1, AJE_hardship_2, AJE_hardship_3, AJE_hardship_4, AJE_hardship_5, AJE_hardship_6,
+        AJE_hardship_7, AJE_hardship_8, AJE_hardship_9, AJE_hardship_10, AJE_hardship_11, AJE_hardship_12,
+        AJE_hardship_13, AJE_hardship_14, AJE_hardship_15, AJE_hardship_16),
+      \(x) case_when(
+        had_dispute == 0   ~ NA_real_,
+        (x == 1 ) ~ 1,
+        (x == 2) ~ 0,
+        (x == 3) ~ NA_real_,
+      ),
+      .names = "{str_remove(.col, 'AJE_')}_bin"
+    ),  
+  
     #Legal capability
     legal_rights = case_when(
       (AJE_legalrights_done == 1 | AJE_legalrights_done == 2 | AJE_legalrights_ongoing == 1 | 
@@ -266,11 +656,21 @@ data_subset <- master_data %>%
     ),
     
     expert_help = case_when(
-      (AJE_advice_done == 1 | AJE_advice_done == 2 | AJE_advice_ongoing == 1 | AJE_advice_ongoing == 2) ~ 1,
-      (AJE_advice_done == 3 | AJE_advice_done == 4 | AJE_advice_ongoing == 3 | AJE_advice_ongoing == 4) ~ 0
-    )
+      (AJE_advice_done == 1 | AJE_advice_done == 2 | 
+         AJE_advice_ongoing == 1 | AJE_advice_ongoing == 2) ~ 1,
+      (AJE_advice_done == 3 | AJE_advice_done == 4 | 
+         AJE_advice_ongoing == 3 | AJE_advice_ongoing == 4) ~ 0,
+    ),
     
+    fair_outcome = case_when(
+      (AJE_fairoutcome_done == 1 | AJE_fairoutcome_done==2 | 
+         AJE_fairoutcome_ongoing ==1 | AJE_fairoutcome_ongoing ==2) ~ 1,
+      (AJE_fairoutcome_done == 3 | AJE_fairoutcome_done==4 | 
+         AJE_fairoutcome_ongoing ==3 | AJE_fairoutcome_ongoing ==4) ~ 0,
+    )
   )
+
+
 
     
 ### Demographics
@@ -348,6 +748,8 @@ data_subset.df <- data_subset %>%
     ),
   cooccurence_group = as.character(cooccurence_group)
 )
+
+
 
 # Special wrangling
 

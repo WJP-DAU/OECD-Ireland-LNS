@@ -57,6 +57,26 @@ cls
 do "${path2dos}/variable_labels.do"
 */
 
+*----- Creating NUTS 3 variable
+gen NUTS_3=""
+
+replace NUTS_3="Border" if county==5 | county==21 | county==12 | county==2 | county==18
+
+replace NUTS_3="West" if county==7 | county==16 | county==20
+
+replace NUTS_3="Mid-west" if county==3 | county==22 | county==13
+
+replace NUTS_3="South East" if county==23 | county==10 | county==1 | county==25
+
+replace NUTS_3="South-West" if county==4 | county==8
+
+replace NUTS_3="Dublin" if county==6
+
+replace NUTS_3="Mid-East" if county==26 | county==9 | county==17 | county==15
+
+replace NUTS_3="Midlands" if county==14 | county==24 | county==19 | county==11
+
+
 /*=================================================================================================================
 					3. Routing
 =================================================================================================================*/
@@ -65,7 +85,6 @@ do "${path2dos}/variable_labels.do"
 
 cls
 do "${path2dos}/routing.do"
-
 
 	
 /*=================================================================================================================

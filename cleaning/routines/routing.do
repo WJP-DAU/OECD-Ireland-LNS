@@ -865,6 +865,8 @@ foreach v in q28 {
 
 
 *-------- q26 == 1 -> q29_1
+
+*q29_1_1-q29_1_9
 forvalues i=1/9 {
 	foreach x in a b c d e f g h i {
 		di as result "`: variable label q29_1_it0`i'_`x' '"
@@ -879,6 +881,8 @@ forvalues i=1/9 {
 		di as text "NO-SKIP - obs: " as error r(N)
 	}
 }
+
+*q29_1_11
 foreach x in a b c d e f g h i {
 		di as result "`: variable label q29_1_it11_`x' '"
 		
@@ -893,6 +897,8 @@ foreach x in a b c d e f g h i {
 	}
 
 *-------- q26 == 1 -> q29_2
+
+*q29_2_1-q29_1_9
 forvalues i=1/9 {
 	foreach x in a b c d {
 		di as result "`: variable label q29_2_it0`i'_`x' '"
@@ -907,8 +913,10 @@ forvalues i=1/9 {
 		di as text "NO-SKIP - obs: " as error r(N)
 	}
 }
+
+*q29_2_11
 foreach x in a b c d {
-		di as result "`: variable label q29_1_it11_`x' '"
+		di as result "`: variable label q29_2_it11_`x' '"
 		
 		* Skip
 		di as input "Specific routing check"
@@ -920,6 +928,40 @@ foreach x in a b c d {
 		di as text "NO-SKIP - obs: " as error r(N)
 	}
 
+*-------- q28 == 1-8 -> q29_2
+
+*q29_2_1-q29_1_9
+forvalues i=1/9 {
+	foreach x in a b c d {
+		di as result "`: variable label q29_2_it0`i'_`x' '"
+		
+		* Skip
+		di as input "Specific routing check"
+		cap: inspect q29_2_it0`i'_`x' if q28>8 & q28!=.
+		di as text "SKIP - obs: " as error r(N) as text "; values: " as error r(N_unique)	
+		replace q29_2_it0`i'_`x' = . if q28>8 & q28!=.
+		
+		* Non-skip
+		qui count if q29_2_it0`i'_`x' == . & q28<=8 & q28!=. & q26_0`i'==1
+		di as text "NO-SKIP - obs: " as error r(N)
+	}
+}
+
+*q29_2_11
+foreach x in a b c d {
+		di as result "`: variable label q29_2_it11_`x' '"
+		
+		* Skip
+		di as input "Specific routing check"
+		cap: inspect q29_2_it11_`x' if q28>8 & q28!=.
+		di as text "SKIP - obs: " as error r(N) as text "; values: " as error r(N_unique)
+		replace q29_2_it11_`x' =. if q28>8 & q28!=.
+		
+		* Non-skip
+		qui count if q29_2_it11_`x' == . & q28<=8 & q28!=. & q26_11==1
+		di as text "NO-SKIP - obs: " as error r(N)
+	}
+	
 
 *-------- q24 ==2,3  -> q30
 foreach v in q30 {
@@ -937,19 +979,36 @@ foreach v in q30 {
 	
 	
 *-------- had_dispute -> q31
-foreach v in q31a_1 q31a_2 q31a_3 q31a_4 q31b_1 q31b_2 q31b_3 q31b_4 {
+
+*Done problems
+foreach v in q31a_1 q31a_2 q31a_3 q31a_4 {
 	di as result "`: variable label `v' '"
 
 	* Skip
 	di as input "Had dispute check"
-	cap: inspect `v' if had_dispute==0
+	cap: inspect `v' if had_dispute==0 & (q24!=2 | q24!=3)
 	di as text "SKIP - obs: " as error r(N) as text "; values: " as error r(N_unique)	
 	
 	* Non-skip
-	qui count if `v' == . & had_dispute==1
+	qui count if `v' == . & had_dispute==1 & (q24==2 & q24==3)
 	di as text "NO-SKIP - obs: " as error r(N)
 }	
+
+*Ongoing or unknown problems
+foreach v in q31b_1 q31b_2 q31b_3 q31b_4  {
+	di as result "`: variable label `v' '"
+
+	* Skip
+	di as input "Had dispute check"
+	cap: inspect `v' if had_dispute==0 & (q24!=1 | q24!=4 | q24!=5)
+	di as text "SKIP - obs: " as error r(N) as text "; values: " as error r(N_unique)	
 	
+	* Non-skip
+	qui count if `v' == . & had_dispute==1 & (q24==1 & q24==4 & q24==5)
+	di as text "NO-SKIP - obs: " as error r(N)
+}	
+
+
 	
 /*=================================================================================================================
 					IMPACT
