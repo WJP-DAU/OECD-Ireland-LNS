@@ -169,90 +169,6 @@ data_subset <- master_data %>%
       had_dispute == 1 ~ 0
     ),
     
-    #Access to appropriate/professional assistance and representation
-    access2rep = case_when(
-      had_dispute == 0   ~ NA_real_,
-      
-      # Needed access and did not get it - ALL advisers (reasons for no action = barriers)
-      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
-         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
-         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
-         AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 &
-         AJD_adviser_17 == 2)
-      &
-        (AJR_noaction_3 ==1 | AJR_noaction_4 ==1 | AJR_noaction_5 ==1 | AJR_noaction_7 ==1 | 
-           AJR_noaction_8 ==1 | AJR_noaction_9 ==1 | AJR_noaction_11 ==1 | AJR_noaction_13 ==1) ~ 0,
-      
-      #Needed access and did not get it - prof advisers (reasons for not going to a prof adviser = barriers)
-      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
-         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & 
-         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & 
-         AJD_adviser_13 == 2) 
-      & 
-        (AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1 ) 
-      &
-        (AJD_noadvice_reason_7== 1 | AJD_noadvice_reason_8== 1 | AJD_noadvice_reason_9== 1 | 
-           AJD_noadvice_reason_10== 1 | AJD_noadvice_reason_11== 1 | AJD_noadvice_reason_12== 1 | 
-           AJD_noadvice_reason_13== 1 | AJD_noadvice_reason_14== 1 |  AJD_noadvice_reason_15== 1 | 
-           AJD_noadvice_reason_16 == 1 ) ~ 0,
-      
-      #Unknown reasons - prof advisers (reasons for no contact a prof adviser = other reason)
-      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
-         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & 
-         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & 
-         AJD_adviser_13 == 2) 
-      &
-        (AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1 ) 
-      &
-        AJD_noadvice_reason_17 == 1 ~ 0, 
-      
-      #Unknown reasons (AJR_action == 3, "Have done something")
-      (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
-         AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
-         AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
-         AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 &
-         AJD_adviser_17 == 2) 
-      & 
-        AJR_action == 3 ~ 1,
-    
-    # No action (No, as it has resolved itself or is no longer an issue) as opting out
-    (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
-       AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
-       AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
-       AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 &
-       AJD_adviser_17 == 2) 
-    & 
-      AJR_action == 4 ~ 1,
-      
-    #No prof advisers - reasons: opting out
-    (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
-       AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
-       AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
-       AJD_adviser_13 == 2) 
-    &
-      (AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1 )
-    &
-      (AJD_noadvice_reason_1 ==1 | AJD_noadvice_reason_2==1 | AJD_noadvice_reason_3==1 | 
-         AJD_noadvice_reason_4==1 | AJD_noadvice_reason_5==1 | AJD_noadvice_reason_6==1 ) ~ 1,
-    
-    #No advisers (ALL) - reasons: opting out 
-    (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
-       AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
-       AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 &
-       AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 &
-       AJD_adviser_17 == 2) 
-    & 
-      (AJR_noaction_1 == 1 | AJR_noaction_2 ==1 | AJR_noaction_6 ==1 | AJR_noaction_10 ==1 
-       | AJR_noaction_12 ==1) ~ 1,
-    
-      #YES to any Professional adviser
-      AJD_adviser_1 ==1 | AJD_adviser_2 == 1 | AJD_adviser_3 == 1 | AJD_adviser_4 == 1 | 
-        AJD_adviser_5 == 1 | AJD_adviser_6 == 1 | AJD_adviser_7 == 1 | AJD_adviser_8 == 1 |
-        AJD_adviser_9 == 1 | AJD_adviser_10 == 1 | AJD_adviser_11 == 1 | AJD_adviser_12 ==1 |
-        AJD_adviser_13 == 1 ~ 1,
-  ),
-
-    
     #Did not need assistance (ALL advisers)
     no_need_assistance = case_when(
       (AJR_noaction_1 == 1 | AJR_noaction_2 ==1 | AJR_noaction_6 ==1 | AJR_noaction_10 ==1 
@@ -268,12 +184,6 @@ data_subset <- master_data %>%
     needed_assistance = case_when(
       (AJR_noaction_3 ==1 | AJR_noaction_4 ==1 | AJR_noaction_5 ==1 | AJR_noaction_7 ==1 | 
          AJR_noaction_8 ==1 | AJR_noaction_9 ==1 | AJR_noaction_11 ==1 | AJR_noaction_13 ==1) ~ 1,
-      had_dispute == 1 ~ 0
-    ),
-    
-    #Unknown reason 
-    unknown = case_when(
-      AJR_action ==3 ~ 1,
       had_dispute == 1 ~ 0
     ),
     
@@ -311,8 +221,8 @@ data_subset <- master_data %>%
       had_dispute == 1 ~ 0
     ),
     
-    #Unknown prof help
-    unknown_prof = case_when(
+    #Unknown 
+    unknown = case_when(
       (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & 
          AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & 
          AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & 
@@ -328,7 +238,18 @@ data_subset <- master_data %>%
            AJD_noadvice_reason_16 == 0 ) 
       &
         AJD_noadvice_reason_17 == 1 ~1,
+      AJR_action ==3 ~ 1,
       had_dispute == 1 ~ 0
+    ),
+    
+    #Access to appropriate/professional assistance and representation
+    access2rep = case_when(
+      needed_assistance == 1 ~ 0,
+      needed_assistance_prof == 1 ~ 0,
+      unknown == 1 ~ 0,
+      no_need_assistance_prof ==1 ~ 1,
+      no_need_assistance == 1 ~ 1,
+      appropriate_adviser == 1 ~ 1
     ),
     
     
@@ -459,14 +380,8 @@ data_subset <- master_data %>%
     
     #Access to a dispute resolution mechanism (SDG 16.3.3)
     access2drm = case_when(
-      had_dispute == 0   ~ NA_real_,
-      AJR_drm_1_bin == 1 | AJR_drm_2_bin == 1 | AJR_drm_3_bin == 1 | AJR_drm_4_bin == 1 | 
-      AJR_drm_5_bin == 1 | AJR_drm_6_bin == 1 | AJR_drm_7_bin == 1 | AJR_drm_8_bin == 1 | 
-      AJR_drm_9_bin == 1 | AJR_drm_11_bin == 1 ~ 1 ,
-      
-      (AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 & 
-      AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 & 
-      AJR_drm_9_bin == 0 & AJR_drm_11_bin == 0 ) 
+      contacted_drm ==1 ~ 1 ,
+      contacted_drm ==0  
       &
       (AJR_noresol_reason_7 == 1 | AJR_noresol_reason_8 ==1 | AJR_noresol_reason_9 == 1  | 
       AJR_noresol_reason_10 == 1 | AJR_noresol_reason_11 ==1 | AJR_noresol_reason_12 ==1 | 
@@ -670,7 +585,7 @@ data_subset <- master_data %>%
     )
   )
 
-
+ 
 
     
 ### Demographics
