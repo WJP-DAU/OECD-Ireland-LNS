@@ -23,9 +23,9 @@
 ##
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#source("code/settings.R")
-#source("code/functions.R")
-#source("code/bars_group.R")
+source("code/settings.R")
+source("code/functions.R")
+source("code/bars_group.R")
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ##
@@ -36,7 +36,6 @@
 master_data <- read_dta(
   file.path(path2SP,"data/ireland_lns_2025_final.dta")
 )
-
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ##
@@ -805,51 +804,6 @@ data_drm <- data_subset.df %>%
     fair_community_leader  = case_when(AJR_drm_8_f %in% c(1,2) ~ 1,
                                        AJR_drm_8_f %in% c(3,4) ~ 0,
                                        TRUE ~ NA_real_)
-  ) %>%
-  summarise(
-    # promedios por ítem
-    across(starts_with("affordable_"), ~ mean(.x, na.rm = TRUE)),
-    across(starts_with("fair_"),       ~ mean(.x, na.rm = TRUE))
-  ) %>%
-  # separa "measure" y "category": e.g. "affordable_court" -> measure=affordable, category=court
-  tidyr::pivot_longer(
-    cols = everything(),
-    names_to  = c("measure", "category"),
-    names_sep = "_",
-    values_to = "value2plot"
-  )
-
-# 2) Etiquetas bonitas + orden explícito y dos series (Affordable vs Fair)
-axis_order <- c("Courts","Tribunals","Ombudsman","Police",
-                "Mediation","Lawyer","Gov. Department","Community Leader")
-
-radar_df <- data_drm %>%
-  mutate(
-    axis_clean = dplyr::recode(
-      category,
-      "court"            = "Courts",
-      "tribunal"         = "Tribunals",
-      "ombudsman"        = "Ombudsman",
-      "police"           = "Police",
-      "mediation"        = "Mediation",
-      "lawyer"           = "Lawyer",
-      "gov" = "Gov. Department",             # por si te llega "gov"
-      "gov_department"   = "Gov. Department",
-      "community" = "Community Leader",
-      .default = category
-    ),
-    axis_clean = factor(axis_clean, levels = axis_order),
-    color_var  = dplyr::recode(measure,
-                               "affordable" = "Affordable",
-                               "fair"       = "Fair")
-  ) %>%
-  arrange(axis_clean) %>%
-  transmute(
-    axis_var   = as.character(axis_clean),
-    target_var = value2plot,            # (0–1)
-    label_var  = as.character(axis_clean),
-    color_var,
-    order_var  = as.integer(axis_clean) # 1..N consistente para ambas series
   ) 
 
 
@@ -919,7 +873,7 @@ run_block <- function(data,
                   height = 280, 
                   units = "mm", 
                   scale = 0.75)
-  invisible(p)
+  return(p)
 }
 
 # Prevalence
@@ -932,10 +886,10 @@ grp_prev <- select_groups(full_group_cfg,
                           "NUTS",
                           "disability")
 
-plot1 <- run_block(data_subset.df, 
-                   prevalence, 
-                   grp_prev, 
-                   levels_map, 
+plot1 <- run_block(data = data_subset.df, 
+                   value = "prevalence", 
+                   group_cfg = grp_prev, 
+                   levels_cfg = levels_map, 
                    paste0(path2SP, 
                           "output/prevalence.svg"))
 

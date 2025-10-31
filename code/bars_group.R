@@ -63,11 +63,6 @@ plot_by_group <- function(data_frame,
                         names_to = "color", 
                         values_to = "value") %>%
     dplyr::mutate(
-      level = if_else(
-        grouping == " ",
-        glue::glue("<span style='color:#575796;'><b><i>{level}</b></i></span>"),
-        level
-      ),
       grouping = dplyr::recode(grouping, !!!group_cfg),  # recodifica con group_cfg (no global)
       grouping = factor(grouping, levels = facet_order2),
       label_value = dplyr::if_else(color == "primary", 
@@ -125,17 +120,33 @@ plot_by_group <- function(data_frame,
       unique()
   }
   
-  # 3) Clave Y ordenada y plot
+  levels_all <- unique(c("<span style='color:#575796;'><b><i>{level}</i></b></span>", levels_all))
+  
   data2plot <- data2plot %>%
     dplyr::mutate(
-      y_key = paste(grouping, level, sep = " | "),
-      y_key = if_else(grouping == " ", 
-                      glue::glue("<span style='color:#575796;'><b><i>{level}</i></b></span>"),
-                      y_key),
-      y_key = factor(y_key, levels = levels_all),
+      y_id  = paste(grouping, level, sep = " | "),
+      y_lab = sprintf("<b>%s</b>", level),
+      y_id  = factor(y_id, levels = levels_all),
+      y_lab = if_else(grouping == " ", " ",level)
     )
   
-  ggplot2::ggplot(data2plot, ggplot2::aes(x = value * 100, y = level, fill = color)) +
+  first_group <- levels(forcats::fct_inorder(data2plot$grouping))[1]
+  
+  label_df <- tibble(
+    label_html = "<span style='color:#575796;font-weight:700;font-style:italic;'><b><i>National Average</i></b></span>",
+    x = 0,   # posición en X (tu escala va 0–115, ponlo donde quieras)
+    y = 2,   # arriba del panel
+    grouping = first_group  # <-- clave: coincide con la faceta
+  )
+  
+  # # Mapa único id -> etiqueta HTML
+  # labels_map <- data2plot %>%
+  #   dplyr::distinct(y_id, y_lab) %>%
+  #   { setNames(.$y_lab, .$y_id) }
+  # 
+  
+  
+  p <- ggplot2::ggplot(data2plot, ggplot2::aes(x = value * 100, y = y_lab, fill = color)) +
     ggplot2::geom_col(position = ggplot2::position_stack(reverse = TRUE), width = 0.9, na.rm = TRUE) +
     ggplot2::geom_text(
       ggplot2::aes(x = 101, label = label_value),
@@ -146,7 +157,7 @@ plot_by_group <- function(data_frame,
       rows = ggplot2::vars(grouping),
       scales = "free", space = "free_y", switch = "y"
     ) +
-    ggplot2::scale_y_discrete(labels = function(x) sub(".*\\|\\s*", "", x)) +
+    #ggplot2::scale_y_discrete(labels = labels_map) +
     ggplot2::scale_fill_manual(values = c("primary" = "#575796", "secondary" = "#e5e8e8")) +
     ggplot2::scale_x_continuous(expand = c(0, 0), limits = c(0, 115), position = "top") +
     ggplot2::coord_cartesian(clip = "off") +
@@ -157,24 +168,36 @@ plot_by_group <- function(data_frame,
       axis.title.x = element_blank(),
       axis.title.y = element_blank(),
       axis.text.x = element_blank(),
-      axis.text.y = ggtext::element_markdown(size = 10, 
-                                          hjust = 1, 
-                                          family = "inter", 
-                                          face = "plain"),
+      axis.text.y = ggtext::element_markdown(size = 10,
+                                     hjust = 1,
+                                     family = "inter",
+                                     face = "plain"),
       panel.grid.major.y = element_blank(),
       panel.grid.major.x = element_blank(),
       panel.grid.minor.x = element_blank(),
       panel.spacing = grid::unit(12, "mm"),
-      strip.text.y.left = ggplot2::element_text(angle = 0, 
-                                                size = 10, 
-                                                color = "#575796", 
-                                                hjust = 1, 
-                                                vjust = 1, 
-                                                family = "inter", 
-                                                face = "bold", 
-                                                margin = margin(-20,-35,0,55)),
+      strip.text.y.left = element_text(angle = 0,
+                                       size = 10,
+                                       color = "#575796",
+                                       hjust = 0,
+                                       vjust = 1,
+                                       family = "inter",
+                                       face = "bold",
+                                       margin = margin(-20,-35,0,55)),
       strip.switch.pad.grid = grid::unit(-35, "mm"),
       strip.clip = "off",
       legend.position = "none"
-    )
+    ) +
+    geom_richtext(
+      data = label_df,
+      aes(x = x, y = y, label = label_html),
+      inherit.aes = FALSE,
+      fill = NA, label.color = NA, # sin fondo ni borde
+      vjust = 1.5, hjust = 1,
+      size = 3.5,
+      family = "inter", 
+      face = "bold"
+    );p
+  
+  return(p)
 }
