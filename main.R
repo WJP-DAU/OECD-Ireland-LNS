@@ -814,8 +814,9 @@ data_drm <- data_subset.df %>%
 ##
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+
 ## =========================================================
-## Configuración (fuente única)
+## Group bars
 ## =========================================================
 
 # Helper para seleccionar solo algunos grupos por gráfico
@@ -870,8 +871,8 @@ run_block <- function(data,
   dir.create(dirname(outfile), showWarnings = FALSE, recursive = TRUE)
   ggplot2::ggsave(plot = p, 
                   filename = outfile, 
-                  width = 300, 
-                  height = 280, 
+                  width = width, 
+                  height = height, 
                   units = "mm", 
                   scale = 0.75)
   return(p)
@@ -913,7 +914,8 @@ plot2 <- run_block(
   timeliness, 
   grp_selected, 
   levels_map, 
-  paste0(path2SP, "output/timeliness.svg")
+  paste0(path2SP, "output/timeliness.svg"), 
+  width = 300, height = 350
   )
 
 # Contacted DRM
@@ -923,7 +925,8 @@ plot3 <- run_block(
   contacted_drm, 
   grp_selected, 
   levels_map, 
-  paste0(path2SP, "output/contacted_DRM.svg")
+  paste0(path2SP, "output/contacted_DRM.svg"),
+  width = 300, height = 350
   )
 
 # Access to DRM
@@ -932,7 +935,8 @@ plot4 <- run_block(
   access2drm, 
   grp_selected, 
   levels_map, 
-  paste0(path2SP, "output/access2DRM.svg")
+  paste0(path2SP, "output/access2DRM.svg"),
+  width = 300, height = 350
   )
 
 # Access to info
@@ -941,7 +945,8 @@ plot5 <- run_block(
   access2info, 
   grp_selected, 
   levels_map, 
-  paste0(path2SP, "output/access2info.svg")
+  paste0(path2SP, "output/access2info.svg"),
+  width = 300, height = 350
   )
 
 # Access to representation
@@ -950,7 +955,8 @@ plot6 <- run_block(
   access2rep, 
   grp_selected, 
   levels_map, 
-  paste0(path2SP, "output/access2rep.svg")
+  paste0(path2SP, "output/access2rep.svg"),
+  width = 300, height = 350
   )
 
 # Fairness
@@ -959,7 +965,8 @@ plot7 <- run_block(
   fair, 
   grp_selected, 
   levels_map, 
-  paste0(path2SP, "output/fairness.svg")
+  paste0(path2SP, "output/fairness.svg"),
+  width = 300, height = 350
   )
 
 # Outcome
@@ -968,5 +975,23 @@ plot8 <- run_block(
   outcome_done, 
   grp_selected, 
   levels_map, 
-  paste0(path2SP, "output/outcome_done.svg")
+  paste0(path2SP, "output/outcome_done.svg"),
+  width = 300, height = 350
+  )
+
+## =========================================================
+## Bars
+## =========================================================
+
+data2plot <- data_subset.df %>%
+  summarize(
+    across(
+      starts_with("AJR_noresol_reason_"),
+      ~mean(.x, na.rm = T)
+    )
+  ) %>%
+  pivot_longer(cols = everything(), names_to = "category", values_to = "values") %>%
+  drop_na() %>%
+  mutate(
+    values = values*100
   )

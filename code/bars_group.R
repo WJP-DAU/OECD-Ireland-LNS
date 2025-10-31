@@ -135,7 +135,7 @@ plot_by_group <- function(data_frame,
   label_df <- tibble(
     label_html = "<span style='color:#575796;font-weight:700;font-style:italic;'><b><i>National Average</i></b></span>",
     x = 0,   # posición en X (tu escala va 0–115, ponlo donde quieras)
-    y = 2,   # arriba del panel
+    y = 2.25,   # arriba del panel
     grouping = first_group  # <-- clave: coincide con la faceta
   )
   
@@ -151,7 +151,7 @@ plot_by_group <- function(data_frame,
     ggplot2::geom_text(
       ggplot2::aes(x = 101, label = label_value),
       family = "inter", fontface = "bold", color = "#575796",
-      hjust = 0, size = 3.5, na.rm = TRUE
+      hjust = 0, size = 5, na.rm = TRUE
     ) +
     ggplot2::facet_grid(
       rows = ggplot2::vars(grouping),
@@ -168,7 +168,7 @@ plot_by_group <- function(data_frame,
       axis.title.x = element_blank(),
       axis.title.y = element_blank(),
       axis.text.x = element_blank(),
-      axis.text.y = ggtext::element_markdown(size = 10,
+      axis.text.y = ggtext::element_markdown(size = 16,
                                      hjust = 1,
                                      family = "inter",
                                      face = "plain"),
@@ -177,9 +177,9 @@ plot_by_group <- function(data_frame,
       panel.grid.minor.x = element_blank(),
       panel.spacing = grid::unit(12, "mm"),
       strip.text.y.left = element_text(angle = 0,
-                                       size = 10,
+                                       size = 16,
                                        color = "#575796",
-                                       hjust = 0,
+                                       hjust = 1,
                                        vjust = 1,
                                        family = "inter",
                                        face = "bold",
@@ -194,9 +194,8 @@ plot_by_group <- function(data_frame,
       inherit.aes = FALSE,
       fill = NA, label.color = NA, # sin fondo ni borde
       vjust = 1.5, hjust = 1,
-      size = 3.5,
-      family = "inter", 
-      face = "bold"
+      size = 5,
+      family = "inter" 
     );p
   
   return(p)
