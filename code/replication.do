@@ -163,7 +163,7 @@ replace access2rep = 1 if AJD_adviser_1 ==1 | AJD_adviser_2 == 1 | AJD_adviser_3
 replace access2rep = 1 if ///
 (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 & AJD_adviser_17 == 2) & ///
 (AJR_noaction_1 == 1 | AJR_noaction_2 ==1 | AJR_noaction_6 ==1 | AJR_noaction_10 ==1 | AJR_noaction_12 ==1) & ///
-(AJR_noaction_3 ==0 & AJR_noaction_4 ==0 &  AJR_noaction_5 ==0 &  AJR_noaction_7 ==0 & AJR_noaction_8 ==0 &  AJR_noaction_9 ==0 &  AJR_noaction_11 ==0 | AJR_noaction_13 ==0 )
+(AJR_noaction_3 ==0 & AJR_noaction_4 ==0 &  AJR_noaction_5 ==0 &  AJR_noaction_7 ==0 & AJR_noaction_8 ==0 &  AJR_noaction_9 ==0 &  AJR_noaction_11 ==0 & AJR_noaction_13 ==0 )
 
 *Did not need the access - non-appropriate advisers (reasons for not going to a prof adviser = opting out)
 replace access2rep = 1 if (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2) & ///
@@ -177,6 +177,15 @@ replace access2rep = 1 if (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_
 
 //** NO ACCESS
 
+*Unknown reasons (Did not go to a professional adviser, but went to other advisers. In the reasons for no contact a prof adviser: Other reason )
+replace access2rep = 0 if (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2) & ///
+(AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1 ) & ///
+(AJD_noadvice_reason_1 ==0 & AJD_noadvice_reason_2==0 &  AJD_noadvice_reason_3==0 &  AJD_noadvice_reason_4==0 &  AJD_noadvice_reason_5==0 &  AJD_noadvice_reason_6==0 & AJD_noadvice_reason_7== 0 & AJD_noadvice_reason_8== 0 & AJD_noadvice_reason_9== 0 & AJD_noadvice_reason_10== 0 & AJD_noadvice_reason_11== 0 & AJD_noadvice_reason_12== 0 & AJD_noadvice_reason_13== 0 & AJD_noadvice_reason_14== 0 &  AJD_noadvice_reason_15== 0 & AJD_noadvice_reason_16 == 0 ) & ///
+AJD_noadvice_reason_17 == 1
+
+*Unknown reasons (AJR_action == 3, "Have done something")
+replace access2rep = 0 if (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 & AJD_adviser_17 == 2) & AJR_action == 3
+
 *Needed access and did not get it - ALL advisers (reasons for no action = barriers)
 replace access2rep = 0 if ///
 (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 & AJD_adviser_17 == 2) & ///
@@ -186,14 +195,6 @@ replace access2rep = 0 if ///
 replace access2rep = 0 if (AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1 ) & ///
 (AJD_noadvice_reason_7== 1 | AJD_noadvice_reason_8== 1 | AJD_noadvice_reason_9== 1 | AJD_noadvice_reason_10== 1 | AJD_noadvice_reason_11== 1 | AJD_noadvice_reason_12== 1 | AJD_noadvice_reason_13== 1 | AJD_noadvice_reason_14== 1 |  AJD_noadvice_reason_15== 1 | AJD_noadvice_reason_16 == 1 )
 
-*Unknown reasons (Did not go to a professional adviser, but went to other advisers. In the reasons for no contact a prof adviser: Other reason )
-replace access2rep = 0 if (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2) & ///
-(AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1 ) & ///
-(AJD_noadvice_reason_1 ==0 & AJD_noadvice_reason_2==0 &  AJD_noadvice_reason_3==0 &  AJD_noadvice_reason_4==0 &  AJD_noadvice_reason_5==0 &  AJD_noadvice_reason_6==0 & AJD_noadvice_reason_7== 0 & AJD_noadvice_reason_8== 0 & AJD_noadvice_reason_9== 0 & AJD_noadvice_reason_10== 0 & AJD_noadvice_reason_11== 0 & AJD_noadvice_reason_12== 0 & AJD_noadvice_reason_13== 0 & AJD_noadvice_reason_14== 0 &  AJD_noadvice_reason_15== 0 & AJD_noadvice_reason_16 == 0 ) & ///
-AJD_noadvice_reason_17 == 1
-
-*Unknown reasons (AJR_action == 3, "Have done something")
-replace access2rep = 0 if (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 & AJD_adviser_17 == 2) & AJR_action == 3
 
 *Make missing people with no disputes
 replace access2rep = . if had_dispute==0
@@ -395,7 +396,26 @@ forvalues i=1/9{
 gen drm_11_help = AJR_drm_11_h
 recode drm_11_help(1 2 = 1) (3 4 = 0) (5 6 = .)
 
+
+*----- Procedural Fairness in the Resolution PENDING
+
+
 *----- Timeliness of the process
+
+* Create monthly date variables
+gen start_date = ym(AJR_year_start, AJR_month_start)
+gen end_date   = ym(AJR_year_end, AJR_month_end)
+
+* Format as readable monthly dates
+format start_date end_date %tm
+
+* Calculate difference in months
+gen diff_months = end_date - start_date
+
+gen timeliness = .
+replace timeliness = 1 if diff_months<=12 & diff_months!=.
+replace timeliness = 0 if diff_months>12 & diff_months!=.
+
 
 *----- Fairness of the process
 gen fair_process = AJR_fair
@@ -404,7 +424,10 @@ recode fair_process (2=0)
 *----- Outcome
 gen outcome = AJR_status
 recode outcome (4 5 = .)
+tab outcome, g(outcome_)
 
+gen outcome_done = AJR_status
+recode outcome_done (1 = 0) (2 3 = 1) (4 5 = .)
 
 *----- Level of impact
 gen level_impact = .
@@ -483,13 +506,37 @@ recode income2 (5=.)
 =====================================================================================================================================*/
 
 #delimit ;
-global a2j "had_dispute 
+global a2j "
+had_dispute 
 ndisputes
 land neighbors housing family injury citizenship gov public_services products services MoneyDebt employment
+access2info
+access2rep 
+contact_adviser no_contact_adviser
+appropriate_adviser no_appropriate_adviser
+AJD_adviser_1_bin AJD_adviser_2_bin AJD_adviser_3_bin AJD_adviser_4_bin AJD_adviser_5_bin AJD_adviser_6_bin AJD_adviser_7_bin AJD_adviser_8_bin AJD_adviser_9_bin AJD_adviser_10_bin AJD_adviser_11_bin AJD_adviser_12_bin AJD_adviser_13_bin AJD_adviser_14_bin AJD_adviser_15_bin AJD_adviser_16_bin AJD_adviser_17_bin
+adviser_help_1 adviser_help_2 adviser_help_3 adviser_help_4 adviser_help_5 adviser_help_6 adviser_help_7 adviser_help_8 adviser_help_9 adviser_help_10 adviser_help_11 adviser_help_12 adviser_help_13 adviser_help_14 adviser_help_15 adviser_help_16 adviser_help_17
+reason_no_need reason_had_help reason_info_bar reason_relation_bar reason_psycho_bar reason_prior reason_social reason_other
+AJD_noadvice_reason_1 AJD_noadvice_reason_2 AJD_noadvice_reason_3 AJD_noadvice_reason_4 AJD_noadvice_reason_5 AJD_noadvice_reason_6 AJD_noadvice_reason_7 AJD_noadvice_reason_8 AJD_noadvice_reason_9 AJD_noadvice_reason_10 AJD_noadvice_reason_11 AJD_noadvice_reason_12 AJD_noadvice_reason_13 AJD_noadvice_reason_14 AJD_noadvice_reason_15 AJD_noadvice_reason_16 AJD_noadvice_reason_17
+AJR_action_1 AJR_action_2 AJR_action_3 AJR_action_4
+AJR_noaction_1 AJR_noaction_2 AJR_noaction_3 AJR_noaction_4 AJR_noaction_5 AJR_noaction_6 AJR_noaction_7 AJR_noaction_8 AJR_noaction_9 AJR_noaction_10 AJR_noaction_11 AJR_noaction_12 AJR_noaction_13
+access2drm
+contacted_drm
+needed_drm
+no_need_drm
+unknown_drm
+AJR_drm_1_bin AJR_drm_2_bin AJR_drm_3_bin AJR_drm_4_bin AJR_drm_5_bin AJR_drm_6_bin AJR_drm_7_bin AJR_drm_8_bin AJR_drm_9_bin AJR_drm_10_bin AJR_drm_11_bin
 AJR_noresol_reason_1 AJR_noresol_reason_2 AJR_noresol_reason_3 AJR_noresol_reason_4 AJR_noresol_reason_5 AJR_noresol_reason_6 AJR_noresol_reason_7 AJR_noresol_reason_8 AJR_noresol_reason_9 AJR_noresol_reason_10 AJR_noresol_reason_11 AJR_noresol_reason_12 AJR_noresol_reason_13 AJR_noresol_reason_14 AJR_noresol_reason_15 AJR_noresol_reason_16
-legal_rights infosource advice fair_outcome
-hardship_1 hardship_2 hardship_3 hardship_4 hardship_5 hardship_6 hardship_7 hardship_8 hardship_9 hardship_10 hardship_11 hardship_12 hardship_13 hardship_14 hardship_15 hardship_16
+drm_1_eff drm_2_eff drm_3_eff drm_4_eff drm_5_eff drm_6_eff drm_7_eff drm_8_eff drm_9_eff drm_11_eff 
+drm_1_fair drm_2_fair drm_3_fair drm_4_fair drm_5_fair drm_6_fair drm_7_fair drm_8_fair drm_9_fair drm_11_fair 
+drm_1_aff drm_2_aff drm_3_aff drm_4_aff drm_5_aff drm_6_aff drm_7_aff drm_8_aff drm_9_aff drm_11_aff 
+drm_1_dur drm_2_dur drm_3_dur drm_4_dur drm_5_dur drm_6_dur drm_7_dur drm_8_dur drm_9_dur drm_11_dur 
+drm_1_help drm_2_help drm_3_help drm_4_help drm_5_help drm_6_help drm_7_help drm_8_help drm_9_help drm_11_help
+diff_months timeliness 
+fair_process outcome_1 outcome_2 outcome_3 outcome_done
 had_hardship
+hardship_1 hardship_2 hardship_3 hardship_4 hardship_5 hardship_6 hardship_7 hardship_8 hardship_9 hardship_10 hardship_11 hardship_12 hardship_13 hardship_14 hardship_15 hardship_16
+legal_rights infosource expert_help fair_outcome
 " ;
 ;
 #delimit cr
@@ -513,10 +560,11 @@ collapse (mean) $a2j
 
 export excel using "${path2SP}\data\reports_replication.xlsx", replace firstrow(var) sheet("Overall")
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Overall") modify
-putexcel A2:AY2, overwri nformat("0.0%") 
+putexcel A2:GY2, overwri nformat("0.0%") 
 putexcel B2:B10, overwri nformat("0.0")
+putexcel FW2:FW10, overwri nformat("0.0")
 *putexcel Q2:Q28, overwri nformat(number) 
-putexcel A1:AY1, overwri bold hcenter txtwrap
+putexcel A1:GY1, overwri bold hcenter txtwrap
 
 restore
 

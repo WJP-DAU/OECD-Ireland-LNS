@@ -49,7 +49,7 @@ p_load(char = c(
 # SharePoint path
 if (Sys.info()["user"] == "nrodriguez") {
   path2SP <- "/Users/nrodriguez/OneDrive - World Justice Project/Programmatic/Data Analytics/6. Country Reports/OECD-Ireland-LNS/"
-  path2fonts <- "/Users/nrodriguez/OneDrive - World Justice Project/ProgrammaticData Analytics/6. Country Reports/0. Fonts/"
+  path2fonts <- "/Users/nrodriguez/OneDrive - World Justice Project/Programmatic/Data Analytics/6. Country Reports/0. Fonts/"
   
 }
 if (Sys.info()["user"] == "santiagopardo") {
