@@ -320,9 +320,10 @@ replace contacted_drm = . if had_dispute==0
 	
 *----- Access to a DRM
 gen access2drm =.
-replace access2drm = 0 if (AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 & AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 & AJR_drm_9_bin == 0 & AJR_drm_11_bin == 0 ) & ///
+replace access2drm = 0 if contacted_drm==0 & ///
 (AJR_noresol_reason_7 == 1 | AJR_noresol_reason_8 ==1 | AJR_noresol_reason_9 == 1  | AJR_noresol_reason_10 == 1 | AJR_noresol_reason_11 ==1 | AJR_noresol_reason_12 ==1 | AJR_noresol_reason_13 ==1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1 )
-replace access2drm = 1 if (AJR_drm_1_bin == 1 | AJR_drm_2_bin == 1 | AJR_drm_3_bin == 1 | AJR_drm_4_bin == 1 | AJR_drm_5_bin == 1 | AJR_drm_6_bin == 1 | AJR_drm_7_bin == 1 | AJR_drm_8_bin == 1 | AJR_drm_9_bin == 1 | AJR_drm_11_bin == 1)
+
+replace access2drm = 1 if contacted_drm==1
 
 *----- Needed but didn't have access to a DRM
 gen needed_drm = . 
@@ -560,10 +561,9 @@ collapse (mean) $a2j
 
 export excel using "${path2SP}\data\reports_replication.xlsx", replace firstrow(var) sheet("Overall")
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Overall") modify
-putexcel A2:GY2, overwri nformat("0.0%") 
-putexcel B2:B10, overwri nformat("0.0")
-putexcel FW2:FW10, overwri nformat("0.0")
-*putexcel Q2:Q28, overwri nformat(number) 
+putexcel A2:GY2, overwri nformat("0%") 
+putexcel B2:B10, overwri nformat("0")
+putexcel FW2:FW10, overwri nformat("0")
 putexcel A1:GY1, overwri bold hcenter txtwrap
 
 restore
@@ -581,10 +581,10 @@ label values gend2 gend2
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(var) sheet("Gender") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Gender") modify
-putexcel B2:AZ10, overwri nformat("0.0%") 
-putexcel C2:C10, overwri nformat("0.0")
-*putexcel Q2:Q28, overwri nformat(number) 
-putexcel A1:AZ1, overwri bold hcenter txtwrap
+putexcel B2:GY210, overwri nformat("0%") 
+putexcel C2:C10, overwri nformat("0")
+putexcel FX2:FX10, overwri nformat("0")
+putexcel A1:GY1, overwri bold hcenter txtwrap
 
 restore
 
@@ -599,10 +599,10 @@ label values age_g age
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(var) sheet("Age") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Age") modify
-putexcel B2:AZ10, overwri nformat("0.0%") 
-putexcel C2:C10, overwri nformat("0.0")
-*putexcel Q2:Q28, overwri nformat(number) 
-putexcel A1:AZ1, overwri bold hcenter txtwrap
+putexcel B2:GY10, overwri nformat("0%") 
+putexcel C2:C10, overwri nformat("0")
+putexcel FX2:FX10, overwri nformat("0")
+putexcel A1:GY1, overwri bold hcenter txtwrap
 
 restore
 
@@ -615,10 +615,10 @@ collapse (mean) $a2j, by(edu_2)
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(var) sheet("Edu") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Edu") modify
-putexcel B2:AZ10, overwri nformat("0.0%") 
-putexcel C2:C10, overwri nformat("0.0")
-*putexcel Q2:Q28, overwri nformat(number) 
-putexcel A1:AZ1, overwri bold hcenter txtwrap
+putexcel B2:GY10, overwri nformat("0%") 
+putexcel C2:C10, overwri nformat("0")
+putexcel FX2:FX10, overwri nformat("0")
+putexcel A1:GY1, overwri bold hcenter txtwrap
 
 restore
 
@@ -631,10 +631,10 @@ collapse (mean) $a2j, by(income2)
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(var) sheet("Income") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Income") modify
-putexcel B2:AZ10, overwri nformat("0.0%") 
-putexcel C2:C10, overwri nformat("0.0")
-*putexcel Q2:Q28, overwri nformat(number) 
-putexcel A1:AZ1, overwri bold hcenter txtwrap
+putexcel B2:GY10, overwri nformat("0%") 
+putexcel C2:C10, overwri nformat("0")
+putexcel FX2:FX10, overwri nformat("0")
+putexcel A1:GY1, overwri bold hcenter txtwrap
 
 restore
 
@@ -647,10 +647,10 @@ collapse (mean) $a2j, by(region)
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(var) sheet("Region") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Region") modify
-putexcel B2:AZ10, overwri nformat("0.0%") 
-putexcel C2:C10, overwri nformat("0.0")
-*putexcel Q2:Q28, overwri nformat(number) 
-putexcel A1:AZ1, overwri bold hcenter txtwrap
+putexcel B2:GY10, overwri nformat("0%") 
+putexcel C2:C10, overwri nformat("0")
+putexcel FX2:FX10, overwri nformat("0")
+putexcel A1:GY1, overwri bold hcenter txtwrap
 
 restore
 
@@ -663,10 +663,10 @@ collapse (mean) $a2j, by(disability2)
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(var) sheet("Disability") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Disability") modify
-putexcel B2:AZ10, overwri nformat("0.0%") 
-putexcel C2:C10, overwri nformat("0.0")
-*putexcel Q2:Q28, overwri nformat(number) 
-putexcel A1:AZ1, overwri bold hcenter txtwrap
+putexcel B2:GY10, overwri nformat("0%") 
+putexcel C2:C10, overwri nformat("0")
+putexcel FX2:FX10, overwri nformat("0")
+putexcel A1:GY1, overwri bold hcenter txtwrap
 
 restore
 
@@ -679,10 +679,10 @@ collapse (mean) $a2j, by(level_impact)
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(var) sheet("Level of impact") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Level of impact") modify
-putexcel B2:AZ10, overwri nformat("0.0%") 
-putexcel C2:C10, overwri nformat("0.0")
-*putexcel Q2:Q28, overwri nformat(number) 
-putexcel A1:AZ1, overwri bold hcenter txtwrap
+putexcel B2:GY10, overwri nformat("0%") 
+putexcel C2:C10, overwri nformat("0")
+putexcel FX2:FX10, overwri nformat("0")
+putexcel A1:GY1, overwri bold hcenter txtwrap
 
 restore
 
@@ -695,10 +695,10 @@ collapse (mean) $a2j, by(cooccurence_group)
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(var) sheet("Co-occurrance") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Co-occurrance") modify
-putexcel B2:AZ10, overwri nformat("0.0%") 
-putexcel C2:C10, overwri nformat("0.0")
-*putexcel Q2:Q28, overwri nformat(number) 
-putexcel A1:AZ1, overwri bold hcenter txtwrap
+putexcel B2:GY10, overwri nformat("0%") 
+putexcel C2:C10, overwri nformat("0")
+putexcel FX2:FX10, overwri nformat("0")
+putexcel A1:GY1, overwri bold hcenter txtwrap
 
 restore
 
@@ -711,10 +711,10 @@ collapse (mean) $a2j, by(ethnic_majority)
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(var) sheet("Ethnicity") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Ethnicity") modify
-putexcel B2:AZ10, overwri nformat("0.0%") 
-putexcel C2:C10, overwri nformat("0.0")
-*putexcel Q2:Q28, overwri nformat(number) 
-putexcel A1:AZ1, overwri bold hcenter txtwrap
+putexcel B2:GY10, overwri nformat("0%") 
+putexcel C2:C10, overwri nformat("0")
+putexcel FX2:FX10, overwri nformat("0")
+putexcel A1:GY1, overwri bold hcenter txtwrap
 
 restore
 
