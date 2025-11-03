@@ -54,42 +54,42 @@ data_subset <- master_data %>%
     #Problem categories (ALL MENTIONED PROBLEMS)
     problem_cat_land = if_else(
       AJP_A1 == 1
-      , 1 , 0),
+      , 1 , 0, 0),
     problem_cat_neighbors = if_else(
       (AJP_B1 == 1 | AJP_B2 == 1 | AJP_B3 == 1)
-      , 1 , 0),
+      , 1 , 0, 0),
     problem_cat_housing = if_else(
       (AJP_C1 == 1 | AJP_C2 == 1 | AJP_C3 == 1 | AJP_D1 == 1 | AJP_D2 == 1 | AJP_D3 == 1 | 
          AJP_E1 == 1 | AJP_E2 == 1 | AJP_E3 == 1 | AJP_E4 == 1 | AJP_E5 == 1 | AJP_E6 == 1 | 
          AJP_E7 == 1 )
-      , 1 , 0),
+      , 1 , 0, 0),
     problem_cat_family = if_else(
       (AJP_F1 == 1 | AJP_F2 == 1 | AJP_F3 == 1 | AJP_F4 == 1 | AJP_F5 == 1 | AJP_F6 == 1)
-      , 1 , 0),
+      , 1 , 0, 0),
     problem_cat_injury = if_else(
       (AJP_H1 == 1 | AJP_H2 == 1 | AJP_H3 == 1 | AJP_H4 == 1 | AJP_H5 == 1)
-      , 1 , 0),
+      , 1 , 0, 0),
     problem_cat_citizen = if_else(
       (AJP_G1 == 1 | AJP_G2 == 1 | AJP_G3 == 1 | AJP_G4 == 1 | AJP_G5 == 1)
-      , 1 , 0),
+      , 1 , 0, 0),
     problem_cat_gov = if_else(
       (AJP_I1 == 1 | AJP_I2 == 1 | AJP_I3 == 1 | AJP_I4 == 1 | AJP_I5 == 1 | AJP_I6 == 1)
-      , 1 , 0),
+      , 1 , 0, 0),
     problem_cat_public = if_else(
       (AJP_J1 == 1 | AJP_J2 == 1 | AJP_J3 == 1 | AJP_J4 == 1)
-      , 1 , 0),
+      , 1 , 0, 0),
     problem_cat_products = if_else(
       (AJP_K1 == 1 | AJP_K2 == 1)
-      , 1 , 0),
+      , 1 , 0, 0),
     problem_cat_services = if_else(
       (AJP_L1 == 1 | AJP_L2 == 1)
-      , 1 , 0),
+      , 1 , 0, 0),
     problem_cat_money = if_else(
       (AJP_M1 == 1 | AJP_M2 == 1 | AJP_M3 == 1 | AJP_M4 == 1 | AJP_M5 == 1)
-      , 1 , 0),
+      , 1 , 0, 0),
     problem_cat_employment = if_else(
       (AJP_N1 == 1 | AJP_N2 == 1 | AJP_N3 == 1 | AJP_N4 == 1)
-      , 1 , 0),
+      , 1 , 0, 0),
 
     #Co-occurence
     cooccurence_group = case_when(
@@ -949,8 +949,8 @@ data2plot <- data_subset.df %>%
     color    = "standard",
     labels = paste0(
       format(
-        round(values2plot, 1),
-        nsmall = 1
+        round(values2plot, 0),
+        nsmall = 0
       ), "%"
     )
   ) %>%
@@ -1092,7 +1092,7 @@ gen_multiresponse_bars <- function(data,
     select(category_label, values2plot = values, lab_pos, labels, color, order_no) %>%
     rename(category = category_label) %>%
     filter(
-      order_no < 12
+      order_no < 13
     )
   
   # 4) Graficar
@@ -1113,8 +1113,8 @@ gen_multiresponse_bars <- function(data,
       fontface = "bold.italic"
     ) +
     theme(
-      axis.text.x = element_text(size = 14, family = "inter", face = "plain", color = "#1a1a1a"),
-      axis.text.y = element_text(size = 14, hjust = 0, family = "inter", face = "plain", color = "#1a1a1a")
+      axis.text.x = element_text(size = 18, family = "inter", face = "plain", color = "#1a1a1a"),
+      axis.text.y = element_text(size = 18, hjust = 0, family = "inter", face = "plain", color = "#1a1a1a")
     );p
   
   # 5) Guardar
@@ -1239,5 +1239,45 @@ gen_multiresponse_bars(
   name         = "status",
   country      = "Ireland",
   w = 300, h = 350
+)
+
+cols_problems <- c(
+  "problem_cat_land",
+  "problem_cat_neighbors",
+  "problem_cat_housing",
+  "problem_cat_family",
+  "problem_cat_injury",
+  "problem_cat_citizen",
+  "problem_cat_gov",
+  "problem_cat_public",
+  "problem_cat_products",
+  "problem_cat_services",
+  "problem_cat_money",
+  "problem_cat_employment"
+)
+
+problems_labels_short <- c(
+  "problem_cat_land" = "Land",
+  "problem_cat_neighbors" = "Neighbours",
+  "problem_cat_housing"="Housing",
+  "problem_cat_family" = "Family/relationship",
+  "problem_cat_injury"= "Injury",
+  "problem_cat_citizen"="Citizen or migration",
+  "problem_cat_gov"="Goverment benefits \nand payments",
+  "problem_cat_public"="Public services",
+  "problem_cat_products"="Products",
+  "problem_cat_services"="Services",
+  "problem_cat_money"="Money/debt",
+  "problem_cat_employment"="Employment"
+)
+
+gen_multiresponse_bars(
+  data         = data_subset.df,
+  cols_to_plot = cols_problems,
+  labels_map = problems_labels_short,
+  #labels_vec   = problems_labels_short,  # usa el sufijo numérico
+  name         = "prevalence_categories",
+  country      = "Ireland",
+  w = 250, h = 250
 )
 
