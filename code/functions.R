@@ -16,10 +16,43 @@
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ##
-## 1.  Required packages                                                                                    ----
+## 1.  Required functions                                                                                    ----
 ##
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# ----------------------------------------
+# Helper interno: etiquetar por sufijo numérico usando labels_vec
+# - category: nombres de columnas
+# - labels_vec: vector de labels indexado (1..K)
+# - regex_suffix: regex para extraer el número al final o tras "_"
+# ----------------------------------------
 
+.label_from_suffix <- function(category, labels_vec,
+                               regex_suffix = "(?<=_)\\d+(?=(_[A-Za-z].*)?$)") {
+  suff_idx <- stringr::str_extract(category, regex_suffix)
+  
+  # Fallback si no encontró nada con el regex "inteligente"
+  if (any(is.na(suff_idx))) {
+    suff_idx2 <- stringr::str_extract(category, "\\d+")
+    # Reemplaza donde estaba NA por el fallback
+    suff_idx[is.na(suff_idx)] <- suff_idx2[is.na(suff_idx)]
+  }
+  
+  # Si aún quedan NA, informar exactamente cuáles columnas fallaron
+  if (any(is.na(suff_idx))) {
+    bad <- category[is.na(suff_idx)]
+    stop(
+      "No pude extraer sufijos numéricos de: ",
+      paste0(bad, collapse = ", "),
+      ". Provee labels_map o ajusta el regex_suffix."
+    )
+  }
+  
+  idx <- as.integer(suff_idx)
+  if (max(idx, na.rm = TRUE) > length(labels_vec)) {
+    stop("labels_vec no alcanza para el mayor índice encontrado (", max(idx, na.rm = TRUE), ").")
+  }
+  labels_vec[idx]
+}
 
 # ---------------------------
 # Helper para filtrar grupos
@@ -107,11 +140,12 @@ summarize_by_vars <- function(data,
   return(result)
 }
 
-# ===================================
-# 2) ETAPA: TABLAS (compute summaries)
-#     Input: data (data_subset.df), params
-#     Output: lista nombrada de data frames
-# ===================================
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+##
+## 2. Group bars functions                                                                                  ----
+##
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 compute_groupbars_tables <- function(data, params) {
   stopifnot(is.list(params), !is.null(params$measures))
   
@@ -129,7 +163,7 @@ compute_groupbars_tables <- function(data, params) {
 
 
 # ===================================
-# 3) ETAPA: GRÁFICAS (plot + save)
+# GRÁFICAS (plot + save)
 #     Input: tables (lista), params (solo config),
 #            out_dir, file_ext, use_outcome_dir,
 #            default sizes y overrides, y selección de medidas a graficar
@@ -198,3 +232,133 @@ render_groupbars_plots <- function(
   plots
 }
 
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+##
+## 3. Multiresponse bars functions                                                                                  ----
+##
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+compute_bars_tables <- function(data, params) {
+  stopifnot(is.list(params), !is.null(params$blocks))
+  
+  out <- map(params$blocks, function(b) {
+    stopifnot(all(b$cols %in% names(data)))
+    
+    # 1) agregación (promedio * 100)
+    agg <- data %>%
+      summarize(across(all_of(b$cols), ~ mean(.x, na.rm = TRUE) * 100)) %>%
+      pivot_longer(cols = everything(), names_to = "category", values_to = "values")
+    
+    # 2) etiquetas
+    if (!is.null(b$labels_map_id)) {
+      lbl_map <- params$labels_map_lib[[b$labels_map_id]]
+      if (is.null(lbl_map)) stop("labels_map_id '", b$labels_map_id, "' no existe en labels_map_lib.")
+      agg <- agg %>%
+        mutate(category_label = dplyr::recode(category, !!!lbl_map, .default = category))
+    } else if (!is.null(b$labels_vec_id)) {
+      lbl_vec <- params$labels_vec_lib[[b$labels_vec_id]]
+      if (is.null(lbl_vec)) stop("labels_vec_id '", b$labels_vec_id, "' no existe en labels_vec_lib.")
+      agg <- agg %>%
+        mutate(category_label = .label_from_suffix(category, lbl_vec))
+    } else {
+      stop("Debes definir labels_map_id o labels_vec_id para el bloque '", b$id, "'.")
+    }
+    
+    # 3) data final para graficar
+    df_plot <- agg %>%
+      arrange(desc(values)) %>%
+      mutate(
+        labels   = paste0(format(round(values, 0), nsmall = 0), "%"),
+        lab_pos  = values,
+        color    = "standard",
+        order_no = row_number()
+      ) %>%
+      select(category = category_label,
+             values2plot = values,
+             lab_pos, labels, color, order_no)
+    
+    # 4) top_n si aplica
+    if (is.finite(b$top_n)) {
+      df_plot <- df_plot %>% slice_head(n = b$top_n)
+    }
+    
+    df_plot
+    
+  })
+  
+  names(out) <- vapply(params$blocks, `[[`, character(1), "id")
+  out
+  
+}
+
+# ===================================
+# GRÁFICAS (plot + save)
+#     - Input: tables (lista), params (no usado aquí salvo consistencia),
+#              out_dir, file_ext, default sizes y overrides, selección de ids
+#     - Output: lista de ggplots guardados
+# ===================================
+render_bars_plots <- function(
+    tables,
+    params,
+    out_dir,
+    file_ext = "svg",
+    default_width = 300,
+    default_height = 350,
+    size_overrides = list(),          # p.ej., list(drm_contacted = list(width=300,height=350))
+    ids_to_plot = NULL,               # c("drm_contacted","adviser") o NULL = todas
+    scale = 0.75
+) {
+  out_dir <- normalizePath(out_dir, mustWork = FALSE)
+  dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
+  
+  ids_all <- names(tables)
+  ids <- if (is.null(ids_to_plot)) ids_all else intersect(ids_to_plot, ids_all)
+  
+  file_for_id <- function(id) file.path(out_dir, paste0(id, ".", file_ext))
+  size_for_id <- function(id) {
+    if (id %in% names(size_overrides)) {
+      w <- size_overrides[[id]]$width  %||% default_width
+      h <- size_overrides[[id]]$height %||% default_height
+      c(w, h)
+    } else c(default_width, default_height)
+  }
+  
+  plots <- map(ids, function(id) {
+    data_plot <- tables[[id]]
+    
+    p <- WJPr::wjp_bars(
+      data      = data_plot,
+      target    = "values2plot",
+      grouping  = "category",
+      order     = "order_no",
+      direction = "horizontal",
+      colors    = "color",
+      cvec      = c("standard" = "#575796")
+    ) +
+      geom_text(
+        mapping = aes(y = lab_pos + 7, label = labels),
+        size     = 5,
+        color    = "#1a1a1a",
+        family   = "inter",
+        fontface = "bold.italic"
+      ) +
+      theme(
+        axis.text.x = element_text(size = 18, family = "inter", face = "plain", color = "#1a1a1a"),
+        axis.text.y = element_text(size = 18, hjust = 0, family = "inter", face = "plain", color = "#1a1a1a")
+      )
+    
+    sz <- size_for_id(id)
+    ggsave(
+      filename = file_for_id(id),
+      plot     = p,
+      width    = sz[1],
+      height   = sz[2],
+      units    = "mm",
+      scale    = scale
+    )
+    p
+  })
+  
+  names(plots) <- ids
+  plots
+}
