@@ -34,8 +34,26 @@ groupbars_params <- function() {
   )
   
   groups_presets <- list(
-    basic    = select_groups(full_group_cfg, "Overall","gender","age_group","edu_level","income","NUTS","disability"),
-    extended = select_groups(full_group_cfg, "Overall","gender","age_group","edu_level","income","NUTS","level_impact","cooccurence_group","disability")
+    basic    = select_groups(
+      full_group_cfg, 
+      "Overall",
+      "gender",
+      "age_group",
+      "edu_level",
+      "income",
+      "NUTS",
+      "disability"),
+    extended = select_groups(
+      full_group_cfg, 
+      "Overall",
+      "gender",
+      "age_group",
+      "edu_level",
+      "income",
+      "NUTS",
+      "level_impact",
+      "cooccurence_group",
+      "disability")
   )
   
   measures <- list(

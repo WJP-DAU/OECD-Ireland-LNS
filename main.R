@@ -71,8 +71,6 @@ plots <- render_groupbars_plots(
   )
 )
 
-openxlsx::write.xlsx(tables, "tables_outline.xlsx")
-
 ## =========================================================
 ## Multi Response Bars
 ## =========================================================
@@ -98,3 +96,7 @@ multi_response_bars_plots <- render_bars_plots(
   ),
   ids_to_plot = NULL
 )
+
+tables_outline <- c(tables, multi_response_bars_tables)
+openxlsx::write.xlsx(tables_outline, "tables_outline.xlsx")
+
