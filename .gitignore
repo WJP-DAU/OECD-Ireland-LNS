@@ -38,3 +38,5 @@ output/contacted_DRM.svg
 output/prevalence.svg
 output/timeliness.svg
 output/outcome_done.svg
+*.svg
+*.pdf
