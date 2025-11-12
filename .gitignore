@@ -40,3 +40,8 @@ output/timeliness.svg
 output/outcome_done.svg
 *.svg
 *.pdf
+*.svg
+*.svg
+output/noresol_reasons.svg
+*.svg
+*.svg
