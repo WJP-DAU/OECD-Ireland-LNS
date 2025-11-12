@@ -719,3 +719,197 @@ putexcel A1:GY1, overwri bold hcenter txtwrap
 restore
 
 
+	
+/*=====================================================================================================================================
+					4. Sub-sample (high impact problems)
+=====================================================================================================================================*/
+
+
+*----- Country level  
+
+preserve
+
+keep if level_impact==1
+
+collapse (mean) $a2j
+
+export excel using "${path2SP}\data\reports_replication_high.xlsx", replace firstrow(var) sheet("Overall")
+putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Overall") modify
+putexcel A2:GY2, overwri nformat("0%") 
+putexcel B2:B10, overwri nformat("0")
+putexcel FW2:FW10, overwri nformat("0")
+putexcel A1:GY1, overwri bold hcenter txtwrap
+
+restore
+
+
+*----- Gender
+preserve
+
+keep if level_impact==1
+
+collapse (mean) $a2j , by(gend2)
+
+drop if gend2==.
+
+label define gend2 1 "Male" 2 "Female"
+label values gend2 gend2
+
+export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(var) sheet("Gender") 
+putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Gender") modify
+putexcel B2:GY210, overwri nformat("0%") 
+putexcel C2:C10, overwri nformat("0")
+putexcel FX2:FX10, overwri nformat("0")
+putexcel A1:GY1, overwri bold hcenter txtwrap
+
+restore
+
+
+*----- Age group
+preserve
+
+keep if level_impact==1
+
+collapse (mean) $a2j, by(age_g)
+
+label define age 1 "18-24" 2 "25-34" 3 "35-44" 4 "45-54" 5 "55-64" 6 "+65"
+label values age_g age	
+
+export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(var) sheet("Age") 
+putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Age") modify
+putexcel B2:GY10, overwri nformat("0%") 
+putexcel C2:C10, overwri nformat("0")
+putexcel FX2:FX10, overwri nformat("0")
+putexcel A1:GY1, overwri bold hcenter txtwrap
+
+restore
+
+
+*----- Education level 
+preserve
+
+keep if level_impact==1
+
+collapse (mean) $a2j, by(edu_2)
+
+
+export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(var) sheet("Edu") 
+putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Edu") modify
+putexcel B2:GY10, overwri nformat("0%") 
+putexcel C2:C10, overwri nformat("0")
+putexcel FX2:FX10, overwri nformat("0")
+putexcel A1:GY1, overwri bold hcenter txtwrap
+
+restore
+
+
+*----- Income 
+preserve
+
+keep if level_impact==1
+
+collapse (mean) $a2j, by(income2)
+
+
+export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(var) sheet("Income") 
+putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Income") modify
+putexcel B2:GY10, overwri nformat("0%") 
+putexcel C2:C10, overwri nformat("0")
+putexcel FX2:FX10, overwri nformat("0")
+putexcel A1:GY1, overwri bold hcenter txtwrap
+
+restore
+
+
+*----- Region 
+preserve
+
+keep if level_impact==1
+
+collapse (mean) $a2j, by(region)
+
+
+export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(var) sheet("Region") 
+putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Region") modify
+putexcel B2:GY10, overwri nformat("0%") 
+putexcel C2:C10, overwri nformat("0")
+putexcel FX2:FX10, overwri nformat("0")
+putexcel A1:GY1, overwri bold hcenter txtwrap
+
+restore
+
+
+*----- Disability
+preserve
+
+keep if level_impact==1
+
+collapse (mean) $a2j, by(disability2)
+
+
+export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(var) sheet("Disability") 
+putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Disability") modify
+putexcel B2:GY10, overwri nformat("0%") 
+putexcel C2:C10, overwri nformat("0")
+putexcel FX2:FX10, overwri nformat("0")
+putexcel A1:GY1, overwri bold hcenter txtwrap
+
+restore
+
+
+*----- Impact level 
+preserve
+
+keep if level_impact==1
+
+collapse (mean) $a2j, by(level_impact)
+
+
+export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(var) sheet("Level of impact") 
+putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Level of impact") modify
+putexcel B2:GY10, overwri nformat("0%") 
+putexcel C2:C10, overwri nformat("0")
+putexcel FX2:FX10, overwri nformat("0")
+putexcel A1:GY1, overwri bold hcenter txtwrap
+
+restore
+
+
+*----- Co-occurrent problems
+preserve
+
+keep if level_impact==1
+
+collapse (mean) $a2j, by(cooccurence_group)
+
+
+export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(var) sheet("Co-occurrance") 
+putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Co-occurrance") modify
+putexcel B2:GY10, overwri nformat("0%") 
+putexcel C2:C10, overwri nformat("0")
+putexcel FX2:FX10, overwri nformat("0")
+putexcel A1:GY1, overwri bold hcenter txtwrap
+
+restore
+
+
+*----- Ethnicity
+preserve
+
+keep if level_impact==1
+
+collapse (mean) $a2j, by(ethnic_majority)
+
+
+export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(var) sheet("Ethnicity") 
+putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Ethnicity") modify
+putexcel B2:GY10, overwri nformat("0%") 
+putexcel C2:C10, overwri nformat("0")
+putexcel FX2:FX10, overwri nformat("0")
+putexcel A1:GY1, overwri bold hcenter txtwrap
+
+restore
+
+
+
+
