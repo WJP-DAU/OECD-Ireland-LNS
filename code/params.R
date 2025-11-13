@@ -56,6 +56,8 @@ groupbars_params <- function() {
       "disability")
   )
   
+  # Here you can add a new variable 
+  
   measures <- list(
     add_measure("prevalence",    prevalence,    "basic"),
     add_measure("timeliness",    timeliness,    "extended"),
