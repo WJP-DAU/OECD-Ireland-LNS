@@ -411,6 +411,19 @@ wrangle_ireland_lns <- function(master_data) {
         .names = "{str_remove(.col, 'AJR_')}_bin"
       ),
       
+      # Issue resolution
+      AJR_settle_resol_1 = if_else(AJR_settle_resol==1,1,0,missing=NA),
+      AJR_settle_resol_2 = if_else(AJR_settle_resol==2,1,0,missing=NA),
+      AJR_settle_resol_3 = if_else(AJR_settle_resol==3,1,0,missing=NA),
+      AJR_settle_resol_4 = if_else(AJR_settle_resol==4,1,0,missing=NA),
+      AJR_settle_resol_5 = if_else(AJR_settle_resol==5,1,0,missing=NA),
+      AJR_settle_resol_6 = if_else(AJR_settle_resol==6,1,0,missing=NA),
+      AJR_settle_resol_7 = if_else(AJR_settle_resol==7,1,0,missing=NA),
+      AJR_settle_resol_8 = if_else(AJR_settle_resol==8,1,0,missing=NA),
+      AJR_settle_resol_9 = if_else(AJR_settle_resol==9,1,0,missing=NA),
+      AJR_settle_resol_10 = if_else(AJR_settle_resol==10,1,0,missing=NA),
+      AJR_settle_resol_11 = if_else(AJR_settle_resol==11,1,0,missing=NA),
+  
       # Timeliness
       start_date = make_date(AJR_year_start, AJR_month_start, 1),
       end_date   = make_date(AJR_year_end,   AJR_month_end,   1),
@@ -546,62 +559,8 @@ wrangle_ireland_lns <- function(master_data) {
     )
   
   # ============================================================================
-  # 3) Special wrangling
+  # 3) Special wrangling - NONE (all the wrangling was done in 2)
   # ============================================================================
-  data_subset.df <- data_subset.df %>%
-    mutate(
-      # Affordability por mecanismo
-      affordable_court            = case_when(AJR_drm_1_d %in% c(1,2) ~ 1,
-                                              AJR_drm_1_d %in% c(3,4) ~ 0,
-                                              TRUE ~ NA_real_),
-      affordable_tribunal         = case_when(AJR_drm_2_d %in% c(1,2) ~ 1,
-                                              AJR_drm_2_d %in% c(3,4) ~ 0,
-                                              TRUE ~ NA_real_),
-      affordable_ombudsman        = case_when(AJR_drm_3_d %in% c(1,2) ~ 1,
-                                              AJR_drm_3_d %in% c(3,4) ~ 0,
-                                              TRUE ~ NA_real_),
-      affordable_police           = case_when(AJR_drm_4_d %in% c(1,2) ~ 1,
-                                              AJR_drm_4_d %in% c(3,4) ~ 0,
-                                              TRUE ~ NA_real_),
-      affordable_mediation        = case_when(AJR_drm_5_d %in% c(1,2) ~ 1,
-                                              AJR_drm_5_d %in% c(3,4) ~ 0,
-                                              TRUE ~ NA_real_),
-      affordable_lawyer           = case_when(AJR_drm_6_d %in% c(1,2) ~ 1,
-                                              AJR_drm_6_d %in% c(3,4) ~ 0,
-                                              TRUE ~ NA_real_),
-      affordable_gov_department   = case_when(AJR_drm_7_d %in% c(1,2) ~ 1,
-                                              AJR_drm_7_d %in% c(3,4) ~ 0,
-                                              TRUE ~ NA_real_),
-      affordable_community_leader = case_when(AJR_drm_8_d %in% c(1,2) ~ 1,
-                                              AJR_drm_8_d %in% c(3,4) ~ 0,
-                                              TRUE ~ NA_real_),
-      
-      # Fairness por mecanismo
-      fair_court            = case_when(AJR_drm_1_f %in% c(1,2) ~ 1,
-                                        AJR_drm_1_f %in% c(3,4) ~ 0,
-                                        TRUE ~ NA_real_),
-      fair_tribunal         = case_when(AJR_drm_2_f %in% c(1,2) ~ 1,
-                                        AJR_drm_2_f %in% c(3,4) ~ 0,
-                                        TRUE ~ NA_real_),
-      fair_ombudsman        = case_when(AJR_drm_3_f %in% c(1,2) ~ 1,
-                                        AJR_drm_3_f %in% c(3,4) ~ 0,
-                                        TRUE ~ NA_real_),
-      fair_police           = case_when(AJR_drm_4_f %in% c(1,2) ~ 1,
-                                        AJR_drm_4_f %in% c(3,4) ~ 0,
-                                        TRUE ~ NA_real_),
-      fair_mediation        = case_when(AJR_drm_5_f %in% c(1,2) ~ 1,
-                                        AJR_drm_5_f %in% c(3,4) ~ 0,
-                                        TRUE ~ NA_real_),
-      fair_lawyer           = case_when(AJR_drm_6_f %in% c(1,2) ~ 1,
-                                        AJR_drm_6_f %in% c(3,4) ~ 0,
-                                        TRUE ~ NA_real_),
-      fair_gov_department   = case_when(AJR_drm_7_f %in% c(1,2) ~ 1,
-                                        AJR_drm_7_f %in% c(3,4) ~ 0,
-                                        TRUE ~ NA_real_),
-      fair_community_leader = case_when(AJR_drm_8_f %in% c(1,2) ~ 1,
-                                        AJR_drm_8_f %in% c(3,4) ~ 0,
-                                        TRUE ~ NA_real_)
-    )
   
   return(data_subset.df)
   

@@ -401,6 +401,10 @@ recode drm_11_help(1 2 = 1) (3 4 = 0) (5 6 = .)
 *----- Procedural Fairness in the Resolution PENDING
 
 
+*----- Issue resolution
+tab AJR_settle_resol, g(AJR_settle_resol_)
+
+
 *----- Timeliness of the process
 
 * Create monthly date variables

@@ -8,6 +8,8 @@
 #    Output: params (cfgs, presets, measures)
 # =============================================================================
 
+####### Grouped bars with disaggregations #######
+
 groupbars_params <- function() {
   
   full_group_cfg <- c(
@@ -19,7 +21,8 @@ groupbars_params <- function() {
     "NUTS"              = "Region",
     "level_impact"      = "Impact Level",
     "cooccurence_group" = "Co-occurrent Problems",
-    "disability"        = "Disability"
+    "disability"        = "Disability",
+    "category"          = "Problem Category" 
   )
   
   levels_map <- list(
@@ -30,7 +33,10 @@ groupbars_params <- function() {
     "Income"                = c("< €30k a year","€30k – €70 a year","€70k – €120k a year","> €120k a year"),
     "Impact Level"          = c("High impact", "Low impact"),
     "Co-occurrent Problems" = c("1 problem","2-3 problems","4-5 problems","5 or more problems"),
-    "Disability"            = c("With disability", "Without disability")
+    "Disability"            = c("With disability", "Without disability"),
+    "Problem Category"      = c("Land", "Neighbors", "Housing", "Family/ relationship", "Injury", "Citizenship or migration",
+                                "Government benefits and payments", "Public services", "Products", "Services",
+                                "Money/ debt", "Employment")
   )
   
   groups_presets <- list(
@@ -53,20 +59,23 @@ groupbars_params <- function() {
       "NUTS",
       "level_impact",
       "cooccurence_group",
-      "disability")
+      "disability",
+      "category")
   )
   
   # Here you can add a new variable 
   
   measures <- list(
     add_measure("prevalence",    prevalence,    "basic"),
+    add_measure("ndisputes",     ndisputes,     "basic"),
     add_measure("timeliness",    timeliness,    "extended"),
     add_measure("contacted_DRM", contacted_drm, "extended"),
     add_measure("access2DRM",    access2drm,    "extended"),
     add_measure("access2info",   access2info,   "extended"),
     add_measure("access2rep",    access2rep,    "extended"),
     add_measure("fairness",      fair,          "extended"),
-    add_measure("outcome_done",  outcome_done,  "extended")
+    add_measure("outcome_done",  outcome_done,  "extended"),
+    add_measure("impact",        impact,        "basic")
   )
   
   list(
@@ -77,6 +86,8 @@ groupbars_params <- function() {
   )
 }
 
+
+####### Bars for multiresponse #######
 
 build_bars_params <- function() {
   
@@ -176,6 +187,78 @@ build_bars_params <- function() {
       "Did not think\nthey could help",
       "Afraid of\nconsequences",
       "Did not know\nit was possible"
+    ),
+    
+    #Advisers - help (adviser_help_1_bin : _17)
+    help_adviser = c(
+      "Court",
+      "Tribunal",
+      "Ombudsman",
+      "Police or\nlaw enforcement",
+      "Family\nMediation Service",
+      "Other mediation/\ndispute resolution service",
+      "Private solicitor\nor law office",
+      "Private barrister\nor chambers",
+      "Legal Aid Board\nLaw Centre",
+      "Other law centre\n(e.g. FLAC)",
+      "Gov. department\nor local council",
+      "Non-legal professional\nor organisation",
+      "Community leader\nor person of standing",
+      "Online search\n(e.g. Google)",
+      "Social media",
+      "AI tools",
+      "Other person\n(friend, family,\netc.)"
+    ),
+    
+    #Non-seekers intentions (AJR_action_1:4)
+    intention = c(
+      "Haven't done/\nDidn't do anything and don't expect to",
+      "Nothing yet but expect to",
+      "Have done something",
+      "No, as it has resolved\nitself or is no longer an issue"
+    ),
+    
+    #Reasons for not seeking ANY help (AJR_noaction_1:13)
+    no_help = c(
+      "It wasn’t very important",
+      "It was resolved quickly",
+      "It would take too long",
+      "It would be too stressful",
+      "It would cost too much",
+      "It would damage the\nrelationship with the other side",
+      "It would make them uncomfortable/\nwere too ashamed \nor embarrassed to ask for help",
+      "It would make no difference",
+      "Had bigger issues",
+      "Were at fault or \nthere was no dispute",
+      "Didn’t know what to do",
+      "Didn’t need information or advice",
+      "Other reason"
+    ),
+    
+    #Current status description (AJR_status_cur_1:7)
+    description_status = c(
+      "A formal legal process is ongoing\n(e.g. at a court or tribunal)",
+      "Another dispute resolution process\noutside a court or a tribunal is ongoing",
+      "There is no dispute resolution\nprocess ongoing/actively seeking advice/\nsupport to resolve or finish it",
+      "Have not taken recent action/\nwaiting for the other party to act/respond",
+      "No recent action has been taken,\nbut still intend to resolve it",
+      "No recent action has been taken",
+      "Other"
+    ),
+    
+    #Resolution description (AJR_settle_resol_1:11)
+    description_resol = c(
+      "A court judgment",
+      "A tribunal decision",
+      "A decision/direction by\nanother type of authority",
+      "As a result of another type of mediation,\nconciliation or other dispute resolution,\nincluding using a complaints process",
+      "Following exchanges between lawyers\nacting on behalf of one or more parties",
+      "Following the intervention\nof a third person",
+      "Reached an agreement without any\nassistance of a lawyer or third person",
+      "Got what I wanted without\nhaving to do anything",
+      "Made changes to avoid the issue\n(e.g. changed job, housing)",
+      "Gave up trying to do anything \nand nothing further happened",
+      "Some other way"
     )
   )
   
@@ -228,6 +311,36 @@ build_bars_params <- function() {
       id = "no_resol_reasons",
       cols = paste0("AJR_noresol_reason_", 1:15),
       labels_vec_id = "reason_no_resol",
+      top_n = Inf
+    ),
+    add_mr_block(
+      id = "help_adviser",
+      cols = paste0("adviser_help_", 1:17,"_bin"),
+      labels_vec_id = "help_adviser",
+      top_n = Inf
+    ),
+    add_mr_block(
+      id = "intention",
+      cols = paste0("AJR_action_", 1:4),
+      labels_vec_id = "intention",
+      top_n = Inf
+    ),
+    add_mr_block(
+      id = "no_help",
+      cols = paste0("AJR_noaction_", 1:13),
+      labels_vec_id = "no_help",
+      top_n = Inf
+    ),
+    add_mr_block(
+      id = "description_status",
+      cols = paste0("AJR_status_cur_", 1:7),
+      labels_vec_id = "description_status",
+      top_n = Inf
+    ),
+    add_mr_block(
+      id = "description_resol",
+      cols = paste0("AJR_settle_resol_", 1:11),
+      labels_vec_id = "description_resol",
       top_n = Inf
     ),
     add_mr_block(

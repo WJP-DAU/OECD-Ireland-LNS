@@ -26,8 +26,7 @@
 # - regex_suffix: regex para extraer el número al final o tras "_"
 # ----------------------------------------
 
-.label_from_suffix <- function(category, 
-                               labels_vec,
+.label_from_suffix <- function(category, labels_vec,
                                regex_suffix = "(?<=_)\\d+(?=(_[A-Za-z].*)?$)") {
   suff_idx <- stringr::str_extract(category, regex_suffix)
   
