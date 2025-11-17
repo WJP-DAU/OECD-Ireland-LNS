@@ -27,21 +27,7 @@ plot_by_group <- function(data_frame,
   force(group_cfg); force(levels_cfg)
   
   # Mapa clave -> etiqueta de levels_cfg (fuente común)
-  key2levels_name <- c(
-    "Overall"          = "National Average",
-    "gender"           = "Gender",
-    "age_group"        = "Age Group",
-    "edu_level"        = "Education Level",
-    "ethnic_majority"  = "Ethnicity",
-    "income"           = "Income",
-    "emp_status"       = "Employment Status",
-    "nationality"      = "Nationality",
-    "marital_status"   = "Marital Status",
-    "level_impact"     = "Impact Level",
-    "cooccurence_group"= "Co-occurrent Problems",
-    "disability"       = "Disability",
-    "NUTS"             = "Region"
-  )
+  key2levels_name <- params$full_group_cfg
   
   # 1) Preparación de datos
   facet_order <- unname(group_cfg)  
