@@ -75,7 +75,8 @@ groupbars_params <- function() {
     add_measure("access2rep",    access2rep,    "extended"),
     add_measure("fairness",      fair,          "extended"),
     add_measure("outcome_done",  outcome_done,  "extended"),
-    add_measure("impact",        impact,        "basic")
+    add_measure("impact",        impact,        "basic"),
+    add_measure("had_hardship",  had_hardship,  "basic")
   )
   
   list(

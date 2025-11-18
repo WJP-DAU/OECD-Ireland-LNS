@@ -121,6 +121,15 @@ facet_order <- c("Overall", "age_group", "disability", "edu_level", "gender", "i
 # 1b. Facet labels (pretty names for strips)
 facet_labels <- params[["full_group_cfg"]]   # named vector: internal_code -> label
 
+co_ocurr <- tables[["ndisputes"]] %>%
+  select(grouping, level, value = mean) %>%
+  mutate(
+    grouping = factor(grouping, levels = facet_order)   # facet order from params
+  )
+
+# Global max for background bar
+max_val <- max(co_ocurr$value, na.rm = TRUE)
+
 # 2. Prepare data and apply the facet order
 # Assuming:
 # co_ocurr has: grouping, level, value, x, y, label_html

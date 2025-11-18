@@ -472,6 +472,24 @@ wrangle_ireland_lns <- function(master_data) {
         .names = "{str_remove(.col, 'AJE_')}_bin"
       ),
       
+      #Hardship - overall
+      had_hardship = case_when(
+        had_dispute == 0 ~ NA_real_,
+        hardship_1_bin ==1 | hardship_2_bin ==1 | hardship_3_bin ==1 | 
+        hardship_4_bin ==1 | hardship_5_bin ==1 | hardship_6_bin ==1 | 
+        hardship_7_bin ==1 | hardship_8_bin ==1 | hardship_9_bin ==1 | 
+        hardship_10_bin ==1 | hardship_11_bin ==1 | hardship_12_bin ==1 | 
+        hardship_13_bin ==1 | hardship_14_bin ==1 | hardship_15_bin ==1 | 
+        hardship_16_bin ==1 ~ 1,
+        hardship_1_bin ==0 & hardship_2_bin ==0 & hardship_3_bin ==0 & 
+        hardship_4_bin ==0 & hardship_5_bin ==0 & hardship_6_bin ==0 & 
+        hardship_7_bin ==0 & hardship_8_bin ==0 & hardship_9_bin ==0 & 
+        hardship_10_bin ==0 & hardship_11_bin ==0 & hardship_12_bin ==0 & 
+        hardship_13_bin ==0 & hardship_14_bin ==0 & hardship_15_bin ==0 & 
+        hardship_16_bin ==0 ~ 0,
+        had_dispute == 1 ~ 0
+      ),
+
       # Legal capability
       legal_rights = case_when(
         AJE_legalrights_done %in% c(1,2) | AJE_legalrights_ongoing %in% c(1,2) ~ 1,

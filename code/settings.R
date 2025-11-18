@@ -32,7 +32,7 @@ library(pacman)
 p_load(char = c(
   
   # Data Loading and Saving
-  "haven", "readxl", "writexl", "openxlsx", "lubridate", "rlang",
+  "haven", "readxl", "writexl", "openxlsx", "lubridate", "rlang", "janitor",
   # Viz
   "showtext", "forcats", "stringr", "ggtext", "WJPr",
   # Good 'ol Tidyverse
