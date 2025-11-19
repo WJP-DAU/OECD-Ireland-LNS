@@ -505,9 +505,7 @@ plot_drm_heatmap <- function(DRM_results,
       panel.grid = element_blank()
     )
   
-  # 4) Guardar
-  dir.create(dirname(outfile), recursive = TRUE, showWarnings = FALSE)
-  
+
   ggsave(
     plot    = p_drm_heatmap,
     filename = outfile,
@@ -528,7 +526,7 @@ plot_drm_heatmap <- function(DRM_results,
 
 plot_coocurrence_bars <- function(tables,
                                   params,
-                                  filename    = "output/co_ocurrence.svg",
+                                  filename    = file.path(path2SP, "output/drm_heatmap.svg"),
                                   facet_order = NULL,
                                   width_mm    = 300,
                                   height_mm   = 280) {
@@ -616,9 +614,6 @@ plot_coocurrence_bars <- function(tables,
       strip.clip            = "off",
       legend.position       = "none"
     )
-  
-  # 5. Create directories if needed
-  dir.create(dirname(filename), recursive = TRUE, showWarnings = FALSE)
   
   # 6. Save
   ggsave(

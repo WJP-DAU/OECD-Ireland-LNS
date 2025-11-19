@@ -126,7 +126,11 @@ multi_response_bars_plots <- render_bars_plots(
 
 data2drm <- tables_drm(data_subset.df)
 
-p <- plot_drm_heatmap(DRM_results)
+drm_process <- list(
+  drm_process = data2drm
+)
+
+p <- plot_drm_heatmap(data2drm)
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ##
@@ -134,5 +138,7 @@ p <- plot_drm_heatmap(DRM_results)
 ##
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-tables_outline <- c(tables, multi_response_bars_tables, data2drm)
-openxlsx::write.xlsx(tables_outline, "tables_outline.xlsx")
+tables_outline <- c(tables, multi_response_bars_tables, drm_process)
+openxlsx::write.xlsx(tables_outline, 
+                     file.path(path2SP, "tables_outline.xlsx"))
+print("Tables outline saved to 'tables_outline.xlsx'")
