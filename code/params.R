@@ -284,6 +284,26 @@ build_bars_params <- function() {
       "Made changes to avoid the issue\n(e.g. changed job, housing)",
       "Gave up trying to do anything \nand nothing further happened",
       "Some other way"
+    ),
+    
+    #Types of hardships
+    hardships = c(
+      "Health difficulties \nor injury",
+      "Stress or emotional strain",
+      "Damage to personal \nor family relationships",
+      "Being threatened or\nfeeling unsafe",
+      "Damage to property",
+      "Changes to your housing\n situation",
+      "Loss of employment",
+      "Loss of money",
+      "Loss of confidence or fear",
+      "Deterioration in \nmental health",
+      "Feeling isolated or \nloss of support networks",
+      "Use of addictive substances",
+      "Delay or disruption to\neducation or training",
+      "Delay or disruption in\naccessing public services",
+      "Finding everyday activities more difficult",
+      "Feeling less trust \nin public institutions"
     )
   )
   
@@ -368,6 +388,13 @@ build_bars_params <- function() {
       labels_vec_id = "description_resol",
       top_n = Inf
     ),
+    add_mr_block(
+      id = "hardships",
+      cols = paste0("hardship_", 1:16,"_bin"),
+      labels_vec_id = "hardships",
+      top_n = Inf
+    ),
+    
     add_mr_block(
       id = "prevalence_categories",
       cols = c(
