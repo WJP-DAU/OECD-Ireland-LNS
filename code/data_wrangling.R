@@ -364,8 +364,8 @@ wrangle_ireland_lns <- function(master_data) {
           x %in% c(3,4) ~ 0,
           x %in% c(5,6) ~ NA_real_
         ),
-        .names = "{str_remove(.col, 'AJR_')}_bin"
-      ),
+        .names = "{str_remove(.col, 'AJR_')}_efficiency_bin"
+        ),
       across(
         c(AJR_drm_1_f, AJR_drm_2_f, AJR_drm_3_f, AJR_drm_4_f, AJR_drm_5_f, AJR_drm_6_f,
           AJR_drm_7_f, AJR_drm_8_f, AJR_drm_9_f, AJR_drm_11_f),
@@ -375,7 +375,7 @@ wrangle_ireland_lns <- function(master_data) {
           x %in% c(3,4) ~ 0,
           x %in% c(5,6) ~ NA_real_
         ),
-        .names = "{str_remove(.col, 'AJR_')}_bin"
+        .names = "{str_remove(.col, 'AJR_')}_fairness_bin"
       ),
       across(
         c(AJR_drm_1_d, AJR_drm_2_d, AJR_drm_3_d, AJR_drm_4_d, AJR_drm_5_d, AJR_drm_6_d,
@@ -386,7 +386,7 @@ wrangle_ireland_lns <- function(master_data) {
           x %in% c(3,4) ~ 0,
           x %in% c(5,6) ~ NA_real_
         ),
-        .names = "{str_remove(.col, 'AJR_')}_bin"
+        .names = "{str_remove(.col, 'AJR_')}_affordable_bin"
       ),
       across(
         c(AJR_drm_1_e, AJR_drm_2_e, AJR_drm_3_e, AJR_drm_4_e, AJR_drm_5_e, AJR_drm_6_e,
@@ -397,7 +397,7 @@ wrangle_ireland_lns <- function(master_data) {
           x %in% c(3,4) ~ 0,
           x %in% c(5,6) ~ NA_real_
         ),
-        .names = "{str_remove(.col, 'AJR_')}_bin"
+        .names = "{str_remove(.col, 'AJR_')}_duration_bin"
       ),
       across(
         c(AJR_drm_1_h, AJR_drm_2_h, AJR_drm_3_h, AJR_drm_4_h, AJR_drm_5_h, AJR_drm_6_h,
@@ -408,7 +408,7 @@ wrangle_ireland_lns <- function(master_data) {
           x %in% c(3,4) ~ 0,
           x %in% c(5,6) ~ NA_real_
         ),
-        .names = "{str_remove(.col, 'AJR_')}_bin"
+        .names = "{str_remove(.col, 'AJR_')}_helpful_bin"
       ),
       
       # Issue resolution

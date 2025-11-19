@@ -362,3 +362,274 @@ render_bars_plots <- function(
   names(plots) <- ids
   plots
 }
+
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+##
+## 4. Heatmap functions                                                                                 ----
+##
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+tables_drm <- function(data) {
+  
+  data %>%
+    summarise(
+      across(
+        starts_with("drm"),
+        ~ mean(.x, na.rm = TRUE)
+      )
+    ) %>%
+    pivot_longer(
+      everything(),
+      names_to  = "variable",
+      values_to = "value"
+    ) %>%
+    # excluimos drm_11 si no se quiere en el heatmap
+    filter(!str_detect(variable, "drm_11")) %>%
+    mutate(
+      category = case_when(
+        str_detect(variable, "efficiency") ~ "Efficient\nprocess",
+        str_detect(variable, "fairness")   ~ "Fair\nprocess",
+        str_detect(variable, "affordable") ~ "Affordable\nprocess",
+        str_detect(variable, "duration")   ~ "Timely\nprocess",
+        str_detect(variable, "helpful")    ~ "Helpful\nmechanism"
+      ),
+      actor = case_when(
+        str_detect(variable, "drm_1") ~ "Court",
+        str_detect(variable, "drm_2") ~ "Tribunal",
+        str_detect(variable, "drm_3") ~ "Ombudsman",
+        str_detect(variable, "drm_4") ~ "Police",
+        str_detect(variable, "drm_5") ~ "Formal\nmediation",
+        str_detect(variable, "drm_6") ~ "Lawyer",
+        str_detect(variable, "drm_7") ~ "Government\ndepartment",
+        str_detect(variable, "drm_8") ~ "Community\nleader",
+        str_detect(variable, "drm_9") ~ "Other DRM"
+      )
+    ) %>%
+    # ordenamos factores (categorías y actores)
+    mutate(
+      category = factor(
+        category,
+        levels = c(
+          "Efficient\nprocess",
+          "Fair\nprocess",
+          "Affordable\nprocess",
+          "Timely\nprocess",
+          "Helpful\nmechanism"
+        )
+      ),
+      actor = factor(
+        actor,
+        levels = c(
+          "Other DRM",
+          "Community\nleader",
+          "Government\ndepartment",
+          "Lawyer",
+          "Formal\nmediation",
+          "Police",
+          "Ombudsman",
+          "Tribunal",
+          "Court"
+        )
+      )
+    )
+}
+
+plot_drm_heatmap <- function(DRM_results,
+                             outfile = file.path(path2SP, "output/drm_heatmap.svg"),
+                             width  = 300,
+                             height = 250) {
+  
+  # 1) Rango dinámico (excluyendo NA)
+  min_val <- min(DRM_results$value, na.rm = TRUE)
+  max_val <- max(DRM_results$value, na.rm = TRUE)
+  
+  # 2) Función interna para el color del texto (contraste)
+  text_color <- function(val) {
+    # punto medio del rango observado
+    mid <- min_val + (max_val - min_val) / 2
+    ifelse(val > mid, "white", "#1a1a1a")
+  }
+  
+  # 3) Construir el heatmap
+  p_drm_heatmap <- ggplot(
+    DRM_results,
+    aes(x = category, y = actor, fill = value)
+  ) +
+    geom_tile(color = "white", linewidth = 0.8) +
+    
+    # Texto dentro de cada celda con contraste dinámico
+    geom_text(
+      aes(
+        label = scales::percent(value, accuracy = 1),
+        color = text_color(value)
+      ),
+      size = 4,
+      fontface = "bold",
+      family = "inter"
+    ) +
+    scale_color_identity() +   # permite usar los colores tal cual vienen de text_color()
+    
+    # Gradiente dinámico basado en min/max observados
+    scale_fill_gradient(
+      name   = "Share",
+      limits = c(min_val, max_val),
+      labels = scales::percent_format(accuracy = 1),
+      low    = "#E3E4F5",    # tono claro de la marca
+      high   = "#575796"     # color de marca
+    ) +
+    scale_x_discrete(position = "top") +
+    labs(x = NULL, y = NULL) +
+    theme_minimal() +
+    theme(
+      legend.position = "none",  # sin leyenda
+      axis.text.x.top = element_text(
+        angle  = 0,
+        hjust  = 0.5,
+        family = "inter",
+        face   = "bold",
+        size   = 12
+      ),
+      axis.text.y = element_text(
+        family = "inter",
+        face   = "bold",
+        size   = 12,
+        hjust  = 0
+      ),
+      legend.title = element_text(
+        family = "inter",
+        face   = "bold"
+      ),
+      legend.text = element_text(
+        family = "inter"
+      ),
+      panel.grid = element_blank()
+    )
+  
+  # 4) Guardar
+  dir.create(dirname(outfile), recursive = TRUE, showWarnings = FALSE)
+  
+  ggsave(
+    plot    = p_drm_heatmap,
+    filename = outfile,
+    device  = "svg",
+    width   = width,
+    height  = height,
+    units   = "mm"
+  )
+  
+  return(p_drm_heatmap)
+}
+
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+##
+## 5. Co-ocurrence plot                                                                                 ----
+##
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+plot_coocurrence_bars <- function(tables,
+                                  params,
+                                  filename    = "output/co_ocurrence.svg",
+                                  facet_order = NULL,
+                                  width_mm    = 300,
+                                  height_mm   = 280) {
+  
+  # 1. Facet order y labels
+  if (is.null(facet_order)) {
+    facet_order <- names(params[["full_group_cfg"]])
+  }
+  facet_labels <- params[["full_group_cfg"]]  # named vector: internal_code → pretty label
+  
+  # 2. Data para el plot
+  co_ocurr <- tables[["ndisputes"]] %>%
+    select(grouping, level, value = mean) %>%
+    mutate(
+      grouping = factor(grouping, levels = facet_order)
+    )
+  
+  # 3. Máximo global para la barra de fondo
+  max_val <- max(co_ocurr$value, na.rm = TRUE)
+  
+  # 4. Plot
+  p <- ggplot(co_ocurr,
+              aes(x = level, y = value)) +
+    
+    # Background bar (gris)
+    geom_col(
+      aes(y = max_val),
+      fill  = "#E6E8E6",
+      width = 0.9
+    ) +
+    
+    # Main bar (morado)
+    geom_col(
+      fill  = "#4F4A8C",
+      width = 0.9
+    ) +
+    
+    # Texto
+    geom_text(
+      aes(label = round(value, 1)),
+      family   = "inter",
+      fontface = "bold",
+      color    = "#575796",
+      hjust    = 0,
+      size     = 5
+    ) +
+    
+    coord_flip(clip = "off") +
+    
+    facet_grid(
+      rows    = vars(grouping),
+      scales  = "free",
+      space   = "free_y",
+      switch  = "y",
+      labeller = labeller(grouping = facet_labels)
+    ) +
+    
+    scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+    
+    theme_minimal() +
+    theme(
+      strip.placement       = "outside",
+      strip.background      = element_blank(),
+      axis.title.x          = element_blank(),
+      axis.title.y          = element_blank(),
+      axis.text.x           = element_blank(),
+      axis.text.y           = ggtext::element_markdown(
+        size = 16, hjust = 1, family = "inter"
+      ),
+      panel.grid.major.y    = element_blank(),
+      panel.grid.major.x    = element_blank(),
+      panel.grid.minor.x    = element_blank(),
+      panel.spacing         = unit(12, "mm"),
+      strip.text.y.left     = element_text(
+        angle  = 0,
+        size   = 16,
+        color  = "#575796",
+        hjust  = 1,
+        vjust  = 1,
+        family = "inter",
+        face   = "bold",
+        margin = margin(-20, -35, 0, 55)
+      ),
+      strip.switch.pad.grid = unit(-35, "mm"),
+      strip.clip            = "off",
+      legend.position       = "none"
+    )
+  
+  # 5. Create directories if needed
+  dir.create(dirname(filename), recursive = TRUE, showWarnings = FALSE)
+  
+  # 6. Save
+  ggsave(
+    filename = filename,
+    plot     = p,
+    device   = "svg",
+    width    = width_mm,
+    height   = height_mm,
+    units    = "mm"
+  )
+  
+  return(p)
+}
+
