@@ -54,7 +54,7 @@ plot_by_group <- function(data_frame,
       label_value = dplyr::if_else(color == "primary", 
                                    paste0(round(value * 100, 0), "%"), 
                                    NA_character_)
-    )
+    ) 
   
   # Grupos realmente presentes en los datos (tras recodificación)
   groups_present <- stats::na.omit(unique(as.character(data2plot$grouping)))
@@ -83,22 +83,32 @@ plot_by_group <- function(data_frame,
     }
     
     # Para el resto, busca el nombre de niveles en levels_cfg
-    lv_key <- key2levels_name[[k]]
-    if (is.null(lv_key)) next  # sin mapeo conocido, omite silenciosamente
+    lv_key <- key2levels_name[[k]]   # p.ej. "Income"
+    if (is.null(lv_key)) next
     
     if (!lv_key %in% names(levels_cfg)) {
-      # Si falta en levels_cfg, lo omitimos con advertencia suave
       warning("No se encontró levels_cfg[['", lv_key, "']] para la clave '", k, "'. Se omite en levels_all.")
       next
     }
     
-    lv_vals <- levels_cfg[[lv_key]]
-    if (length(lv_vals)) {
-      levels_all <- c(levels_all, paste(disp_lab, lv_vals, sep = " | "))
+    # Orden deseado desde levels_cfg
+    lv_vals_ordered <- levels_cfg[[lv_key]]
+    
+    # Niveles realmente presentes en los datos para este grouping
+    present_vals <- data2plot %>%
+      dplyr::filter(grouping == disp_lab) %>%
+      dplyr::distinct(level) %>%
+      dplyr::pull(level)
+    
+    # Usar intersección, respetando el orden de levels_cfg
+    lv_use <- intersect(lv_vals_ordered, present_vals)
+    
+    if (length(lv_use)) {
+      levels_all <- c(levels_all, paste(disp_lab, lv_use, sep = " | "))
     }
   }
   
-  # Si por alguna razón levels_all queda vacío, lo reconstituimos de lo observado en datos
+  # Si por alguna razón levels_all queda vacío, reconstituimos de lo observado
   if (length(levels_all) == 0) {
     levels_all <- data2plot %>%
       dplyr::mutate(y_key = paste(grouping, level, sep = " | ")) %>%
@@ -106,33 +116,29 @@ plot_by_group <- function(data_frame,
       unique()
   }
   
-  levels_all <- unique(c("<span style='color:#575796;'><b><i>{level}</i></b></span>", levels_all))
+  levels_all <- c(" ", levels_all)
   
   data2plot <- data2plot %>%
     dplyr::mutate(
       y_id  = paste(grouping, level, sep = " | "),
       y_lab = sprintf("<b>%s</b>", level),
+      y_id  = if_else(grouping == " ", " ", y_id),
       y_id  = factor(y_id, levels = levels_all),
-      y_lab = if_else(grouping == " ", " ",level)
+      # sin markup en la etiqueta final, solo texto plano (ggtext lo formatea)
+      y_lab = dplyr::if_else(grouping == " ", " ", level)
     )
   
   first_group <- levels(forcats::fct_inorder(data2plot$grouping))[1]
   
   label_df <- tibble(
     label_html = "<span style='color:#575796;font-weight:700;font-style:italic;'><b><i>National Average</i></b></span>",
-    x = 0,   # posición en X (tu escala va 0–115, ponlo donde quieras)
-    y = 2.25,   # arriba del panel
+    x = 0,   # posición en X 
+    y = 2.275,   # arriba del panel
     grouping = first_group  # <-- clave: coincide con la faceta
   )
   
-  # # Mapa único id -> etiqueta HTML
-  # labels_map <- data2plot %>%
-  #   dplyr::distinct(y_id, y_lab) %>%
-  #   { setNames(.$y_lab, .$y_id) }
-  # 
   
-  
-  p <- ggplot2::ggplot(data2plot, ggplot2::aes(x = value * 100, y = y_lab, fill = color)) +
+  p <- ggplot2::ggplot(data2plot, ggplot2::aes(x = value * 100, y = y_id, fill = color)) +
     ggplot2::geom_col(position = ggplot2::position_stack(reverse = TRUE), width = 0.9, na.rm = TRUE) +
     ggplot2::geom_text(
       ggplot2::aes(x = 101, label = label_value),
@@ -146,6 +152,9 @@ plot_by_group <- function(data_frame,
     #ggplot2::scale_y_discrete(labels = labels_map) +
     ggplot2::scale_fill_manual(values = c("primary" = "#575796", "secondary" = "#e5e8e8")) +
     ggplot2::scale_x_continuous(expand = c(0, 0), limits = c(0, 115), position = "top") +
+    scale_y_discrete(
+      labels = function(x) sub("^.* \\| ", "", x)  # Remueve "Grouping | " del inicio
+    ) +
     ggplot2::coord_cartesian(clip = "off") +
     ggplot2::theme_minimal() +
     ggplot2::theme(
@@ -154,7 +163,7 @@ plot_by_group <- function(data_frame,
       axis.title.x = element_blank(),
       axis.title.y = element_blank(),
       axis.text.x = element_blank(),
-      axis.text.y = ggtext::element_markdown(size = 16,
+      axis.text.y = ggtext::element_markdown(size = 14,
                                      hjust = 1,
                                      family = "inter",
                                      face = "plain"),
@@ -180,7 +189,7 @@ plot_by_group <- function(data_frame,
       inherit.aes = FALSE,
       fill = NA, label.color = NA, # sin fondo ni borde
       vjust = 1.5, hjust = 1,
-      size = 5,
+      size = 5.623357,
       family = "inter" 
     );p
   

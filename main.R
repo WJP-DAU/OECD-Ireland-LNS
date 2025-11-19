@@ -70,9 +70,9 @@ plots <- render_groupbars_plots(
   use_outcome_dir = FALSE,                         # TRUE => guarda en output/outcome/
   measures_to_plot = NULL,                         
   default_width   = 300,
-  default_height  = 350,
+  default_height  = 475,
   size_overrides  = list(
-    prevalence = list(width = 300, height = 280)
+    prevalence = list(width = 350, height = 475)
   )
 )
 
