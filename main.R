@@ -72,7 +72,7 @@ plots <- render_groupbars_plots(
   default_width   = 300,
   default_height  = 475,
   size_overrides  = list(
-    prevalence = list(width = 350, height = 475)
+    prevalence = list(width = 300, height = 475)
   )
 )
 
@@ -82,14 +82,13 @@ plots <- render_groupbars_plots(
 
 # ------------------------------------------------------------
 
-facet_order <- c("Overall", "age_group", "disability", "edu_level", "gender", "income", "NUTS",
-                 "level_impact", "cooccurence_group", "category")
-
 plot_coocurrence_bars(
   tables      = tables,
   params      = params,
-  filename    = "output/co_ocurrence.svg",
-  facet_order = facet_order
+  filename    = file.path(path2SP,"output/co_ocurrence.svg"),
+  facet_order = facet_order, 
+  height_mm = 475, 
+  width_mm = 300
 )
 
 ## =========================================================

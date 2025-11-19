@@ -531,60 +531,164 @@ plot_coocurrence_bars <- function(tables,
                                   width_mm    = 300,
                                   height_mm   = 280) {
   
+  levels_cfg <- params$levels_map
+  # Mapa clave -> etiqueta de levels_cfg (fuente común)
+  key2levels_name <- params$full_group_cfg
+  
+  
+  facet_order <- c("Overall", "age_group", "disability", "edu_level", "gender", "income", "NUTS",
+                   "level_impact", "cooccurence_group", "category")
+  
+  facet_order2 <- unique(c(" ", facet_order))
+
+  group_cfg <- params$full_group_cfg
+  
   # 1. Facet order y labels
   if (is.null(facet_order)) {
     facet_order <- names(params[["full_group_cfg"]])
   }
   facet_labels <- params[["full_group_cfg"]]  # named vector: internal_code → pretty label
   
-  # 2. Data para el plot
   co_ocurr <- tables[["ndisputes"]] %>%
-    select(grouping, level, value = mean) %>%
-    mutate(
-      grouping = factor(grouping, levels = facet_order)
+    dplyr::mutate(
+      primary = mean,
+      secondary = 6.6 - mean,
+      grouping = case_when(
+        grouping == "Overall" ~ " ",
+        TRUE ~ grouping
+      ),
+      level = case_when(
+        grouping == " " ~ "National Average",
+        TRUE ~ level
+      )) %>%
+    tidyr::pivot_longer(c(primary, secondary), 
+                        names_to = "color", 
+                        values_to = "value") %>%
+    dplyr::mutate(
+      grouping = dplyr::recode(grouping, !!!group_cfg),  
+      # recodifica con group_cfg (no global)
+      #grouping = factor(grouping, levels = facet_order2)),
+      label_value = dplyr::if_else(color == "primary", 
+                                   paste0(round(value, 1)), 
+                                   NA_character_)
+    ) 
+  
+  # Grupos realmente presentes en los datos (tras recodificación)
+  groups_present <- stats::na.omit(unique(as.character(co_ocurr$grouping)))
+  
+  # 2) Niveles dinámicos por grupo
+  #    - Usa levels_cfg cuando exista la entrada
+  #    - Para NUTS/Region, usa niveles detectados en los datos
+  #    - Solo arma entradas para grupos presentes
+  levels_all <- character(0)
+  
+  for (k in names(group_cfg)) {
+    disp_lab <- group_cfg[[k]]                      # etiqueta mostrada (p. ej., "Gender")
+    if (!disp_lab %in% groups_present) next        # si ese facet no aparece en datos, omite
+    
+    if (k == "NUTS") {
+      # Region desde datos
+      levels_region <- co_ocurr %>%
+        dplyr::filter(grouping == disp_lab) %>%
+        dplyr::distinct(level) %>%
+        dplyr::arrange(level) %>%
+        dplyr::pull(level)
+      if (length(levels_region)) {
+        levels_all <- c(levels_all, paste(disp_lab, levels_region, sep = " | "))
+      }
+      next
+    }
+    
+    # Para el resto, busca el nombre de niveles en levels_cfg
+    lv_key <- key2levels_name[[k]]   # p.ej. "Income"
+    if (is.null(lv_key)) next
+    
+    if (!lv_key %in% names(levels_cfg)) {
+      warning("No se encontró levels_cfg[['", lv_key, "']] para la clave '", k, "'. Se omite en levels_all.")
+      next
+    }
+    
+    # Orden deseado desde levels_cfg
+    lv_vals_ordered <- levels_cfg[[lv_key]]
+    
+    # Niveles realmente presentes en los datos para este grouping
+    present_vals <- co_ocurr %>%
+      dplyr::filter(grouping == disp_lab) %>%
+      dplyr::distinct(level) %>%
+      dplyr::pull(level)
+    
+    # Usar intersección, respetando el orden de levels_cfg
+    lv_use <- intersect(lv_vals_ordered, present_vals)
+    
+    if (length(lv_use)) {
+      levels_all <- c(levels_all, paste(disp_lab, lv_use, sep = " | "))
+    }
+  }
+  
+  # Si por alguna razón levels_all queda vacío, reconstituimos de lo observado
+  if (length(levels_all) == 0) {
+    levels_all <- co_ocurr %>%
+      dplyr::mutate(y_key = paste(grouping, level, sep = " | ")) %>%
+      dplyr::pull(y_key) %>%
+      unique()
+  }
+
+  levels_all <- c(" ", levels_all)
+  
+  data2plot <- co_ocurr %>%
+    dplyr::mutate(
+      y_id  = paste(grouping, level, sep = " | "),
+      y_lab = sprintf("<b>%s</b>", level),
+      y_id  = if_else(grouping == " ", " ", y_id),
+      y_id  = factor(y_id, levels = levels_all),
+      # sin markup en la etiqueta final, solo texto plano (ggtext lo formatea)
+      y_lab = dplyr::if_else(grouping == " ", " ", level)
     )
   
+  first_group <- levels(forcats::fct_inorder(data2plot$grouping))[1]
+  
+  label_df <- tibble(
+    label_html = "<span style='color:#575796;font-weight:700;font-style:italic;'><b><i>National Average</i></b></span>",
+    x = 0,   # posición en X 
+    y = 1.75,   # arriba del panel
+    grouping = first_group  # <-- clave: coincide con la faceta
+  )
+  
   # 3. Máximo global para la barra de fondo
-  max_val <- max(co_ocurr$value, na.rm = TRUE)
+  max_val <- max(data2plot$value, na.rm = TRUE)
   
   # 4. Plot
-  p <- ggplot(co_ocurr,
-              aes(x = level, y = value)) +
+  p <- ggplot(data2plot,
+              aes(y = y_id, x = value, fill = color)) +
     
-    # Background bar (gris)
-    geom_col(
-      aes(y = max_val),
-      fill  = "#E6E8E6",
-      width = 0.9
-    ) +
-    
-    # Main bar (morado)
-    geom_col(
-      fill  = "#4F4A8C",
-      width = 0.9
-    ) +
+    geom_col(position = ggplot2::position_stack(reverse = TRUE), width = 0.9, na.rm = TRUE) +
     
     # Texto
     geom_text(
-      aes(label = round(value, 1)),
+      aes(
+        x = 6.7,
+        label = label_value
+        ),
       family   = "inter",
       fontface = "bold",
       color    = "#575796",
       hjust    = 0,
       size     = 5
+    )+
+    
+    coord_cartesian(clip = "off") +
+    ggplot2::facet_grid(
+      rows = ggplot2::vars(grouping),
+      scales = "free", space = "free_y", switch = "y"
     ) +
     
-    coord_flip(clip = "off") +
+    scale_x_continuous(expand = c(0, 0), limits = c(0, 7.25), position = "top") +
     
-    facet_grid(
-      rows    = vars(grouping),
-      scales  = "free",
-      space   = "free_y",
-      switch  = "y",
-      labeller = labeller(grouping = facet_labels)
+    ggplot2::scale_fill_manual(values = c("primary" = "#575796", "secondary" = "#e5e8e8")) +
+    
+    scale_y_discrete(
+      labels = function(x) sub("^.* \\| ", "", x)  # Remueve "Grouping | " del inicio
     ) +
-    
-    scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
     
     theme_minimal() +
     theme(
@@ -613,7 +717,16 @@ plot_coocurrence_bars <- function(tables,
       strip.switch.pad.grid = unit(-35, "mm"),
       strip.clip            = "off",
       legend.position       = "none"
-    )
+    ) +
+    geom_richtext(
+      data = label_df,
+      aes(x = x, y = y, label = label_html),
+      inherit.aes = FALSE,
+      fill = NA, label.color = NA, # sin fondo ni borde
+      vjust = 1.5, hjust = 1,
+      size = 5.623357,
+      family = "inter" 
+    );p
   
   # 6. Save
   ggsave(
@@ -622,7 +735,8 @@ plot_coocurrence_bars <- function(tables,
     device   = "svg",
     width    = width_mm,
     height   = height_mm,
-    units    = "mm"
+    units    = "mm",
+    scale = 0.75
   )
   
   return(p)
