@@ -25,7 +25,7 @@ library(pacman)
 
 # Notes: ggsankey and ggwaffle need to be installed from Github's developer version. Run the following lines 
 # of code in order to install: 
-# devtools::install_github("davidsjoberg/ggsankey")
+#devtools::install_github("davidsjoberg/ggsankey")
 # devtools::install_github("liamgilbey/ggwaffle")
 #devtools::install_github("ctoruno/WJPr")
 
@@ -34,7 +34,7 @@ p_load(char = c(
   # Data Loading and Saving
   "haven", "readxl", "writexl", "openxlsx", "lubridate", "rlang", "janitor",
   # Viz
-  "showtext", "forcats", "stringr", "ggtext", "WJPr",
+  "showtext", "forcats", "stringr", "ggtext", "WJPr", "ggsankey",
   # Good 'ol Tidyverse
   "tidyverse"
   

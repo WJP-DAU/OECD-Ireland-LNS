@@ -28,6 +28,9 @@ source("code/data_wrangling.R")
 source("code/params.R")
 source("code/functions.R")
 source("code/bars_group.R")
+source("code/sankey_rep.R")
+source("code/sankey_drm.R")
+
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ##
@@ -129,7 +132,40 @@ drm_process <- list(
   drm_process = data2drm
 )
 
+
 p <- plot_drm_heatmap(data2drm)
+
+## =========================================================
+## Sankey Advice & Representation
+## =========================================================
+
+# ------------------------------------------------------------
+
+psk_ad <- plot_sankey_advice(data = data_subset.df)
+
+ggsave(
+  psk_ad,
+  filename = file.path(path2SP, "output/sankey_advice_representation.svg"),
+  width    = 400,
+  height   = 225, 
+  units = "mm", scale = 0.75
+)
+
+## =========================================================
+## Sankey DRM
+## =========================================================
+
+# ------------------------------------------------------------
+
+psk_drm <- plot_sankey_drm(data = data_subset.df)
+
+ggsave(
+  psk_drm,
+  filename = file.path(path2SP, "output/sankey_drm.svg"),
+  width    = 400,
+  height   = 225, 
+  units = "mm", scale = 0.75
+)
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ##
