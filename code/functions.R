@@ -344,7 +344,7 @@ render_bars_plots <- function(
       ) +
       theme(
         axis.text.x = element_text(size = 18, family = "inter", face = "plain", color = "#1a1a1a"),
-        axis.text.y = element_text(size = 18, hjust = 0, family = "inter", face = "plain", color = "#1a1a1a")
+        axis.text.y = element_text(size = 15, hjust = 0, family = "inter", face = "plain", color = "#1a1a1a")
       )
     
     sz <- size_for_id(id)

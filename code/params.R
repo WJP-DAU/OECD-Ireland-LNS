@@ -22,7 +22,8 @@ groupbars_params <- function() {
     "level_impact"      = "Impact Level",
     "cooccurence_group" = "Co-occurrence",
     "disability"        = "Disability",
-    "category"          = "Problem Type" 
+    "category"          = "Problem Type",
+    "ethnic_majority"   = "Ethnicity"
   )
   
   levels_map <- list(
@@ -52,15 +53,17 @@ groupbars_params <- function() {
     "Problem Type"      = c("Land", 
                                 "Neighbors", 
                                 "Housing", 
-                                "Family/ relationship", 
+                                "Family/relationship", 
                                 "Injury", 
                                 "Citizenship",
                                 "Government benefits", 
                                 "Public services", 
                                 "Products", 
                                 "Services",
-                                "Money/ debt", 
-                                "Employment")
+                                "Money/debt", 
+                                "Employment"),
+    "Ethnicity"         = c("White Irish",
+                            "Other Ethnicity")
   )
   
   groups_presets <- list(
@@ -72,7 +75,8 @@ groupbars_params <- function() {
       "edu_level",
       "income",
       "NUTS",
-      "disability"),
+      "disability",
+      "ethnic_majority"),
     extended = select_groups(
       full_group_cfg, 
       "Overall",
@@ -84,7 +88,8 @@ groupbars_params <- function() {
       "level_impact",
       "cooccurence_group",
       "disability",
-      "category")
+      "category",
+      "ethnic_majority")
   )
   
   # Here you can add a new variable 
@@ -128,24 +133,91 @@ build_bars_params <- function() {
   
   # --- Biblioteca de labels: VECTORES por índice (1..K) ---
   labels_vec_lib <- list(
-    # Razones (ejemplo del encabezado que compartiste)
-    reason = c(
-      "Issue not\nimportant enough",
-      "Issue resolved\nbefore action",
-      "Confident could\nresolve alone",
-      "Confident could\nresolve with help",
-      "Up to the other\nparty to act",
-      "Person caused\nthe issue",
-      "Did not know\nwhere to go",
-      "Could not obtain\nlegal assistance",
-      "Too expensive\nor feared cost",
-      "Too far or\nhard to reach",
-      "Too inconvenient",
-      "Did not trust\nauthorities",
-      "Did not think\nthey could help",
-      "Afraid of\nconsequences",
-      "Did not know\nit was possible",
-      "Told not to\nget advice or\ninformation",
+    # Asesores (AJD_adviser_1 : _17)
+    adviser = c(
+      "Court",
+      "Tribunal",
+      "Ombudsman",
+      "Police or\nlaw enforcement",
+      "Family\nMediation Service",
+      "Other mediation/dispute\nresolution service",
+      "Private solicitor\nor law office",
+      "Private barrister\nor chambers",
+      "Legal Aid Board\nLaw Centre",
+      "Other law centre\n(e.g. FLAC)",
+      "Gov. department\nor local council",
+      "Non-legal professional\nor organisation",
+      "Community leader\nor person of standing",
+      "Online search",
+      "Social media",
+      "AI tools",
+      "Other person"
+    ),
+    
+    #Advisers - help (adviser_help_1_bin : _17)
+    help_adviser = c(
+      "Court",
+      "Tribunal",
+      "Ombudsman",
+      "Police or\nlaw enforcement",
+      "Family\nMediation Service",
+      "Other mediation/dispute\nresolution service",
+      "Private solicitor\nor law office",
+      "Private barrister\nor chambers",
+      "Legal Aid Board\nLaw Centre",
+      "Other law centre\n(e.g. FLAC)",
+      "Gov. department\nor local council",
+      "Non-legal professional\nor organisation",
+      "Community leader\nor person of standing",
+      "Online search",
+      "Social media",
+      "AI tools",
+      "Other person"
+    ),
+    
+    # Razones para no buscar ayuda prof (AJD_noadvice_reason_1:17)
+    no_prof_help = c(
+      "No real disaggreement/\nproblem",
+      "Other person\n/org was right",
+      "Issue resolved\nby itself",
+      "Got all the help\nfrom others",
+      "Did not feel\nhelp was needed",
+      "Issue not\nserious enough",
+      "Concerned about\ntime required",
+      "Concerned about\ncost",
+      "Too difficult to\nfind help nearby",
+      "Too stressful",
+      "Feared harming\nrelationship with\nthe other party",
+      "Scared to take\naction/ask for help",
+      "Did not know where/how\nto find advice",
+      "Thought help would not\nchange the outcome",
+      "Tried seeking help\nbefore and it\nwasn't helpful",
+      "Someone told me\nnot to get advice",
+      "Other reason"
+    ),
+    
+    #Non-seekers intentions (AJR_action_1:4)
+    intention = c(
+      "Haven't done/\ndidn't do anything and\ndon't expect to",
+      "Nothing yet but expect to",
+      "Have done something",
+      "No, as it has resolved\nitself or is no longer\nan issue"
+    ),
+    
+    #Reasons for not seeking ANY help (AJR_noaction_1:13)
+    no_help = c(
+      "It wasn’t very\nimportant",
+      "It was resolved\nquickly",
+      "Concerned about\ntime required",
+      "Too stressful",
+      "Concerned about\ncost",
+      "It would damage\nthe relationship",
+      "Uncomfortable/\nashamed to\nask for help",
+      "It would make\nno difference",
+      "Had bigger issues",
+      "Were at fault",
+      "Didn’t know\nwhat to do",
+      "Didn’t need advice",
       "Other reason"
     ),
     
@@ -162,38 +234,6 @@ build_bars_params <- function() {
       "Other dispute\nresolution service",
       "Other person\n(friend, family,\netc.)",
       "Other professional\nor organisation"
-    ),
-    
-    # Asesores (AJD_adviser_1 : _17)
-    adviser = c(
-      "Court",
-      "Tribunal",
-      "Ombudsman",
-      "Police or\nlaw enforcement",
-      "Family\nMediation Service",
-      "Other mediation/\ndispute resolution\nservice",
-      "Private solicitor\nor law office",
-      "Private barrister\nor chambers",
-      "Legal Aid Board\nLaw Centre",
-      "Other law centre\n(e.g. FLAC)",
-      "Gov. department\nor local council",
-      "Non-legal professional\nor organisation",
-      "Community leader\nor person of standing",
-      "Online search\n(e.g. Google)",
-      "Social media\n(e.g. Facebook, X,\nTikTok, Reddit)",
-      "AI tools\n(e.g. ChatGPT,\nGemini)",
-      "Other person\n(friend, family,\netc.)"
-    ),
-    
-    # Estado resolución actual (AJR_status_cur_1 : _7)
-    status = c(
-      "Formal legal\nprocess ongoing",
-      "Other dispute\nresolution ongoing",
-      "Seeking advice/\nsupport to resolve",
-      "Waiting for\nother party to act",
-      "No recent action —\nintend to resolve",
-      "No recent\naction taken",
-      "Other"
     ),
     
     reason_no_resol = c(
@@ -213,61 +253,15 @@ build_bars_params <- function() {
       "Afraid of\nconsequences",
       "Did not know\nit was possible"
     ),
-    
-    #Advisers - help (adviser_help_1_bin : _17)
-    help_adviser = c(
-      "Court",
-      "Tribunal",
-      "Ombudsman",
-      "Police or\nlaw enforcement",
-      "Family\nMediation Service",
-      "Other mediation/\ndispute resolution service",
-      "Private solicitor\nor law office",
-      "Private barrister\nor chambers",
-      "Legal Aid Board\nLaw Centre",
-      "Other law centre\n(e.g. FLAC)",
-      "Gov. department\nor local council",
-      "Non-legal professional\nor organisation",
-      "Community leader\nor person of standing",
-      "Online search\n(e.g. Google)",
-      "Social media",
-      "AI tools",
-      "Other person\n(friend, family,\netc.)"
-    ),
-    
-    #Non-seekers intentions (AJR_action_1:4)
-    intention = c(
-      "Haven't done/\nDidn't do anything and don't expect to",
-      "Nothing yet but expect to",
-      "Have done something",
-      "No, as it has resolved\nitself or is no longer an issue"
-    ),
-    
-    #Reasons for not seeking ANY help (AJR_noaction_1:13)
-    no_help = c(
-      "It wasn’t very important",
-      "It was resolved quickly",
-      "It would take too long",
-      "It would be too stressful",
-      "It would cost too much",
-      "It would damage the\nrelationship with the other side",
-      "It would make them uncomfortable/\nwere too ashamed \nor embarrassed to ask for help",
-      "It would make no difference",
-      "Had bigger issues",
-      "Were at fault or \nthere was no dispute",
-      "Didn’t know what to do",
-      "Didn’t need information or advice",
-      "Other reason"
-    ),
-    
-    #Current status description (AJR_status_cur_1:7)
-    description_status = c(
-      "A formal legal process is ongoing\n(e.g. at a court or tribunal)",
-      "Another dispute resolution process\noutside a court or a tribunal is ongoing",
-      "There is no dispute resolution\nprocess ongoing/actively seeking advice/\nsupport to resolve or finish it",
-      "Have not taken recent action/\nwaiting for the other party to act/respond",
-      "No recent action has been taken,\nbut still intend to resolve it",
-      "No recent action has been taken",
+
+    # Estado resolución actual (AJR_status_cur_1 : _7)
+    status = c(
+      "Formal legal\nprocess ongoing",
+      "Other dispute\nresolution ongoing",
+      "Seeking advice/\nsupport to resolve",
+      "Waiting for\nother party to act",
+      "No recent action —\nintend to resolve",
+      "No recent\naction taken",
       "Other"
     ),
     
@@ -329,39 +323,21 @@ build_bars_params <- function() {
   # --- Definición de bloques a producir (puedes agregar/editar libremente) ---
   blocks <- list(
     add_mr_block(
-      id = "drm_contacted",
-      cols = paste0("AJR_drm_", 1:11, "_bin"),
-      labels_vec_id = "drm",
-      top_n = Inf
-    ),
-    add_mr_block(
       id = "adviser",
       cols = paste0("AJD_adviser_", 1:17),
       labels_vec_id = "adviser",
       top_n = Inf
     ),
     add_mr_block(
-      id = "help_barriers",
-      cols = paste0("AJD_noadvice_reason_", 1:17),
-      labels_vec_id = "reason",
-      top_n = Inf
-    ),
-    add_mr_block(
-      id = "status",
-      cols = paste0("AJR_status_cur_", 1:7),
-      labels_vec_id = "status",
-      top_n = Inf
-    ),
-    add_mr_block(
-      id = "no_resol_reasons",
-      cols = paste0("AJR_noresol_reason_", 1:15),
-      labels_vec_id = "reason_no_resol",
-      top_n = Inf
-    ),
-    add_mr_block(
       id = "help_adviser",
       cols = paste0("adviser_help_", 1:17,"_bin"),
       labels_vec_id = "help_adviser",
+      top_n = Inf
+    ),
+    add_mr_block(
+      id = "no_prof_help",
+      cols = paste0("AJD_noadvice_reason_", 1:17),
+      labels_vec_id = "no_prof_help",
       top_n = Inf
     ),
     add_mr_block(
@@ -377,9 +353,21 @@ build_bars_params <- function() {
       top_n = Inf
     ),
     add_mr_block(
-      id = "description_status",
+      id = "drm_contacted",
+      cols = paste0("AJR_drm_", 1:11, "_bin"),
+      labels_vec_id = "drm",
+      top_n = Inf
+    ),
+    add_mr_block(
+      id = "no_resol_reasons",
+      cols = paste0("AJR_noresol_reason_", 1:15),
+      labels_vec_id = "reason_no_resol",
+      top_n = Inf
+    ),
+    add_mr_block(
+      id = "status",
       cols = paste0("AJR_status_cur_", 1:7),
-      labels_vec_id = "description_status",
+      labels_vec_id = "status",
       top_n = Inf
     ),
     add_mr_block(

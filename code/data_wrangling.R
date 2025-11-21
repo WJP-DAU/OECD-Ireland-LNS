@@ -54,14 +54,14 @@ wrangle_ireland_lns <- function(master_data) {
         AJP_cat_selected == 1  ~ "Land",
         AJP_cat_selected == 2  ~ "Neighbors",
         AJP_cat_selected == 3  ~ "Housing",
-        AJP_cat_selected == 4  ~ "Family/ relationship",
+        AJP_cat_selected == 4  ~ "Family/relationship",
         AJP_cat_selected == 5  ~ "Injury",
         AJP_cat_selected == 6  ~ "Citizenship",
         AJP_cat_selected == 7  ~ "Government benefits",
         AJP_cat_selected == 8  ~ "Public services",
         AJP_cat_selected == 9  ~ "Products",
         AJP_cat_selected == 10 ~ "Services",
-        AJP_cat_selected == 11 ~ "Money/ debt",
+        AJP_cat_selected == 11 ~ "Money/debt",
         AJP_cat_selected == 12 ~ "Employment"
       ),
       
@@ -534,8 +534,8 @@ wrangle_ireland_lns <- function(master_data) {
         edu_2 == 2 ~ "Higher Education"
       ),
       ethnic_majority = case_when(
-        ethni == 1 ~ "Ethnic majority",
-        ethni %in% c(2,3,4,5,6,7,8,9,10,11,12,13,14) ~ "Ethnic minority"
+        ethni == 1 ~ "White Irish",
+        ethni %in% c(2,3,4,5,6,7,8,9,10,11,12,13,14) ~ "Other Ethnicity"
       ),
       disability = case_when(
         disability %in% c(1,2) ~ "With disability",
