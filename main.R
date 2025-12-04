@@ -50,7 +50,43 @@ master_data <- read_dta(
 ##
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-data_subset.df <- wrangle_ireland_lns(master_data)
+# ---------------------------
+# Parseo de argumentos estilo GNU
+# ---------------------------
+
+args <- commandArgs(trailingOnly = TRUE)
+
+# Función auxiliar para parsear argumentos tipo --param=valor
+parse_arg <- function(name, default = NULL) {
+  pattern <- paste0("^--", name, "=")
+  match <- args[grepl(pattern, args)]
+  
+  if (length(match) == 0) {
+    return(default)  # valor por defecto si no se pasa
+  }
+  
+  value <- sub(pattern, "", match)
+  return(value)
+}
+
+# Leer argumento high_impact
+high_impact_raw <- parse_arg("high_impact", default = "FALSE")
+
+# Convertir a logico
+high_impact <- as.logical(high_impact_raw)
+
+cat(">> high_impact =", high_impact, "\n")
+
+if (isTRUE(high_impact)) {
+  
+  data_subset.df <- wrangle_ireland_lns(master_data) %>%
+    filter(AJE_impact %in% c(3, 4, 5))
+  
+} else {
+  
+  data_subset.df <- wrangle_ireland_lns(master_data)
+  
+}
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ##
@@ -126,7 +162,10 @@ multi_response_bars_plots <- render_bars_plots(
 
 # ------------------------------------------------------------
 
-data2drm <- tables_drm(data_subset.df)
+data2drm <- tables_drm(data_subset.df)%>%
+  mutate(
+    value = if_else(n_obs < 30, NA_real_, value)  
+    )
 
 drm_process <- list(
   drm_process = data2drm

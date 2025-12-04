@@ -154,7 +154,12 @@ compute_groupbars_tables <- function(data, params) {
       data      = data,
       value     = !!m$value,
       group_cfg = params$groups_presets[[m$groups_preset]]
-    )
+    ) %>%
+      mutate(
+        mean = if_else(n < 30, NA_real_, mean),
+        overall_mean = if_else(overall_n < 30, NA_real_, overall_mean),
+        diff_overall = if_else(n < 30, NA_real_, diff_overall)
+      )
   })
   
   names(tbls) <- vapply(params$measures, function(m) m$id, FUN.VALUE = character(1))
@@ -244,17 +249,24 @@ compute_bars_tables <- function(data, params) {
   out <- map(params$blocks, function(b) {
     stopifnot(all(b$cols %in% names(data)))
     
-    # 1) agregación (promedio * 100)
+    # ---- 0) número de observaciones por categoría (columna) ----
+    n_obs_df <- data %>%
+      summarize(across(all_of(b$cols), ~ sum(!is.na(.x)))) %>%
+      pivot_longer(cols = everything(), names_to = "category", values_to = "n_obs")
+    
+    # ---- 1) agregación (promedio * 100) ----
     agg <- data %>%
       summarize(across(all_of(b$cols), ~ mean(.x, na.rm = TRUE) * 100)) %>%
-      pivot_longer(cols = everything(), names_to = "category", values_to = "values")
+      pivot_longer(cols = everything(), names_to = "category", values_to = "values") %>%
+      left_join(n_obs_df, by = "category")   # <<< añadir n_obs por categoría
     
-    # 2) etiquetas
+    # ---- 2) etiquetas ----
     if (!is.null(b$labels_map_id)) {
       lbl_map <- params$labels_map_lib[[b$labels_map_id]]
       if (is.null(lbl_map)) stop("labels_map_id '", b$labels_map_id, "' no existe en labels_map_lib.")
       agg <- agg %>%
         mutate(category_label = dplyr::recode(category, !!!lbl_map, .default = category))
+      
     } else if (!is.null(b$labels_vec_id)) {
       lbl_vec <- params$labels_vec_lib[[b$labels_vec_id]]
       if (is.null(lbl_vec)) stop("labels_vec_id '", b$labels_vec_id, "' no existe en labels_vec_lib.")
@@ -264,7 +276,7 @@ compute_bars_tables <- function(data, params) {
       stop("Debes definir labels_map_id o labels_vec_id para el bloque '", b$id, "'.")
     }
     
-    # 3) data final para graficar
+    # ---- 3) data final para graficar ----
     df_plot <- agg %>%
       arrange(desc(values)) %>%
       mutate(
@@ -275,20 +287,24 @@ compute_bars_tables <- function(data, params) {
       ) %>%
       select(category = category_label,
              values2plot = values,
-             lab_pos, labels, color, order_no)
+             lab_pos, labels, color, order_no, n_obs)  %>%
+      mutate(
+        values2plot = if_else(n_obs < 30, NA_real_, values2plot),
+        lab_pos = if_else(n_obs < 30, NA_real_, lab_pos),
+        labels = if_else(n_obs < 30, NA_character_, labels),
+        order_no = if_else(n_obs < 30, NA_integer_, order_no)
+      )
     
-    # 4) top_n si aplica
+    # ---- 4) top_n si aplica ----
     if (is.finite(b$top_n)) {
       df_plot <- df_plot %>% slice_head(n = b$top_n)
     }
     
     df_plot
-    
   })
   
   names(out) <- vapply(params$blocks, `[[`, character(1), "id")
   out
-  
 }
 
 # ===================================
@@ -371,6 +387,21 @@ render_bars_plots <- function(
 
 tables_drm <- function(data) {
   
+  # 1) número de observaciones por variable (no NA)
+  n_obs_df <- data %>%
+    summarise(
+      across(
+        starts_with("drm"),
+        ~ sum(!is.na(.x))
+      )
+    ) %>%
+    pivot_longer(
+      everything(),
+      names_to  = "variable",
+      values_to = "n_obs"
+    )
+  
+  # 2) medias por variable
   data %>%
     summarise(
       across(
@@ -383,6 +414,8 @@ tables_drm <- function(data) {
       names_to  = "variable",
       values_to = "value"
     ) %>%
+    # unimos n_obs por variable
+    left_join(n_obs_df, by = "variable") %>%
     # excluimos drm_11 si no se quiere en el heatmap
     filter(!str_detect(variable, "drm_11")) %>%
     mutate(
@@ -433,6 +466,7 @@ tables_drm <- function(data) {
       )
     )
 }
+
 
 plot_drm_heatmap <- function(DRM_results,
                              outfile = file.path(path2SP, "output/drm_heatmap.svg"),

@@ -40,7 +40,11 @@ plot_sankey_drm <- function(data) {
     dplyr::mutate(
       total = sum(count),
       national_avg = count / total
+    ) %>%
+    mutate(
+      national_avg = if_else(total < 30, NA_real_, national_avg)
     )
+  
   
   # Stage 2 Data
   sankey_data_stage_2 <- sankey_wrangling %>% 
@@ -56,6 +60,9 @@ plot_sankey_drm <- function(data) {
     dplyr::mutate(
       total = sum(count),
       national_avg = count / total
+    ) %>%
+    mutate(
+      national_avg = if_else(total < 30, NA_real_, national_avg)
     )
   
   # Stage 0 Data
@@ -69,6 +76,9 @@ plot_sankey_drm <- function(data) {
     dplyr::mutate(
       total = sum(count),
       national_avg = count / total
+    ) %>%
+    mutate(
+      national_avg = if_else(total < 30, NA_real_, national_avg)
     ) %>%
     mutate(
       sankey_drm_stage_0 = if_else(
