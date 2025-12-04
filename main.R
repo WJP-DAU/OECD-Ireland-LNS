@@ -177,3 +177,4 @@ tables_outline <- c(tables, multi_response_bars_tables, drm_process)
 openxlsx::write.xlsx(tables_outline, 
                      file.path(path2SP, "tables_outline.xlsx"))
 print("Tables outline saved to 'tables_outline.xlsx'")
+
