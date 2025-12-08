@@ -34,7 +34,7 @@ else {
 
 *-------- Defining path to Data and DoFiles:
 *global path2data "${path2SP}/Merged Files/Merged Final Files"
-global path2dos  "${path2SP}/"
+global path2dos  "${path2SP}/code"
 
 	
 /*=================================================================================================================
@@ -277,6 +277,7 @@ forvalues i=1/17{
 }
 
 *----- Barriers to accessing professional help (Reasons)
+/*
 gen reason_no_need = 0 if appropriate_adviser==0
 replace reason_no_need =1 if AJD_noadvice_reason_1 ==1 | AJD_noadvice_reason_2 ==1 | AJD_noadvice_reason_3 ==1 | AJD_noadvice_reason_5 ==1 | AJD_noadvice_reason_6 ==1
 
@@ -300,7 +301,7 @@ replace reason_social = 1 if AJD_noadvice_reason_16==1
 
 gen reason_other = 0 if appropriate_adviser==0
 replace reason_other = 1 if AJD_noadvice_reason_17==1
-
+*/
 
 *----- Non-seekers' actions/intentions
 tab AJR_action, g(AJR_action_)
@@ -346,6 +347,14 @@ replace unknown_drm = 1 if AJR_noresol_reason_16 ==1 & (AJR_noresol_reason_7 == 
 	
 *----- Reasons for not accessing DRMs	
 *These are AJR_noresol_reason_1- AJR_noresol_reason_16. No further calculations needed
+
+
+*----- Fixing the denominator for the contacted mechanisms
+forvalues i=1/11 {
+	gen drm_`i' = .
+	replace drm_`i' = 0 if contacted_drm==0 & (AJR_noresol_reason_7 == 1 | AJR_noresol_reason_8 ==1 | AJR_noresol_reason_9 == 1  | AJR_noresol_reason_10 == 1 | AJR_noresol_reason_11 ==1 | AJR_noresol_reason_12 ==1 | AJR_noresol_reason_13 ==1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1 )
+	replace drm_`i' = 1 if AJR_drm_`i'==1
+}
 
 
 *----- Efficiency by each mechanism
@@ -398,7 +407,43 @@ gen drm_11_help = AJR_drm_11_h
 recode drm_11_help(1 2 = 1) (3 4 = 0) (5 6 = .)
 
 
-*----- Procedural Fairness in the Resolution PENDING
+*----- Procedural Fairness in the Resolution
+
+*Outcome
+forvalues i=1/9 {
+	gen drm_res_`i'_outcome = AJR_drm_res_`i'_a
+	recode drm_res_`i'_outcome (1 = 1) (2 = 0) (3 4 = .)
+}
+
+gen drm_res_11_outcome = AJR_drm_res_11_a
+recode drm_res_11_outcome (1 = 1) (2 = 0) (3 4 = .)
+
+*Appeal
+forvalues i=1/9 {
+	gen drm_res_`i'_ap = AJR_drm_res_`i'_b
+	recode drm_res_`i'_ap (1 = 1) (2 = 0) (3 4 = .)
+}
+
+gen drm_res_11_ap = AJR_drm_res_11_b
+recode drm_res_11_ap (1 = 1) (2 = 0) (3 4 = .)
+
+*Lawyer representation
+forvalues i=1/9 {
+	gen drm_res_`i'_rep = AJR_drm_res_`i'_c
+	recode drm_res_`i'_rep (1 = 1) (2 = 0) (3 4 = .)
+}
+
+gen drm_res_11_rep = AJR_drm_res_11_c
+recode drm_res_11_rep (1 = 1) (2 = 0) (3 4 = .)
+
+*Other representation
+forvalues i=1/9 {
+	gen drm_res_`i'_oth = AJR_drm_res_`i'_d
+	recode drm_res_`i'_oth (1 = 1) (2 = 0) (3 4 = .)
+}
+
+gen drm_res_11_oth = AJR_drm_res_11_d
+recode drm_res_11_oth (1 = 1) (2 = 0) (3 4 = .)
 
 
 *----- Issue resolution
@@ -426,6 +471,7 @@ replace timeliness = 0 if diff_months>12 & diff_months!=.
 gen fair_process = AJR_fair
 recode fair_process (2=0) 
  
+
 *----- Outcome
 gen outcome = AJR_status
 recode outcome (4 5 = .)
@@ -472,6 +518,14 @@ foreach v in legal_rights infosource expert_help fair_outcome {
 }
 
 
+*----- Prevalence of disputes - HIGH IMPACT
+
+gen had_dispute_hi=had_dispute
+replace had_dispute_hi=0 if level_impact==0
+
+gen had_dispute_hi_n = had_dispute_hi
+
+
 *------ Demographics
 
 *Gender
@@ -510,220 +564,287 @@ recode income2 (5=.)
 					3. Export data
 =====================================================================================================================================*/
 
-#delimit ;
-global a2j "
-had_dispute 
-ndisputes
-land neighbors housing family injury citizenship gov public_services products services MoneyDebt employment
-access2info
-access2rep 
-contact_adviser no_contact_adviser
-appropriate_adviser no_appropriate_adviser
-AJD_adviser_1_bin AJD_adviser_2_bin AJD_adviser_3_bin AJD_adviser_4_bin AJD_adviser_5_bin AJD_adviser_6_bin AJD_adviser_7_bin AJD_adviser_8_bin AJD_adviser_9_bin AJD_adviser_10_bin AJD_adviser_11_bin AJD_adviser_12_bin AJD_adviser_13_bin AJD_adviser_14_bin AJD_adviser_15_bin AJD_adviser_16_bin AJD_adviser_17_bin
-adviser_help_1 adviser_help_2 adviser_help_3 adviser_help_4 adviser_help_5 adviser_help_6 adviser_help_7 adviser_help_8 adviser_help_9 adviser_help_10 adviser_help_11 adviser_help_12 adviser_help_13 adviser_help_14 adviser_help_15 adviser_help_16 adviser_help_17
-reason_no_need reason_had_help reason_info_bar reason_relation_bar reason_psycho_bar reason_prior reason_social reason_other
-AJD_noadvice_reason_1 AJD_noadvice_reason_2 AJD_noadvice_reason_3 AJD_noadvice_reason_4 AJD_noadvice_reason_5 AJD_noadvice_reason_6 AJD_noadvice_reason_7 AJD_noadvice_reason_8 AJD_noadvice_reason_9 AJD_noadvice_reason_10 AJD_noadvice_reason_11 AJD_noadvice_reason_12 AJD_noadvice_reason_13 AJD_noadvice_reason_14 AJD_noadvice_reason_15 AJD_noadvice_reason_16 AJD_noadvice_reason_17
-AJR_action_1 AJR_action_2 AJR_action_3 AJR_action_4
-AJR_noaction_1 AJR_noaction_2 AJR_noaction_3 AJR_noaction_4 AJR_noaction_5 AJR_noaction_6 AJR_noaction_7 AJR_noaction_8 AJR_noaction_9 AJR_noaction_10 AJR_noaction_11 AJR_noaction_12 AJR_noaction_13
-access2drm
-contacted_drm
-needed_drm
-no_need_drm
-unknown_drm
-AJR_drm_1_bin AJR_drm_2_bin AJR_drm_3_bin AJR_drm_4_bin AJR_drm_5_bin AJR_drm_6_bin AJR_drm_7_bin AJR_drm_8_bin AJR_drm_9_bin AJR_drm_10_bin AJR_drm_11_bin
-AJR_noresol_reason_1 AJR_noresol_reason_2 AJR_noresol_reason_3 AJR_noresol_reason_4 AJR_noresol_reason_5 AJR_noresol_reason_6 AJR_noresol_reason_7 AJR_noresol_reason_8 AJR_noresol_reason_9 AJR_noresol_reason_10 AJR_noresol_reason_11 AJR_noresol_reason_12 AJR_noresol_reason_13 AJR_noresol_reason_14 AJR_noresol_reason_15 AJR_noresol_reason_16
-drm_1_eff drm_2_eff drm_3_eff drm_4_eff drm_5_eff drm_6_eff drm_7_eff drm_8_eff drm_9_eff drm_11_eff 
-drm_1_fair drm_2_fair drm_3_fair drm_4_fair drm_5_fair drm_6_fair drm_7_fair drm_8_fair drm_9_fair drm_11_fair 
-drm_1_aff drm_2_aff drm_3_aff drm_4_aff drm_5_aff drm_6_aff drm_7_aff drm_8_aff drm_9_aff drm_11_aff 
-drm_1_dur drm_2_dur drm_3_dur drm_4_dur drm_5_dur drm_6_dur drm_7_dur drm_8_dur drm_9_dur drm_11_dur 
-drm_1_help drm_2_help drm_3_help drm_4_help drm_5_help drm_6_help drm_7_help drm_8_help drm_9_help drm_11_help
-diff_months timeliness 
-fair_process outcome_1 outcome_2 outcome_3 outcome_done
-had_hardship
-hardship_1 hardship_2 hardship_3 hardship_4 hardship_5 hardship_6 hardship_7 hardship_8 hardship_9 hardship_10 hardship_11 hardship_12 hardship_13 hardship_14 hardship_15 hardship_16
-legal_rights infosource expert_help fair_outcome
-" ;
-;
-#delimit cr
-
-* Total sample counts - Country
-preserve
-
-gen cont=1
-
-collapse (sum) cont
-
-save "${path2SP}\data\counts_a2j_path.dta", replace
-
-restore
+*----- Run global.do (creates global for all indicators and counts)
+do "${path2dos}\globals.do"
 
 
 *----- Country level  
 
 preserve
-collapse (mean) $a2j
+collapse (mean) $a2j (count) $a2j_n 
 
-export excel using "${path2SP}\data\reports_replication.xlsx", replace firstrow(var) sheet("Overall")
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
+
+drop $a2j_n
+
+do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\reports_replication.xlsx", replace firstrow(varl) sheet("Overall")
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Overall") modify
-putexcel A2:GY2, overwri nformat("0%") 
+putexcel A2:IG2, overwri nformat("0%") 
 putexcel B2:B10, overwri nformat("0")
-putexcel FW2:FW10, overwri nformat("0")
-putexcel A1:GY1, overwri bold hcenter txtwrap
+putexcel HF2:HF10, overwri nformat("0")
+putexcel A1:IG1, overwri bold hcenter txtwrap
 
 restore
 
 
 *----- Gender
+
 preserve
 
-collapse (mean) $a2j , by(gend2)
+collapse (mean) $a2j (count) $a2j_n  , by(gend2)
 
 drop if gend2==.
+
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
+
+drop $a2j_n
+
+do "${path2dos}\labels.do"
 
 label define gend2 1 "Male" 2 "Female"
 label values gend2 gend2
 
-export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(var) sheet("Gender") 
+export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Gender") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Gender") modify
-putexcel B2:GY210, overwri nformat("0%") 
+putexcel B2:IH210, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel FX2:FX10, overwri nformat("0")
-putexcel A1:GY1, overwri bold hcenter txtwrap
+putexcel HG2:HG10, overwri nformat("0")
+putexcel A1:IH1, overwri bold hcenter txtwrap
 
 restore
 
 
 *----- Age group
+
 preserve
 
-collapse (mean) $a2j, by(age_g)
+collapse (mean) $a2j (count) $a2j_n , by(age_g)
+
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
+
+drop $a2j_n
+
+do "${path2dos}\labels.do"
 
 label define age 1 "18-24" 2 "25-34" 3 "35-44" 4 "45-54" 5 "55-64" 6 "+65"
 label values age_g age	
 
-export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(var) sheet("Age") 
+export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Age") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Age") modify
-putexcel B2:GY10, overwri nformat("0%") 
+putexcel B2:IH10, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel FX2:FX10, overwri nformat("0")
-putexcel A1:GY1, overwri bold hcenter txtwrap
+putexcel HG2:HG10, overwri nformat("0")
+putexcel A1:IH1, overwri bold hcenter txtwrap
 
 restore
 
 
 *----- Education level 
+
 preserve
 
-collapse (mean) $a2j, by(edu_2)
+collapse (mean) $a2j (count) $a2j_n , by(edu_2)
+
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
+
+drop $a2j_n
+
+do "${path2dos}\labels.do"
 
 
-export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(var) sheet("Edu") 
+export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Edu") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Edu") modify
-putexcel B2:GY10, overwri nformat("0%") 
+putexcel B2:IH10, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel FX2:FX10, overwri nformat("0")
-putexcel A1:GY1, overwri bold hcenter txtwrap
+putexcel HG2:HG10, overwri nformat("0")
+putexcel A1:IH1, overwri bold hcenter txtwrap
 
 restore
 
 
 *----- Income 
+
 preserve
 
-collapse (mean) $a2j, by(income2)
+collapse (mean) $a2j (count) $a2j_n , by(income2)
 
+drop if income2==.
 
-export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(var) sheet("Income") 
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
+
+drop $a2j_n
+
+label define income2 1 "< €30k a year" 2 "€30k – €70 a year" 3 "€70k – €120k a year" 4 "> €120k a year"
+label values income2 income2  
+
+do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Income") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Income") modify
-putexcel B2:GY10, overwri nformat("0%") 
+putexcel B2:IH10, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel FX2:FX10, overwri nformat("0")
-putexcel A1:GY1, overwri bold hcenter txtwrap
+putexcel HG2:HG10, overwri nformat("0")
+putexcel A1:IH1, overwri bold hcenter txtwrap
 
 restore
 
 
 *----- Region 
+
 preserve
 
-collapse (mean) $a2j, by(region)
+collapse (mean) $a2j (count) $a2j_n , by(region)
 
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
 
-export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(var) sheet("Region") 
+drop $a2j_n
+
+do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Region") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Region") modify
-putexcel B2:GY10, overwri nformat("0%") 
+putexcel B2:IH10, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel FX2:FX10, overwri nformat("0")
-putexcel A1:GY1, overwri bold hcenter txtwrap
+putexcel HG2:HG10, overwri nformat("0")
+putexcel A1:IH1, overwri bold hcenter txtwrap
 
 restore
 
 
 *----- Disability
+
 preserve
 
-collapse (mean) $a2j, by(disability2)
+collapse (mean) $a2j (count) $a2j_n , by(disability2)
 
+drop if disability2==""
 
-export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(var) sheet("Disability") 
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
+
+drop $a2j_n
+
+do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Disability") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Disability") modify
-putexcel B2:GY10, overwri nformat("0%") 
+putexcel B2:IH10, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel FX2:FX10, overwri nformat("0")
-putexcel A1:GY1, overwri bold hcenter txtwrap
+putexcel HG2:HG10, overwri nformat("0")
+putexcel A1:IH1, overwri bold hcenter txtwrap
 
 restore
 
 
-*----- Impact level 
+*----- Impact level
+ 
 preserve
 
-collapse (mean) $a2j, by(level_impact)
+collapse (mean) $a2j (count) $a2j_n , by(level_impact)
 
+drop if level_impact==.
 
-export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(var) sheet("Level of impact") 
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
+
+drop $a2j_n
+
+label define level_impact 0 "Low impact" 1 "High impact"
+label values level_impact level_impact
+
+do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Level of impact") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Level of impact") modify
-putexcel B2:GY10, overwri nformat("0%") 
+putexcel B2:IH10, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel FX2:FX10, overwri nformat("0")
-putexcel A1:GY1, overwri bold hcenter txtwrap
+putexcel HG2:HG10, overwri nformat("0")
+putexcel A1:IH1, overwri bold hcenter txtwrap
 
 restore
 
 
 *----- Co-occurrent problems
+
 preserve
 
-collapse (mean) $a2j, by(cooccurence_group)
+collapse (mean) $a2j (count) $a2j_n , by(cooccurence_group)
 
+drop if cooccurence_group==.
 
-export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(var) sheet("Co-occurrance") 
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
+
+drop $a2j_n
+
+label define cooccurence_group 1 "1 problem" 2 "2-3 problems" 3 "4-5 problems" 4 "5 or more problems"
+label values cooccurence_group cooccurence_group
+
+do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Co-occurrance") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Co-occurrance") modify
-putexcel B2:GY10, overwri nformat("0%") 
+putexcel B2:IH10, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel FX2:FX10, overwri nformat("0")
-putexcel A1:GY1, overwri bold hcenter txtwrap
+putexcel HG2:HG10, overwri nformat("0")
+putexcel A1:IH1, overwri bold hcenter txtwrap
 
 restore
 
 
 *----- Ethnicity
+
 preserve
 
-collapse (mean) $a2j, by(ethnic_majority)
+collapse (mean) $a2j (count) $a2j_n , by(ethnic_majority)
 
+drop if ethnic_majority==""
 
-export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(var) sheet("Ethnicity") 
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
+
+drop $a2j_n
+
+do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Ethnicity") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Ethnicity") modify
-putexcel B2:GY10, overwri nformat("0%") 
+putexcel B2:IH10, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel FX2:FX10, overwri nformat("0")
-putexcel A1:GY1, overwri bold hcenter txtwrap
+putexcel HG2:HG10, overwri nformat("0")
+putexcel A1:IH1, overwri bold hcenter txtwrap
 
 restore
 
 
-	
 /*=====================================================================================================================================
 					4. Sub-sample (high impact problems)
 =====================================================================================================================================*/
@@ -735,184 +856,319 @@ preserve
 
 keep if level_impact==1
 
-collapse (mean) $a2j
+collapse (mean) $a2j (count) $a2j_n
 
-export excel using "${path2SP}\data\reports_replication_high.xlsx", replace firstrow(var) sheet("Overall")
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
+
+drop $a2j_n
+
+do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\reports_replication_high.xlsx", replace firstrow(varl) sheet("Overall")
 putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Overall") modify
-putexcel A2:GY2, overwri nformat("0%") 
+putexcel A2:IG2, overwri nformat("0%") 
 putexcel B2:B10, overwri nformat("0")
-putexcel FW2:FW10, overwri nformat("0")
-putexcel A1:GY1, overwri bold hcenter txtwrap
+putexcel HF2:HF10, overwri nformat("0")
+putexcel A1:IG1, overwri bold hcenter txtwrap
 
 restore
 
 
 *----- Gender
+
 preserve
 
 keep if level_impact==1
 
-collapse (mean) $a2j , by(gend2)
+collapse (mean) $a2j (count) $a2j_n , by(gend2)
 
 drop if gend2==.
+
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
+
+drop $a2j_n
+
+do "${path2dos}\labels.do"
 
 label define gend2 1 "Male" 2 "Female"
 label values gend2 gend2
 
-export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(var) sheet("Gender") 
+export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(varl) sheet("Gender") 
 putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Gender") modify
-putexcel B2:GY210, overwri nformat("0%") 
+putexcel B2:IH210, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel FX2:FX10, overwri nformat("0")
-putexcel A1:GY1, overwri bold hcenter txtwrap
+putexcel HG2:HG10, overwri nformat("0")
+putexcel A1:IH1, overwri bold hcenter txtwrap
 
 restore
 
 
 *----- Age group
+
 preserve
 
 keep if level_impact==1
 
-collapse (mean) $a2j, by(age_g)
+collapse (mean) $a2j (count) $a2j_n , by(age_g)
+
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
+
+drop $a2j_n
+
+do "${path2dos}\labels.do"
 
 label define age 1 "18-24" 2 "25-34" 3 "35-44" 4 "45-54" 5 "55-64" 6 "+65"
 label values age_g age	
 
-export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(var) sheet("Age") 
+export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(varl) sheet("Age") 
 putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Age") modify
-putexcel B2:GY10, overwri nformat("0%") 
+putexcel B2:IH10, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel FX2:FX10, overwri nformat("0")
-putexcel A1:GY1, overwri bold hcenter txtwrap
+putexcel HG2:HG10, overwri nformat("0")
+putexcel A1:IH1, overwri bold hcenter txtwrap
 
 restore
 
 
 *----- Education level 
+
 preserve
 
 keep if level_impact==1
 
-collapse (mean) $a2j, by(edu_2)
+collapse (mean) $a2j (count) $a2j_n , by(edu_2)
+
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
+
+drop $a2j_n
+
+do "${path2dos}\labels.do"
 
 
-export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(var) sheet("Edu") 
+export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(varl) sheet("Edu") 
 putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Edu") modify
-putexcel B2:GY10, overwri nformat("0%") 
+putexcel B2:IH10, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel FX2:FX10, overwri nformat("0")
-putexcel A1:GY1, overwri bold hcenter txtwrap
+putexcel HG2:HG10, overwri nformat("0")
+putexcel A1:IH1, overwri bold hcenter txtwrap
 
 restore
 
 
 *----- Income 
+
 preserve
 
 keep if level_impact==1
 
-collapse (mean) $a2j, by(income2)
+collapse (mean) $a2j (count) $a2j_n , by(income2)
 
+drop if income2==.
 
-export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(var) sheet("Income") 
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
+
+drop $a2j_n
+
+label define income2 1 "< €30k a year" 2 "€30k – €70 a year" 3 "€70k – €120k a year" 4 "> €120k a year"
+label values income2 income2  
+
+do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(varl) sheet("Income") 
 putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Income") modify
-putexcel B2:GY10, overwri nformat("0%") 
+putexcel B2:IH10, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel FX2:FX10, overwri nformat("0")
-putexcel A1:GY1, overwri bold hcenter txtwrap
+putexcel HG2:HG10, overwri nformat("0")
+putexcel A1:IH1, overwri bold hcenter txtwrap
 
 restore
 
 
 *----- Region 
+
 preserve
 
 keep if level_impact==1
 
-collapse (mean) $a2j, by(region)
+collapse (mean) $a2j (count) $a2j_n , by(region)
 
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
 
-export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(var) sheet("Region") 
+drop $a2j_n
+
+do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(varl) sheet("Region") 
 putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Region") modify
-putexcel B2:GY10, overwri nformat("0%") 
+putexcel B2:IH10, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel FX2:FX10, overwri nformat("0")
-putexcel A1:GY1, overwri bold hcenter txtwrap
+putexcel HG2:HG10, overwri nformat("0")
+putexcel A1:IH1, overwri bold hcenter txtwrap
 
 restore
 
 
 *----- Disability
+
 preserve
 
 keep if level_impact==1
 
-collapse (mean) $a2j, by(disability2)
+collapse (mean) $a2j (count) $a2j_n , by(disability2)
 
+drop if disability2==""
 
-export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(var) sheet("Disability") 
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
+
+drop $a2j_n
+
+do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(varl) sheet("Disability") 
 putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Disability") modify
-putexcel B2:GY10, overwri nformat("0%") 
+putexcel B2:IH10, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel FX2:FX10, overwri nformat("0")
-putexcel A1:GY1, overwri bold hcenter txtwrap
+putexcel HG2:HG10, overwri nformat("0")
+putexcel A1:IH1, overwri bold hcenter txtwrap
 
 restore
 
 
-*----- Impact level 
+*----- Impact level
+ 
 preserve
 
 keep if level_impact==1
 
-collapse (mean) $a2j, by(level_impact)
+collapse (mean) $a2j (count) $a2j_n , by(level_impact)
 
+drop if level_impact==.
 
-export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(var) sheet("Level of impact") 
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
+
+drop $a2j_n
+
+label define level_impact 0 "Low impact" 1 "High impact"
+label values level_impact level_impact
+
+do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(varl) sheet("Level of impact") 
 putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Level of impact") modify
-putexcel B2:GY10, overwri nformat("0%") 
+putexcel B2:IH10, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel FX2:FX10, overwri nformat("0")
-putexcel A1:GY1, overwri bold hcenter txtwrap
+putexcel HG2:HG10, overwri nformat("0")
+putexcel A1:IH1, overwri bold hcenter txtwrap
 
 restore
 
 
 *----- Co-occurrent problems
+
 preserve
 
 keep if level_impact==1
 
-collapse (mean) $a2j, by(cooccurence_group)
+collapse (mean) $a2j (count) $a2j_n , by(cooccurence_group)
 
+drop if cooccurence_group==.
 
-export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(var) sheet("Co-occurrance") 
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
+
+drop $a2j_n
+
+label define cooccurence_group 1 "1 problem" 2 "2-3 problems" 3 "4-5 problems" 4 "5 or more problems"
+label values cooccurence_group cooccurence_group
+
+do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(varl) sheet("Co-occurrance") 
 putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Co-occurrance") modify
-putexcel B2:GY10, overwri nformat("0%") 
+putexcel B2:IH10, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel FX2:FX10, overwri nformat("0")
-putexcel A1:GY1, overwri bold hcenter txtwrap
+putexcel HG2:HG10, overwri nformat("0")
+putexcel A1:IH1, overwri bold hcenter txtwrap
 
 restore
 
 
 *----- Ethnicity
+
 preserve
 
 keep if level_impact==1
 
-collapse (mean) $a2j, by(ethnic_majority)
+collapse (mean) $a2j (count) $a2j_n , by(ethnic_majority)
 
+drop if ethnic_majority==""
 
-export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(var) sheet("Ethnicity") 
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
+
+drop $a2j_n
+
+do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(varl) sheet("Ethnicity") 
 putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Ethnicity") modify
-putexcel B2:GY10, overwri nformat("0%") 
+putexcel B2:IH10, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel FX2:FX10, overwri nformat("0")
-putexcel A1:GY1, overwri bold hcenter txtwrap
+putexcel HG2:HG10, overwri nformat("0")
+putexcel A1:IH1, overwri bold hcenter txtwrap
 
 restore
+
+
+
+/*
+*----- Prevalence HIGH IMPACT
+
+preserve
+
+collapse (mean) had_dispute_hi (count) had_dispute_hi_n , by(gend2 age_g edu_2 income2 region disability2 level_impact cooccurence_group ethnic_majority)
+
+replace 
+
+do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(varl) sheet("Ethnicity") 
+putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Ethnicity") modify
+putexcel B2:IH10, overwri nformat("0%") 
+putexcel C2:C10, overwri nformat("0")
+putexcel HG2:HG10, overwri nformat("0")
+putexcel A1:IH1, overwri bold hcenter txtwrap
+
+restore
+*/
 
 
 
