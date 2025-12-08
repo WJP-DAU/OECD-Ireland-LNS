@@ -37,6 +37,9 @@ plot_sankey_advice <- function(data) {
     dplyr::mutate(
       total = sum(count),
       national_avg = count / total
+    ) %>%
+    mutate(
+      national_avg = if_else(total < 30, NA_real_, national_avg)
     )
   
   # Stage 2 Data
@@ -50,6 +53,9 @@ plot_sankey_advice <- function(data) {
     dplyr::mutate(
       total = sum(count),
       national_avg = count / total
+    ) %>%
+    mutate(
+      national_avg = if_else(total < 30, NA_real_, national_avg)
     )
   
   # Stage 3 Data
