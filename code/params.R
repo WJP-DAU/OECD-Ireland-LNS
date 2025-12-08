@@ -95,7 +95,19 @@ groupbars_params <- function() {
   # Here you can add a new variable 
   
   measures <- list(
-    add_measure("prevalence",    prevalence,    "basic"),
+    add_measure("prevalence",   prevalence,    "basic"),
+    add_measure("problem_cat_land",      problem_cat_land,      "basic"),
+    add_measure("problem_cat_neighbors", problem_cat_neighbors, "basic"),
+    add_measure("problem_cat_housing",   problem_cat_housing,   "basic"),
+    add_measure("problem_cat_family",    problem_cat_family,    "basic"),
+    add_measure("problem_cat_injury",    problem_cat_injury,    "basic"),
+    add_measure("problem_cat_citizen",   problem_cat_citizen,   "basic"),
+    add_measure("problem_cat_gov",       problem_cat_gov,       "basic"),
+    add_measure("problem_cat_public",    problem_cat_public,    "basic"),
+    add_measure("problem_cat_products",  problem_cat_products,  "basic"),
+    add_measure("problem_cat_services",  problem_cat_services,  "basic"),
+    add_measure("problem_cat_money",     problem_cat_money,     "basic"),
+    add_measure("problem_cat_employment",problem_cat_employment,"basic"),
     add_measure("ndisputes",     ndisputes,     "basic"),
     add_measure("timeliness",    timeliness,    "extended"),
     add_measure("contacted_DRM", contacted_drm, "extended"),

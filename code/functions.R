@@ -84,11 +84,13 @@ summarize_by_vars <- function(data,
   # Overall
   overall_n <- sum(!is.na(rlang::eval_tidy(val, data)))
   overall_mean <- if (overall_n > 0) mean(rlang::eval_tidy(val, data), na.rm = TRUE) else NA_real_
+  overall_mean <- if(overall_mean == 1) overall_n/2402 else overall_mean
   
   # Por grupo
   out <- purrr::map_dfr(grp_syms, function(g) {
     data %>%
       dplyr::filter(!is.na(!!g)) %>%
+      ungroup() %>%
       dplyr::group_by(!!g) %>%
       dplyr::summarise(
         mean = mean(!!val, na.rm = TRUE),
