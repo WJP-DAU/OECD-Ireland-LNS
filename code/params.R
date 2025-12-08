@@ -105,7 +105,11 @@ groupbars_params <- function() {
     add_measure("fairness",      fair,          "extended"),
     add_measure("outcome_done",  outcome_done,  "extended"),
     add_measure("impact",        impact,        "basic"),
-    add_measure("had_hardship",  had_hardship,  "basic")
+    add_measure("had_hardship",  had_hardship,  "basic"),
+    add_measure("legal_rights",  legal_rights,  "basic"),
+    add_measure("access2info2",  access2info,   "basic"),
+    add_measure("expert_help",   expert_help,   "basic"),
+    add_measure("fair_outcome",  fair_outcome,  "basic")
   )
   
   list(
@@ -269,35 +273,35 @@ build_bars_params <- function() {
     description_resol = c(
       "A court judgment",
       "A tribunal decision",
-      "A decision/direction by\nanother type of authority",
-      "As a result of another type of mediation,\nconciliation or other dispute resolution,\nincluding using a complaints process",
-      "Following exchanges between lawyers\nacting on behalf of one or more parties",
-      "Following the intervention\nof a third person",
-      "Reached an agreement without any\nassistance of a lawyer or third person",
-      "Got what I wanted without\nhaving to do anything",
-      "Made changes to avoid the issue\n(e.g. changed job, housing)",
-      "Gave up trying to do anything \nand nothing further happened",
+      "A decision by\nanother type of\nauthority",
+      "Another type of\ndispute resolution",
+      "Exchanges\nbetween lawyers",
+      "Intervention\nof a third person",
+      "Reached an agreement\nwithout any assistance\nof a third person",
+      "Got what they\nwanted without\nhaving to do anything",
+      "Made changes to\navoid the issue",
+      "Gave up trying\nto do anything",
       "Some other way"
     ),
     
     #Types of hardships
     hardships = c(
-      "Health difficulties \nor injury",
-      "Stress or emotional strain",
-      "Damage to personal \nor family relationships",
+      "Health difficulties\nor injury",
+      "Stress or\nemotional strain",
+      "Damage to\nrelationships",
       "Being threatened or\nfeeling unsafe",
       "Damage to property",
-      "Changes to your housing\n situation",
+      "Changes to housing\nsituation",
       "Loss of employment",
       "Loss of money",
-      "Loss of confidence or fear",
-      "Deterioration in \nmental health",
-      "Feeling isolated or \nloss of support networks",
-      "Use of addictive substances",
-      "Delay or disruption to\neducation or training",
-      "Delay or disruption in\naccessing public services",
-      "Finding everyday activities more difficult",
-      "Feeling less trust \nin public institutions"
+      "Loss of confidence",
+      "Deterioration in\nmental health",
+      "Feeling isolated",
+      "Use of substances",
+      "Disruption to\neducation",
+      "Disruption of public\nservices",
+      "Finding everyday\nactivities difficult",
+      "Less trust in\npublic institutions"
     )
   )
   
@@ -353,8 +357,8 @@ build_bars_params <- function() {
       top_n = Inf
     ),
     add_mr_block(
-      id = "drm_contacted",
-      cols = paste0("AJR_drm_", 1:11, "_bin"),
+      id = "drm",
+      cols = paste0("AJR_drm_", 1:11,"_bin"),
       labels_vec_id = "drm",
       top_n = Inf
     ),

@@ -354,7 +354,23 @@ wrangle_ireland_lns <- function(master_data) {
            AJR_drm_9_bin == 0 & AJR_drm_11_bin == 0) ~ 0
       ),
       
-      # Eficiency/Fairness/Affordability/Duration/Helpfulness by mechanism
+      #Fixing the denominator for the contacted mechanisms
+      across(
+        c(AJR_drm_1_bin, AJR_drm_2_bin, AJR_drm_3_bin, AJR_drm_4_bin, 
+          AJR_drm_5_bin, AJR_drm_6_bin, AJR_drm_7_bin, AJR_drm_8_bin,
+          AJR_drm_9_bin, AJR_drm_11_bin
+          ),
+        ~ case_when(
+          .x == 1 ~ 1,
+          contacted_drm == 0 &
+          (AJR_noresol_reason_7 == 1 | AJR_noresol_reason_8 == 1 | AJR_noresol_reason_9 == 1 |
+           AJR_noresol_reason_10 == 1 | AJR_noresol_reason_11 == 1 | AJR_noresol_reason_12 == 1 |
+           AJR_noresol_reason_13 == 1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1
+           ) ~ 0
+          )
+      ),
+      
+      # Efficiency/Fairness/Affordability/Duration/Helpfulness by mechanism
       across(
         c(AJR_drm_1_c, AJR_drm_2_c, AJR_drm_3_c, AJR_drm_4_c, AJR_drm_5_c, AJR_drm_6_c,
           AJR_drm_7_c, AJR_drm_8_c, AJR_drm_9_c, AJR_drm_11_c),
@@ -410,6 +426,57 @@ wrangle_ireland_lns <- function(master_data) {
         ),
         .names = "{str_remove(.col, 'AJR_')}_helpful_bin"
       ),
+      
+      # Outcome/Appeal/Representation/Another adviser by mechanism
+      across(
+        c(AJR_drm_res_1_a, AJR_drm_res_2_a, AJR_drm_res_3_a, AJR_drm_res_4_a,
+          AJR_drm_res_5_a, AJR_drm_res_6_a, AJR_drm_res_7_a, AJR_drm_res_8_a,
+          AJR_drm_res_9_a, AJR_drm_res_11_a),
+        \(x) case_when(
+          had_dispute == 0 ~ NA_real_,
+          x %in% c(1) ~ 1,
+          x %in% c(2) ~ 0,
+          x %in% c(3,4) ~ NA_real_
+        ),
+        .names = "{str_remove(.col, 'AJR_')}_outcome_bin"
+      ),
+      across(
+        c(AJR_drm_res_1_b, AJR_drm_res_2_b, AJR_drm_res_3_b, AJR_drm_res_4_b,
+          AJR_drm_res_5_b, AJR_drm_res_6_b, AJR_drm_res_7_b, AJR_drm_res_8_b,
+          AJR_drm_res_9_b, AJR_drm_res_11_b),
+        \(x) case_when(
+          had_dispute == 0 ~ NA_real_,
+          x %in% c(1) ~ 1,
+          x %in% c(2) ~ 0,
+          x %in% c(3,4) ~ NA_real_
+        ),
+        .names = "{str_remove(.col, 'AJR_')}_appeal_bin"
+      ),
+      across(
+        c(AJR_drm_res_1_c, AJR_drm_res_2_c, AJR_drm_res_3_c, AJR_drm_res_4_c,
+          AJR_drm_res_5_c, AJR_drm_res_6_c, AJR_drm_res_7_c, AJR_drm_res_8_c,
+          AJR_drm_res_9_c, AJR_drm_res_11_c),
+        \(x) case_when(
+          had_dispute == 0 ~ NA_real_,
+          x %in% c(1) ~ 1,
+          x %in% c(2) ~ 0,
+          x %in% c(3,4) ~ NA_real_
+        ),
+        .names = "{str_remove(.col, 'AJR_')}_rep_bin"
+      ),
+      across(
+        c(AJR_drm_res_1_d, AJR_drm_res_2_d, AJR_drm_res_3_d, AJR_drm_res_4_d,
+          AJR_drm_res_5_d, AJR_drm_res_6_d, AJR_drm_res_7_d, AJR_drm_res_8_d,
+          AJR_drm_res_9_d, AJR_drm_res_11_d),
+        \(x) case_when(
+          had_dispute == 0 ~ NA_real_,
+          x %in% c(1) ~ 1,
+          x %in% c(2) ~ 0,
+          x %in% c(3,4) ~ NA_real_
+        ),
+        .names = "{str_remove(.col, 'AJR_')}_oth_bin"
+      ),
+      
       
       # Issue resolution
       AJR_settle_resol_1 = if_else(AJR_settle_resol==1,1,0,missing=NA),

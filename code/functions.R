@@ -417,7 +417,8 @@ tables_drm <- function(data) {
     # unimos n_obs por variable
     left_join(n_obs_df, by = "variable") %>%
     # excluimos drm_11 si no se quiere en el heatmap
-    filter(!str_detect(variable, "drm_11")) %>%
+    filter(!str_detect(variable, "drm_11"), 
+           !str_detect(variable, "drm_res")) %>%
     mutate(
       category = case_when(
         str_detect(variable, "efficiency") ~ "Efficient\nprocess",
@@ -550,6 +551,159 @@ plot_drm_heatmap <- function(DRM_results,
   )
   
   return(p_drm_heatmap)
+}
+
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+##
+## 4.1 Heatmap function (second section DRMs)                                                                                 ----
+##
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+tables_drm2 <- function(data) {
+  
+  data %>%
+    summarise(
+      across(
+        starts_with("drm_res"),
+        ~ mean(.x, na.rm = TRUE)
+      )
+    ) %>%
+    pivot_longer(
+      everything(),
+      names_to  = "variable",
+      values_to = "value"
+    ) %>%
+    # excluimos drm_11 si no se quiere en el heatmap
+    filter(!str_detect(variable, "drm_res_11")) %>%
+    mutate(
+      category = case_when(
+        str_detect(variable, "outcome") ~ "Written\noutcome",
+        str_detect(variable, "appeal")   ~ "Appeal\nrights",
+        str_detect(variable, "rep") ~ "Lawyer\nrepresentation",
+        str_detect(variable, "oth")   ~ "Other adviser\nrepresentation",
+      ),
+      actor = case_when(
+        str_detect(variable, "drm_res_1") ~ "Court",
+        str_detect(variable, "drm_res_2") ~ "Tribunal",
+        str_detect(variable, "drm_res_3") ~ "Ombudsman",
+        str_detect(variable, "drm_res_4") ~ "Police",
+        str_detect(variable, "drm_res_5") ~ "Formal\nmediation",
+        str_detect(variable, "drm_res_6") ~ "Lawyer",
+        str_detect(variable, "drm_res_7") ~ "Government\ndepartment",
+        str_detect(variable, "drm_res_8") ~ "Community\nleader",
+        str_detect(variable, "drm_res_9") ~ "Other DRM"
+      )
+    ) %>%
+    # ordenamos factores (categorías y actores)
+    mutate(
+      category = factor(
+        category,
+        levels = c(
+          "Written\noutcome",
+          "Appeal\nrights",
+          "Lawyer\nrepresentation",
+          "Other adviser\nrepresentation"
+        )
+      ),
+      actor = factor(
+        actor,
+        levels = c(
+          "Other DRM",
+          "Community\nleader",
+          "Government\ndepartment",
+          "Lawyer",
+          "Formal\nmediation",
+          "Police",
+          "Ombudsman",
+          "Tribunal",
+          "Court"
+        )
+      )
+    )
+}
+
+plot_drm_heatmap2 <- function(DRM_results2,
+                             outfile = file.path(path2SP, "output/drm2_heatmap.svg"),
+                             width  = 300,
+                             height = 250) {
+  
+  # 1) Rango dinámico (excluyendo NA)
+  min_val2 <- min(DRM_results2$value, na.rm = TRUE)
+  max_val2 <- max(DRM_results2$value, na.rm = TRUE)
+  
+  # 2) Función interna para el color del texto (contraste)
+  text_color <- function(val) {
+    # punto medio del rango observado
+    mid <- min_val2 + (max_val2 - min_val2) / 2
+    ifelse(val > mid, "white", "#1a1a1a")
+  }
+  
+  # 3) Construir el heatmap
+  p_drm_heatmap2 <- ggplot(
+    DRM_results2,
+    aes(x = category, y = actor, fill = value)
+  ) +
+    geom_tile(color = "white", linewidth = 0.8) +
+    
+    # Texto dentro de cada celda con contraste dinámico
+    geom_text(
+      aes(
+        label = scales::percent(value, accuracy = 1),
+        color = text_color(value)
+      ),
+      size = 4,
+      fontface = "bold",
+      family = "inter"
+    ) +
+    scale_color_identity() +   # permite usar los colores tal cual vienen de text_color()
+    
+    # Gradiente dinámico basado en min/max observados
+    scale_fill_gradient(
+      name   = "Share",
+      limits = c(min_val2, max_val2),
+      labels = scales::percent_format(accuracy = 1),
+      low    = "#E3E4F5",    # tono claro de la marca
+      high   = "#575796"     # color de marca
+    ) +
+    scale_x_discrete(position = "top") +
+    labs(x = NULL, y = NULL) +
+    theme_minimal() +
+    theme(
+      legend.position = "none",  # sin leyenda
+      axis.text.x.top = element_text(
+        angle  = 0,
+        hjust  = 0.5,
+        family = "inter",
+        face   = "bold",
+        size   = 12
+      ),
+      axis.text.y = element_text(
+        family = "inter",
+        face   = "bold",
+        size   = 12,
+        hjust  = 0
+      ),
+      legend.title = element_text(
+        family = "inter",
+        face   = "bold"
+      ),
+      legend.text = element_text(
+        family = "inter"
+      ),
+      panel.grid = element_blank()
+    )
+  
+  
+  ggsave(
+    plot    = p_drm_heatmap2,
+    filename = outfile,
+    device  = "svg",
+    width   = width,
+    height  = height,
+    units   = "mm"
+  )
+  
+  return(p_drm_heatmap2)
 }
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

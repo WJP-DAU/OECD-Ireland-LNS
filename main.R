@@ -174,6 +174,19 @@ drm_process <- list(
 
 p <- plot_drm_heatmap(data2drm)
 
+
+### Heatmap 2 - second section of DRMs
+data2drm2 <- tables_drm2(data_subset.df)
+
+drm_process2 <- list(
+  drm_process2 = data2drm2
+)
+
+
+p <- plot_drm_heatmap2(data2drm2)
+
+
+
 ## =========================================================
 ## Sankey Advice & Representation
 ## =========================================================
