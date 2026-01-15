@@ -567,6 +567,7 @@ recode income2 (5=.)
 *----- Run global.do (creates global for all indicators and counts)
 do "${path2dos}\globals.do"
 
+/*
 
 *----- Country level  
 
@@ -1148,28 +1149,188 @@ putexcel A1:IH1, overwri bold hcenter txtwrap
 restore
 
 
-
-/*
+*/
 *----- Prevalence HIGH IMPACT
+
+*----- Country level  
 
 preserve
 
-collapse (mean) had_dispute_hi (count) had_dispute_hi_n , by(gend2 age_g edu_2 income2 region disability2 level_impact cooccurence_group ethnic_majority)
+collapse (mean) had_dispute_hi
+//by(gend2 age_g edu_2 income2 region disability2 level_impact cooccurence_group ethnic_majority)
+*replace 
 
-replace 
+*do "${path2dos}\labels.do"
 
-do "${path2dos}\labels.do"
-
-export excel using "${path2SP}\data\reports_replication_high.xlsx", firstrow(varl) sheet("Ethnicity") 
-putexcel set "${path2SP}\data\reports_replication_high.xlsx", sheet("Ethnicity") modify
-putexcel B2:IH10, overwri nformat("0%") 
-putexcel C2:C10, overwri nformat("0")
-putexcel HG2:HG10, overwri nformat("0")
+export excel using "${path2SP}\data\prevalence_high.xlsx", firstrow(varl) sheet("Overall") replace
+putexcel set "${path2SP}\data\prevalence_high.xlsx", sheet("Overall") modify
+putexcel A2:IH10, overwri nformat("0%") 
+putexcel B2:B10, overwri nformat("0")
 putexcel A1:IH1, overwri bold hcenter txtwrap
 
 restore
-*/
+
+*----- Gender
+
+preserve
+
+collapse (mean) had_dispute_hi , by(gend2)
+
+drop if gend2==.
+
+//by(gend2 age_g edu_2 income2 region disability2 level_impact cooccurence_group ethnic_majority)
+*replace 
+
+*do "${path2dos}\labels.do"
+label define gend2 1 "Male" 2 "Female"
+label values gend2 gend2
+
+export excel using "${path2SP}\data\prevalence_high.xlsx", firstrow(varl) sheet("Gender")
+putexcel set "${path2SP}\data\prevalence_high.xlsx", sheet("Gender") modify
+putexcel B2:B10, overwri nformat("0%") 
+putexcel A1:IH1, overwri bold hcenter txtwrap
+
+restore
+
+*----- Age group
+
+preserve
+
+collapse (mean) had_dispute_hi, by(age_g)
 
 
+//by(gend2 age_g edu_2 income2 region disability2 level_impact cooccurence_group ethnic_majority)
+*replace 
+
+*do "${path2dos}\labels.do"
+label define age 1 "18-24" 2 "25-34" 3 "35-44" 4 "45-54" 5 "55-64" 6 "+65"
+label values age_g age	
+
+export excel using "${path2SP}\data\prevalence_high.xlsx", firstrow(varl) sheet("Age")
+putexcel set "${path2SP}\data\prevalence_high.xlsx", sheet("Age") modify 
+putexcel B2:B10, overwri nformat("0%")
+putexcel A1:IH1, overwri bold hcenter txtwrap
+
+restore
+
+*----- Education level 
+
+preserve
+
+collapse (mean) had_dispute_hi , by(edu_2)
+
+//by(gend2 age_g edu_2 income2 region disability2 level_impact cooccurence_group ethnic_majority)
+*replace 
+
+*do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\prevalence_high.xlsx", firstrow(varl) sheet("Edu")
+putexcel set "${path2SP}\data\prevalence_high.xlsx", sheet("Edu") modify
+putexcel B2:B10, overwri nformat("0%")
+putexcel A1:IH1, overwri bold hcenter txtwrap
+
+restore
+
+*----- Income 
+
+preserve
+
+collapse (mean) had_dispute_hi , by(income2)
+
+drop if income2==.
+
+//by(gend2 age_g edu_2 income2 region disability2 level_impact cooccurence_group ethnic_majority)
+*replace 
+
+*do "${path2dos}\labels.do"
+label define income2 1 "< €30k a year" 2 "€30k – €70 a year" 3 "€70k – €120k a year" 4 "> €120k a year"
+label values income2 income2  
+
+export excel using "${path2SP}\data\prevalence_high.xlsx", firstrow(varl) sheet("Income")
+putexcel set "${path2SP}\data\prevalence_high.xlsx", sheet("Income") modify
+putexcel B2:B10, overwri nformat("0%")
+putexcel A1:IH1, overwri bold hcenter txtwrap
+
+restore
+
+*----- Region 
+
+preserve
+
+collapse (mean) had_dispute_hi , by(region)
+
+
+//by(gend2 age_g edu_2 income2 region disability2 level_impact cooccurence_group ethnic_majority)
+*replace 
+
+*do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\prevalence_high.xlsx", firstrow(varl) sheet("Region")
+putexcel set "${path2SP}\data\prevalence_high.xlsx", sheet("Region") modify
+putexcel B2:B10, overwri nformat("0%")
+putexcel A1:IH1, overwri bold hcenter txtwrap
+
+restore
+
+*----- Disability
+
+preserve
+
+collapse (mean) had_dispute_hi, by(disability2)
+
+drop if disability2==""
+
+
+//by(gend2 age_g edu_2 income2 region disability2 level_impact cooccurence_group ethnic_majority)
+*replace 
+
+*do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\prevalence_high.xlsx", firstrow(varl) sheet("Disability")
+putexcel set "${path2SP}\data\prevalence_high.xlsx", sheet("Disability") modify
+putexcel B2:B10, overwri nformat("0%")
+putexcel A1:IH1, overwri bold hcenter txtwrap
+
+restore
+
+*----- Co-occurrent problems
+
+preserve
+
+collapse (mean) had_dispute_hi , by(cooccurence_group)
+
+drop if cooccurence_group==.
+
+//by(gend2 age_g edu_2 income2 region disability2 level_impact cooccurence_group ethnic_majority)
+*replace 
+
+*do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\prevalence_high.xlsx", firstrow(varl) sheet("Co-occurrance")
+putexcel set "${path2SP}\data\prevalence_high.xlsx", sheet("Co-occurrance") modify
+putexcel B2:B10, overwri nformat("0%")
+putexcel A1:IH1, overwri bold hcenter txtwrap
+
+restore
+
+*----- Ethnicity
+
+preserve
+
+collapse (mean) had_dispute_hi , by(ethnic_majority)
+
+drop if ethnic_majority==""
+
+//by(gend2 age_g edu_2 income2 region disability2 level_impact cooccurence_group ethnic_majority)
+*replace 
+
+*do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\prevalence_high.xlsx", firstrow(varl) sheet("Ethnicity")
+putexcel set "${path2SP}\data\prevalence_high.xlsx", sheet("Ethnicity") modify
+putexcel B2:B10, overwri nformat("0%")
+putexcel A1:IH1, overwri bold hcenter txtwrap
+
+restore
 
 

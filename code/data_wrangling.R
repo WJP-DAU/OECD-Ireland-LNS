@@ -513,8 +513,8 @@ wrangle_ireland_lns <- function(master_data) {
       
       # Outcome
       outcome_done = case_when(
-        AJR_status == 1 ~ NA_real_,
-        AJR_status == 2 ~ 0,
+        AJR_status == 1 ~ 0,
+        AJR_status == 2 ~ 1,
         AJR_status == 3 ~ 1,
         AJR_status %in% c(4,5) ~ NA_real_
       ),
