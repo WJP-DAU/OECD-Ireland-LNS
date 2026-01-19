@@ -89,8 +89,12 @@ groupbars_params <- function() {
       "cooccurence_group",
       "disability",
       "category",
-      "ethnic_majority")
-  )
+      "ethnic_majority"),
+    problem = select_groups(
+      full_group_cfg,
+      "category")
+    )
+  
   
   # Here you can add a new variable 
   
@@ -121,8 +125,55 @@ groupbars_params <- function() {
     add_measure("legal_rights",  legal_rights,  "basic"),
     add_measure("access2info2",  access2info,   "basic"),
     add_measure("expert_help",   expert_help,   "basic"),
-    add_measure("fair_outcome",  fair_outcome,  "basic")
+    add_measure("fair_outcome",  fair_outcome,  "basic"),
+    add_measure("AJD_noadvice_reason_6",  AJD_noadvice_reason_6,  "basic"),
+    add_measure("AJD_noadvice_reason_5",  AJD_noadvice_reason_5,  "basic"),
+    add_measure("AJD_noadvice_reason_3",  AJD_noadvice_reason_3,  "basic"),
+    add_measure("AJD_noadvice_reason_14", AJD_noadvice_reason_14, "basic"),
+    add_measure("AJD_noadvice_reason_10", AJD_noadvice_reason_10, "basic"),
+    add_measure("AJD_noadvice_reason_8",  AJD_noadvice_reason_8,  "basic"),
+    add_measure("AJD_noadvice_reason_1",  AJD_noadvice_reason_1,  "basic"),
+    add_measure("AJR_noaction_8",  AJR_noaction_8,  "basic"),
+    add_measure("AJR_noaction_4",  AJR_noaction_4,  "basic"),
+    add_measure("AJR_noaction_1",  AJR_noaction_1,  "basic"),
+    add_measure("AJR_noaction_5",  AJR_noaction_5,  "basic"),
+    add_measure("AJR_noaction_11", AJR_noaction_11,  "basic"),
+    add_measure("AJR_noaction_3",  AJR_noaction_3,  "basic"),
+    add_measure("AJR_noaction_9",  AJR_noaction_9,  "basic"),
+    add_measure("AJD_adviser_14",  AJD_adviser_14,  "basic"),
+    add_measure("AJD_adviser_17",  AJD_adviser_17,  "basic"),
+    add_measure("AJD_adviser_12",  AJD_adviser_12,  "basic"),
+    add_measure("AJD_adviser_15",  AJD_adviser_15,  "basic"),
+    add_measure("AJD_adviser_7",   AJD_adviser_7,  "basic"),
+    add_measure("AJD_adviser_16",  AJD_adviser_16,  "basic"),
+    add_measure("AJD_adviser_4",   AJD_adviser_4,  "basic"),
+    add_measure("AJD_noadvice_reason_6_p",  AJD_noadvice_reason_6,  "problem"),
+    add_measure("AJD_noadvice_reason_5_p",  AJD_noadvice_reason_5,  "problem"),
+    add_measure("AJD_noadvice_reason_3_p",  AJD_noadvice_reason_3,  "problem"),
+    add_measure("AJD_noadvice_reason_14_p", AJD_noadvice_reason_14, "problem"),
+    add_measure("AJD_noadvice_reason_10_p", AJD_noadvice_reason_10, "problem"),
+    add_measure("AJD_noadvice_reason_8_p",  AJD_noadvice_reason_8,  "problem"),
+    add_measure("AJD_noadvice_reason_1_p",  AJD_noadvice_reason_1,  "problem"),
+    add_measure("AJR_drm_6_bin_p",  AJR_drm_6_bin,  "problem"),
+    add_measure("AJR_drm_7_bin_p",  AJR_drm_7_bin,  "problem"),
+    add_measure("AJR_drm_4_bin_p",  AJR_drm_4_bin,  "problem"),
+    add_measure("AJR_drm_11_bin_p",  AJR_drm_11_bin,  "problem"),
+    add_measure("AJR_drm_8_bin_p",  AJR_drm_8_bin,  "problem"),
+    add_measure("impact_p",  impact,  "problem"),
+    add_measure("hardship_2_bin_p",   hardship_2_bin,  "problem"),
+    add_measure("hardship_8_bin_p",   hardship_8_bin,  "problem"),
+    add_measure("hardship_10_bin_p",  hardship_10_bin,  "problem"),
+    add_measure("hardship_9_bin_p",   hardship_9_bin,  "problem"),
+    add_measure("hardship_15_bin_p",  hardship_15_bin,  "problem"),
+    add_measure("hardship_16_bin_p",  hardship_16_bin,  "problem"),
+    add_measure("hardship_11_bin_p",  hardship_11_bin,  "problem"),
+    add_measure("legal_rights_p ",  legal_rights ,  "problem"),
+    add_measure("access2info2_p",  access2info,  "problem"),
+    add_measure("expert_help_p",  expert_help ,  "problem"),
+    add_measure("fair_outcome_p",  fair_outcome,  "problem")
+    
   )
+  
   
   list(
     full_group_cfg = full_group_cfg,

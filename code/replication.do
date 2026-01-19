@@ -567,7 +567,7 @@ recode income2 (5=.)
 *----- Run global.do (creates global for all indicators and counts)
 do "${path2dos}\globals.do"
 
-/*
+
 
 *----- Country level  
 
@@ -1149,7 +1149,7 @@ putexcel A1:IH1, overwri bold hcenter txtwrap
 restore
 
 
-*/
+
 *----- Prevalence HIGH IMPACT
 
 *----- Country level  
@@ -1330,6 +1330,38 @@ export excel using "${path2SP}\data\prevalence_high.xlsx", firstrow(varl) sheet(
 putexcel set "${path2SP}\data\prevalence_high.xlsx", sheet("Ethnicity") modify
 putexcel B2:B10, overwri nformat("0%")
 putexcel A1:IH1, overwri bold hcenter txtwrap
+
+restore
+
+
+
+*----- Breakdown by problems
+
+gen level_impact2=level_impact
+gen level_impact2_n=level_impact2
+
+global prob "AJD_noadvice_reason_1 AJD_noadvice_reason_2 AJD_noadvice_reason_3 AJD_noadvice_reason_4 AJD_noadvice_reason_5 AJD_noadvice_reason_6 AJD_noadvice_reason_7 AJD_noadvice_reason_8 AJD_noadvice_reason_9 AJD_noadvice_reason_10 AJD_noadvice_reason_11 AJD_noadvice_reason_12 AJD_noadvice_reason_13 AJD_noadvice_reason_14 AJD_noadvice_reason_15 AJD_noadvice_reason_16 AJD_noadvice_reason_17 drm_1 drm_2 drm_3 drm_4 drm_5 drm_6 drm_7 drm_8 drm_9 drm_10 drm_11 level_impact2 hardship_1 hardship_2 hardship_3 hardship_4 hardship_5 hardship_6 hardship_7 hardship_8 hardship_9 hardship_10 hardship_11 hardship_12 hardship_13 hardship_14 hardship_15 hardship_16 legal_rights infosource expert_help fair_outcome"
+
+preserve
+collapse (mean) $a2j level_impact2 (count) $a2j_n level_impact2_n, by(AJP_cat_selected)
+
+*Removing low counts: Less than 30
+foreach v in $a2j {
+	replace `v' = . if `v'_n<30
+}
+
+drop $a2j_n
+
+do "${path2dos}\labels.do"
+
+keep AJP_cat_selected $prob
+
+drop if AJP_cat_selected==.
+
+export excel using "${path2SP}\data\problems_breakdown.xlsx", replace firstrow(varl) sheet("Overall")
+putexcel set "${path2SP}\data\problems_breakdown.xlsx", sheet("Overall") modify
+putexcel A2:AX13, overwri nformat("0%") 
+putexcel A1:AX1, overwri bold hcenter txtwrap
 
 restore
 
