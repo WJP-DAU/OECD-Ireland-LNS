@@ -46,7 +46,7 @@ master_data <- read_dta(
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ##
-## 3.  Data wrangling (later to re-factor)                                                                  ----
+## 3.  Data wrangling                                                               ----
 ##
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -217,6 +217,37 @@ ggsave(
   width    = 400,
   height   = 225, 
   units = "mm", scale = 0.75
+)
+
+## =========================================================
+## Network graph co-ocurrence
+## =========================================================
+
+data2plot <- data_subset.df %>%
+  select(respondentid, tidyselect::matches("^problem_cat_.*[^0-9]$")) %>%
+  rename(
+    `Land`                 = problem_cat_land,
+    `Citizenship`          = problem_cat_citizen,
+    `Housing`              = problem_cat_housing,
+    `Employment`           = problem_cat_employment,
+    `Neighbors`            = problem_cat_neighbors,
+    `Family`               = problem_cat_family,
+    `Injury`               = problem_cat_injury,
+    `Government\nBenefits` = problem_cat_gov,
+    `Public\nServices`     = problem_cat_public,
+    `Products`             = problem_cat_products,
+    `Services`             = problem_cat_services,
+    `Money &\nDebt`        = problem_cat_money
+  )
+
+network_chart <- network_graph(data = data2plot)
+
+ggsave(
+  network_chart,
+  filename = file.path(path2SP, "output/network_graph.svg"),
+  width    = 17,
+  height   = 17, 
+  bg = "white"
 )
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
