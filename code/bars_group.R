@@ -51,9 +51,15 @@ plot_by_group <- function(data_frame,
     dplyr::mutate(
       grouping = dplyr::recode(grouping, !!!group_cfg),  # recodifica con group_cfg (no global)
       grouping = factor(grouping, levels = facet_order2),
-      label_value = dplyr::if_else(color == "primary", 
-                                   paste0(round(value * 100, 0), "%"), 
-                                   NA_character_)
+      label_value = dplyr::if_else(
+        color == "primary",
+        dplyr::if_else(
+          is.na(value),
+          "NA",
+          paste0(round(value * 100, 0), "%")
+        ),
+        NA_character_
+      )
     ) 
   
   # Grupos realmente presentes en los datos (tras recodificación)
@@ -133,7 +139,7 @@ plot_by_group <- function(data_frame,
   label_df <- tibble(
     label_html = "<span style='color:#575796;font-weight:700;font-style:italic;'><b><i>National Average</i></b></span>",
     x = 0,   # posición en X 
-    y = 2.275,   # arriba del panel
+    y = 1.75,   # arriba del panel
     grouping = first_group  # <-- clave: coincide con la faceta
   )
   
