@@ -716,7 +716,7 @@ plot_drm_heatmap2 <- function(DRM_results2,
 
 plot_coocurrence_bars <- function(tables,
                                   params,
-                                  filename    = file.path(path2SP, "output/drm_heatmap.svg"),
+                                  filename    = file.path(path2SP, "output/co_ocurrence.svg"),
                                   facet_order = NULL,
                                   width_mm    = 300,
                                   height_mm   = 280) {
