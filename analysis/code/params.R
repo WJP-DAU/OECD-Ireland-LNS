@@ -147,6 +147,15 @@ groupbars_params <- function() {
     add_measure("AJD_adviser_7",   AJD_adviser_7,  "basic"),
     add_measure("AJD_adviser_16",  AJD_adviser_16,  "basic"),
     add_measure("AJD_adviser_4",   AJD_adviser_4,  "basic"),
+    
+    add_measure("AJD_adviser_14_p",  AJD_adviser_14,  "problem"),
+    add_measure("AJD_adviser_17_p",  AJD_adviser_17,  "problem"),
+    add_measure("AJD_adviser_12_p",  AJD_adviser_12,  "problem"),
+    add_measure("AJD_adviser_15_p",  AJD_adviser_15,  "problem"),
+    add_measure("AJD_adviser_7_p",   AJD_adviser_7,  "problem"),
+    add_measure("AJD_adviser_16_p",  AJD_adviser_16,  "problem"),
+    add_measure("AJD_adviser_4_p",   AJD_adviser_4,  "problem"),
+    
     add_measure("AJD_noadvice_reason_6_p",  AJD_noadvice_reason_6,  "problem"),
     add_measure("AJD_noadvice_reason_5_p",  AJD_noadvice_reason_5,  "problem"),
     add_measure("AJD_noadvice_reason_3_p",  AJD_noadvice_reason_3,  "problem"),
