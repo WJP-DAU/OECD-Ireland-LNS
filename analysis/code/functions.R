@@ -472,7 +472,7 @@ tables_drm <- function(data) {
 
 
 plot_drm_heatmap <- function(DRM_results,
-                             outfile = file.path(path2SP, "output/drm_heatmap.svg"),
+                             outfile = file.path(path2SP, "analysis/output/drm_heatmap.svg"),
                              width  = 300,
                              height = 250) {
   
@@ -625,7 +625,7 @@ tables_drm2 <- function(data) {
 }
 
 plot_drm_heatmap2 <- function(DRM_results2,
-                             outfile = file.path(path2SP, "output/drm2_heatmap.svg"),
+                             outfile = file.path(path2SP, "analysis/output/drm2_heatmap.svg"),
                              width  = 300,
                              height = 250) {
   
@@ -710,13 +710,251 @@ plot_drm_heatmap2 <- function(DRM_results2,
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ##
-## 5. Co-ocurrence plot                                                                                 ----
+## 5. Panel plot — multiple indicators × multiple groupings                                               ----
+##
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+# Combines several groupbars tables into a single faceted panel grid.
+# Columns = indicators, rows = disaggregation groups.
+#
+# Arguments:
+#   tables           — named list from compute_groupbars_tables()
+#   indicator_ids    — character vector of table IDs to include (must exist in tables)
+#   indicator_labels — named vector id -> display label; if NULL, IDs are used as-is
+#   params           — full params object (uses full_group_cfg and levels_map)
+#   group_filters    — character vector of grouping keys from full_group_cfg,
+#                      e.g. c("gender", "age_group", "income").
+#                      Pass "Overall" to show national-average-only row.
+#   include_overall  — if TRUE, always prepend a national average row above the groups
+#   filename         — full output path (e.g. file.path(path2SP, "output/panel.svg"))
+#   width_mm / height_mm / scale — passed to ggsave()
+
+plot_panel_indicators <- function(
+    tables,
+    indicator_ids,
+    indicator_labels = NULL,
+    params,
+    group_filters    = "Overall",
+    include_overall  = TRUE,
+    filename,
+    width_mm         = 300,
+    height_mm        = 150,
+    scale            = 0.75
+) {
+  missing_ids <- setdiff(indicator_ids, names(tables))
+  if (length(missing_ids)) {
+    stop("IDs not found in tables: ", paste(missing_ids, collapse = ", "))
+  }
+
+  if (is.null(indicator_labels)) {
+    indicator_labels <- setNames(indicator_ids, indicator_ids)
+  }
+
+  # Separate "Overall" from real group keys
+  group_filters_clean <- setdiff(group_filters, "Overall")
+  show_overall        <- include_overall || "Overall" %in% group_filters
+  groupings_to_keep   <- c(if (show_overall) "Overall", group_filters_clean)
+
+  # Display labels and row order for facet strips (left side)
+  overall_strip      <- " "
+  group_strip_labels <- purrr::map_chr(
+    group_filters_clean,
+    ~ params$full_group_cfg[[.x]] %||% .x
+  )
+  row_order <- c(if (show_overall) overall_strip, group_strip_labels)
+
+  # Bind selected tables and filter
+  combined <- purrr::map_dfr(indicator_ids, function(id) {
+    tables[[id]] %>% dplyr::mutate(indicator = id)
+  }) %>%
+    dplyr::filter(grouping %in% groupings_to_keep) %>%
+    dplyr::mutate(
+      indicator_label = dplyr::recode(indicator, !!!indicator_labels),
+      indicator_label = factor(indicator_label,
+                               levels = unname(indicator_labels[indicator_ids])),
+      level           = dplyr::if_else(grouping == "Overall", "National Average", level),
+      grouping_disp   = dplyr::if_else(grouping == "Overall", overall_strip, grouping),
+      grouping_disp   = dplyr::recode(grouping_disp, !!!params$full_group_cfg),
+      grouping_disp   = factor(grouping_disp, levels = row_order)
+    )
+
+  # Build composite y_id factor levels.
+  # National Average (" ") is placed at position 1 (bottom of the global y-axis), but its
+  # facet row is first in row_order so it renders at the TOP of the panel grid.
+  # Each group's levels are added in REVERSE levels_map order so the first levels_map entry
+  # lands at the highest position within that section (= top of the group's facet panel).
+  key2levels_name <- params$full_group_cfg
+  levels_cfg      <- params$levels_map
+  groups_present  <- stats::na.omit(unique(as.character(combined$grouping_disp)))
+  levels_all      <- character(0)
+
+  for (k in names(key2levels_name)) {
+    if (k == "Overall" || !k %in% group_filters_clean) next
+    disp_lab <- key2levels_name[[k]]
+    if (!disp_lab %in% groups_present) next
+
+    if (k == "NUTS") {
+      levels_region <- combined %>%
+        dplyr::filter(grouping == k) %>%
+        dplyr::distinct(level) %>%
+        dplyr::arrange(level) %>%
+        dplyr::pull(level)
+      if (length(levels_region))
+        levels_all <- c(levels_all, paste(disp_lab, rev(levels_region), sep = " | "))
+      next
+    }
+
+    ordered_lvs  <- levels_cfg[[disp_lab]]
+    present_vals <- combined %>%
+      dplyr::filter(grouping == k) %>%
+      dplyr::distinct(level) %>%
+      dplyr::pull(level)
+    lv_use <- if (!is.null(ordered_lvs)) intersect(ordered_lvs, present_vals) else present_vals
+    if (length(lv_use))
+      levels_all <- c(levels_all, paste(disp_lab, rev(lv_use), sep = " | "))
+  }
+
+  # " " (National Average) goes first = position 1 = bottom in ggplot y-axis;
+  # the " " facet row is first in row_order, so it appears at the TOP of the grid.
+  levels_all <- c(overall_strip, levels_all)
+
+  # Attach composite y_id and pivot to long format
+  combined <- combined %>%
+    dplyr::mutate(
+      y_id = paste(as.character(grouping_disp), level, sep = " | "),
+      y_id = dplyr::if_else(as.character(grouping_disp) == overall_strip, overall_strip, y_id),
+      y_id = factor(y_id, levels = levels_all),
+      primary   = mean,
+      secondary = 1 - mean
+    ) %>%
+    tidyr::pivot_longer(c(primary, secondary),
+                        names_to  = "color",
+                        values_to = "value") %>%
+    dplyr::mutate(
+      label_value = dplyr::if_else(
+        color == "primary",
+        dplyr::if_else(is.na(value), NA_character_,
+                       paste0(round(value * 100, 0), "%")),
+        NA_character_
+      )
+    )
+
+  # "National Average" annotation — one entry per indicator column so it appears in every panel
+  label_df <- tibble::tibble(
+    label_html    = "<span style='color:#575796;font-weight:700;font-style:italic;'><b><i>National Average</i></b></span>",
+    x             = 0,
+    y             = 1.75,
+    grouping_disp = factor(overall_strip, levels = row_order),
+    indicator_label = factor(
+      unname(indicator_labels[indicator_ids]),
+      levels = unname(indicator_labels[indicator_ids])
+    )
+  )
+
+  p <- ggplot2::ggplot(combined,
+                       ggplot2::aes(x = value * 100, y = y_id, fill = color)) +
+    ggplot2::geom_col(
+      position = ggplot2::position_stack(reverse = TRUE),
+      width    = 0.7,
+      na.rm    = TRUE
+    ) +
+    ggplot2::geom_text(
+      ggplot2::aes(x = 101, label = label_value),
+      family   = "inter",
+      fontface = "bold",
+      color    = "#575796",
+      hjust    = 0,
+      size     = 4,
+      na.rm    = TRUE
+    ) +
+    ggtext::geom_richtext(
+      data        = label_df,
+      ggplot2::aes(x = x, y = y, label = label_html),
+      inherit.aes = FALSE,
+      fill        = NA,
+      label.color = NA,
+      vjust       = 1.5,
+      hjust       = 1,
+      size        = 4,
+      family      = "inter"
+    ) +
+    ggplot2::facet_grid(
+      rows   = ggplot2::vars(grouping_disp),
+      cols   = ggplot2::vars(indicator_label),
+      scales = "free_y",
+      space  = "free_y",
+      switch = "y"
+    ) +
+    ggplot2::scale_fill_manual(
+      values = c("primary" = "#575796", "secondary" = "#e5e8e8")
+    ) +
+    ggplot2::scale_x_continuous(
+      expand   = c(0, 0),
+      limits   = c(0, 115),
+      position = "top"
+    ) +
+    ggplot2::scale_y_discrete(
+      labels = function(x) sub("^.* \\| ", "", x)
+    ) +
+    ggplot2::coord_cartesian(clip = "off") +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
+      strip.placement       = "outside",
+      strip.background      = element_blank(),
+      strip.text.x          = element_text(
+        size   = 13,
+        family = "inter",
+        face   = "bold",
+        color  = "#575796"
+      ),
+      strip.text.y.left     = element_text(
+        angle  = 0,
+        size   = 12,
+        color  = "#575796",
+        hjust  = 1,
+        vjust  = 1,
+        family = "inter",
+        face   = "bold",
+        margin = margin(-20, -35, 0, 55)
+      ),
+      strip.switch.pad.grid = grid::unit(-35, "mm"),
+      strip.clip            = "off",
+      axis.title            = element_blank(),
+      axis.text.x           = element_blank(),
+      axis.text.y           = element_text(
+        size   = 12,
+        hjust  = 1,
+        family = "inter",
+        face   = "plain",
+        color  = "#1a1a1a"
+      ),
+      panel.grid            = element_blank(),
+      panel.spacing         = grid::unit(8, "mm"),
+      legend.position       = "none"
+    )
+
+  dir.create(dirname(filename), showWarnings = FALSE, recursive = TRUE)
+  ggplot2::ggsave(
+    filename = filename,
+    plot     = p,
+    width    = width_mm,
+    height   = height_mm,
+    units    = "mm",
+    scale    = scale
+  )
+
+  return(p)
+}
+
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+##
+## 6. Co-ocurrence plot                                                                                 ----
 ##
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 plot_coocurrence_bars <- function(tables,
                                   params,
-                                  filename    = file.path(path2SP, "output/co_ocurrence.svg"),
+                                  filename    = file.path(path2SP, "analysis/output/co_ocurrence.svg"),
                                   facet_order = NULL,
                                   width_mm    = 300,
                                   height_mm   = 280) {
