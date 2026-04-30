@@ -738,7 +738,7 @@ plot_panel_indicators <- function(
     include_overall  = TRUE,
     filename,
     width_mm         = 300,
-    height_mm        = 150,
+    height_mm        = NULL,
     scale            = 0.75
 ) {
   missing_ids <- setdiff(indicator_ids, names(tables))
@@ -817,6 +817,12 @@ plot_panel_indicators <- function(
   # " " (National Average) goes first = position 1 = bottom in ggplot y-axis;
   # the " " facet row is first in row_order, so it appears at the TOP of the grid.
   levels_all <- c(overall_strip, levels_all)
+
+  # Auto-size height: 10 mm per bar + 8 mm inter-panel gap × (panels - 1) + 30 mm overhead
+  if (is.null(height_mm)) {
+    n_panels  <- length(row_order)
+    height_mm <- length(levels_all) * 10 + max(0L, n_panels - 1L) * 8 + 30
+  }
 
   # Attach composite y_id and pivot to long format
   combined <- combined %>%
