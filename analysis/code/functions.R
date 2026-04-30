@@ -849,6 +849,20 @@ plot_panel_indicators <- function(
       )
     )
 
+  # Indicator labels — one per column, placed above the National Average bar.
+  # y = 1.75 sits above position 1 ("National Average") in the " " facet row;
+  # coord_cartesian(clip = "off") keeps it visible outside the panel boundary.
+  col_label_df <- tibble::tibble(
+    label           = unname(indicator_labels[indicator_ids]),
+    x               = 50,
+    y               = 1.75,
+    grouping_disp   = factor(overall_strip, levels = row_order),
+    indicator_label = factor(
+      unname(indicator_labels[indicator_ids]),
+      levels = unname(indicator_labels[indicator_ids])
+    )
+  )
+
   p <- ggplot2::ggplot(combined,
                        ggplot2::aes(x = value * 100, y = y_id, fill = color)) +
     ggplot2::geom_col(
@@ -864,6 +878,18 @@ plot_panel_indicators <- function(
       hjust    = 0,
       size     = 4,
       na.rm    = TRUE
+    ) +
+    ggplot2::geom_text(
+      data        = col_label_df,
+      ggplot2::aes(x = x, y = y, label = label),
+      inherit.aes = FALSE,
+      color       = "#575796",
+      fontface    = "bold",
+      family      = "inter",
+      size        = 4.5,
+      hjust       = 0.5,
+      vjust       = 0,
+      na.rm       = TRUE
     ) +
     ggplot2::facet_grid(
       rows   = ggplot2::vars(grouping_disp),
@@ -888,12 +914,7 @@ plot_panel_indicators <- function(
     ggplot2::theme(
       strip.placement       = "outside",
       strip.background      = element_blank(),
-      strip.text.x          = element_text(
-        size   = 13,
-        family = "inter",
-        face   = "bold",
-        color  = "#575796"
-      ),
+      strip.text.x          = element_blank(),
       strip.text.y.left     = element_text(
         angle  = 0,
         size   = 12,
