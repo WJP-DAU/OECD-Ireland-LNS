@@ -3,7 +3,9 @@
     "allow": [
       "Bash(sudo apt *)",
       "Bash(bwrap --version)",
-      "Bash(apt install *)"
+      "Bash(apt install *)",
+      "Bash(git *)",
+      "Bash(gh auth *)"
     ]
   }
 }

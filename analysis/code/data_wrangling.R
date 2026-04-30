@@ -195,7 +195,7 @@ wrangle_ireland_lns <- function(master_data) {
         .names = "{str_remove(.col, 'AJD_')}_bin"
       ),
       
-      # Barreras (prof help)
+      # Barreras (prof help) - No need will prevail (as discussed with Daniela)
       reason_no_need = case_when(
         AJD_noadvice_reason_1 == 1 | AJD_noadvice_reason_2 == 1 | AJD_noadvice_reason_3 == 1 |
           AJD_noadvice_reason_5 == 1 | AJD_noadvice_reason_6 == 1 ~ 1,
@@ -204,55 +204,41 @@ wrangle_ireland_lns <- function(master_data) {
            AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 &
            AJD_adviser_13 == 2) ~ 0
       ),
-      reason_had_help = case_when(
-        AJD_noadvice_reason_4 == 1 | AJD_noadvice_reason_7 == 1 | AJD_noadvice_reason_8 == 1 |
-          AJD_noadvice_reason_9 == 1 ~ 1,
+      
+      reason_practical = case_when(
+        (AJD_noadvice_reason_7 == 1 | AJD_noadvice_reason_8 == 1 | AJD_noadvice_reason_9 == 1) 
+        &
+        (AJD_noadvice_reason_1 == 0 & AJD_noadvice_reason_2 == 0 & AJD_noadvice_reason_3 == 0 &
+           AJD_noadvice_reason_5 == 0 & AJD_noadvice_reason_6 == 0) ~ 1,
+        
         (AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 &
            AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
            AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 &
-           AJD_adviser_13 == 2) ~ 0
+           AJD_adviser_13 == 2) ~ 0        
       ),
-      reason_info_bar = case_when(
-        AJD_noadvice_reason_13 == 1 ~ 1,
+      
+      reason_psy = case_when(
+        (AJD_noadvice_reason_10 == 1 | AJD_noadvice_reason_14 == 1)
+        &
+          (AJD_noadvice_reason_1 == 0 & AJD_noadvice_reason_2 == 0 & AJD_noadvice_reason_3 == 0 &
+             AJD_noadvice_reason_5 == 0 & AJD_noadvice_reason_6 == 0) ~ 1,
+        
         (AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 &
            AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
            AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 &
-           AJD_adviser_13 == 2) ~ 0
+           AJD_adviser_13 == 2) ~ 0        
       ),
-      reason_relation_bar = case_when(
-        AJD_noadvice_reason_11 == 1 | AJD_noadvice_reason_12 == 1 ~ 1,
+      
+      reason_relation = case_when(
+        (AJD_noadvice_reason_11 == 1 | AJD_noadvice_reason_12 == 1)
+        &
+        (AJD_noadvice_reason_1 == 0 & AJD_noadvice_reason_2 == 0 & AJD_noadvice_reason_3 == 0 &
+            AJD_noadvice_reason_5 == 0 & AJD_noadvice_reason_6 == 0) ~ 1,
+        
         (AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 &
            AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
            AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 &
-           AJD_adviser_13 == 2) ~ 0
-      ),
-      reason_psycho_bar = case_when(
-        AJD_noadvice_reason_10 == 1 | AJD_noadvice_reason_14 == 1 ~ 1,
-        (AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 &
-           AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
-           AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 &
-           AJD_adviser_13 == 2) ~ 0
-      ),
-      reason_prior = case_when(
-        AJD_noadvice_reason_15 == 1 ~ 1,
-        (AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 &
-           AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
-           AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 &
-           AJD_adviser_13 == 2) ~ 0
-      ),
-      reason_social = case_when(
-        AJD_noadvice_reason_16 == 1 ~ 1,
-        (AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 &
-           AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
-           AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 &
-           AJD_adviser_13 == 2) ~ 0
-      ),
-      reason_other = case_when(
-        AJD_noadvice_reason_17 == 1 ~ 1,
-        (AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 &
-           AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
-           AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 &
-           AJD_adviser_13 == 2) ~ 0
+           AJD_adviser_13 == 2) ~ 0       
       ),
       
       # Non-seekers’ intention (quienes NO acudieron a ningún advisor)
@@ -287,6 +273,24 @@ wrangle_ireland_lns <- function(master_data) {
           AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 &
           AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 &
           AJD_adviser_17 == 2 ~ 0
+      ),
+      
+      # No actions - reasons
+      no_need_action = case_when(
+        AJR_noaction_1 == 1 | AJR_noaction_2 == 1 | AJR_noaction_12 == 1 ~ 1,
+        (AJR_action == 1 | AJR_action == 2 ) ~ 0
+      ),
+      practical_action = case_when(
+        AJR_noaction_3 == 1 | AJR_noaction_5 == 1 ~ 1,
+        (AJR_action == 1 | AJR_action == 2 ) ~ 0
+      ),
+      psy_action = case_when(
+        AJR_noaction_4 == 1 | AJR_noaction_8 == 1 ~ 1,
+        (AJR_action == 1 | AJR_action == 2 ) ~ 0
+      ),
+      relation_action = case_when(
+        AJR_noaction_6 == 1 | AJR_noaction_7 == 1 ~ 1,
+        (AJR_action == 1 | AJR_action == 2 ) ~ 0
       ),
       
       # Contacted a DRM
@@ -524,6 +528,30 @@ wrangle_ireland_lns <- function(master_data) {
         AJE_impact %in% c(1,2) ~ 0,
         AJE_impact %in% c(3,4,5) ~ 1
       ),
+      
+      # Impact (binary)
+      
+      impact_1 = case_when(
+        AJE_impact == 1 ~ 1,
+        had_dispute == 1 ~ 0
+      ),
+      impact_2 = case_when(
+        AJE_impact == 2 ~ 1,
+        had_dispute == 1 ~ 0
+      ),
+      impact_3 = case_when(
+        AJE_impact == 3 ~ 1,
+        had_dispute == 1 ~ 0
+      ),
+      impact_4 = case_when(
+        AJE_impact == 4 ~ 1,
+        had_dispute == 1 ~ 0
+      ),
+      impact_5 = case_when(
+        AJE_impact == 5 ~ 1,
+        had_dispute == 1 ~ 0
+      ),
+      
       
       # Hardships (bin)
       across(

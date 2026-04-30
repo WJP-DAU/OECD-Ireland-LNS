@@ -87,7 +87,7 @@ main.R
 **`wrangle_ireland_lns(master_data)`** (`data_wrangling.R`) is the single transformation step. It takes raw `.dta` data and returns `data_subset.df` with all derived variables (binary indicators, recoded sociodemographics, DRM quality metrics). No wrangling happens downstream of this function.
 
 **Grouped bar params flow** (`params.R` → `functions.R` → `bars_group.R`):
-- `groupbars_params()` returns a list with `full_group_cfg`, `levels_map`, `groups_presets`, and `measures`. Each measure has an `id`, a quoted `value` column, and a `groups_preset` name (`"basic"` or `"extended"`).
+- `groupbars_params()` returns a list with `full_group_cfg`, `levels_map`, `groups_presets`, and `measures`. Each measure has an `id`, a quoted `value` column, and a `groups_preset` name (`"basic"`, `"extended"`, or `"problem"`). The `"problem"` preset disaggregates only by `category` (selected problem type).
 - `compute_groupbars_tables()` runs `summarize_by_vars()` for each measure across all disaggregation groups, suppressing cells with `n < 30`.
 - `render_groupbars_plots()` calls `plot_by_group()` and saves each plot as SVG.
 

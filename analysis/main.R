@@ -88,23 +88,87 @@ if (isTRUE(high_impact)) {
   
 }
 
+
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ##
 ## 4.  Data for plots                                                                                       ----
 ##
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-## =========================================================
-## Group Bars
-## =========================================================
 
 params <- groupbars_params()
 
 tables <- compute_groupbars_tables(data_subset.df, params)
 
+
+## TEST
+
+plot_panel_indicators(                                                                                                                                                   
+  tables           = tables,
+  indicator_ids    = c("reason_practical", "reason_psy",                                                                                                                 
+                       "reason_relation", "reason_information"),
+  indicator_labels = c(                                                                                                                                                  
+    reason_practical  = "Practical barriers\n(cost/time/access)",
+    reason_psy        = "Psychological\nBarriers",                                                                                                                       
+    reason_relation   = "Relational\nBarriers",
+    reason_information = "Did not know where/how\nto find advice"                                                                                                        
+  ),
+  params          = params,                                                                                                                                              
+  group_filters   = c("Overall", "gender", "age_group", "edu_level",
+                      "income", "NUTS", "disability", "ethnic_majority"),                                                                                                
+  include_overall = TRUE,
+  filename        = file.path(path2SP, "analysis/output/reasons_grouped_demos.svg"),                                                                                     
+  width_mm        = 400,
+  height_mm       = 700,
+  scale            = 0.75  
+)
+
+plot_panel_indicators(                                                                                                                             
+  tables           = tables,                              
+  indicator_ids    = c("reason_practical", "reason_psy",                                                                                                                 
+                       "reason_relation", "reason_information"),
+  indicator_labels = c(                                                                                                                                                  
+    reason_practical  = "Practical barriers\n(cost/time/access)",
+    reason_psy        = "Psychological\nBarriers",                                                                                                                       
+    reason_relation   = "Relational\nBarriers",
+    reason_information = "Did not know where/how\nto find advice"                                                                                                        
+  ),                                       
+  params           = params,                                                                                                                       
+  group_filters    = c("Overall", "level_impact", "cooccurence_group", "category"),
+  
+  include_overall  = TRUE,                                                                                                                         
+  filename         = file.path(path2SP, "analysis/output/reasons_grouped_prob.svg"),
+  width_mm         = 400,                                                                                                                          
+  height_mm        = 700,
+  scale            = 0.75  
+)   
+
+
+
+plot_panel_indicators(                                                                                                                             
+  tables           = tables,                              
+  indicator_ids    = c("impact_1", "impact_2", "impact_3", "impact_4", "impact_5"),
+  indicator_labels = c(impact_1 = "impact_1", impact_2 = "impact_2", impact_3 = "impact_3", 
+                       impact_4 = "impact_4", impact_5 = "impact_5"),                                              
+  params           = params,                                                                                                                       
+  group_filters    = c(  "Overall", "gender", "age_group", "edu_level", "income", 
+                         "NUTS", "disability", "ethnic_majority"),
+
+  include_overall  = TRUE,                                                                                                                         
+  filename         = file.path(path2SP, "analysis/output/impact_demo.svg"),
+  width_mm         = 400,                                                                                                                          
+  height_mm        = 476                                                                                                                           
+)                                                                                                                                                  
+
+
+## =========================================================
+## Group Bars
+## =========================================================
+
+
 plots <- render_groupbars_plots(
   tables          = tables,
   params          = params,
-  out_dir         = file.path(path2SP, "output"),  
+  out_dir         = file.path(path2SP, "analysis/output"),  
   file_ext        = "svg",
   use_outcome_dir = FALSE,                         # TRUE => guarda en output/outcome/
   measures_to_plot = NULL,                         
@@ -115,20 +179,6 @@ plots <- render_groupbars_plots(
   )
 )
 
-## =========================================================
-## Co-occurrence
-## =========================================================
-
-# ------------------------------------------------------------
-
-plot_coocurrence_bars(
-  tables      = tables,
-  params      = params,
-  filename    = file.path(path2SP,"output/co_ocurrence.svg"),
-  facet_order = facet_order, 
-  height_mm = 475, 
-  width_mm = 300
-)
 
 ## =========================================================
 ## Multi Response Bars
@@ -146,7 +196,7 @@ multi_response_bars_tables <- compute_bars_tables(
 multi_response_bars_plots <- render_bars_plots(
   tables         = multi_response_bars_tables,
   params         = multi_response_bars_params,
-  out_dir        = file.path(path2SP, "output"),
+  out_dir        = file.path(path2SP, "analysis/output"),
   file_ext       = "svg",
   default_width  = 300,
   default_height = 350,
@@ -155,6 +205,24 @@ multi_response_bars_plots <- render_bars_plots(
   ),
   ids_to_plot = NULL
 )
+
+
+## =========================================================
+## Co-occurrence
+## =========================================================
+
+# ------------------------------------------------------------
+
+plot_coocurrence_bars(
+  tables      = tables,
+  params      = params,
+  filename    = file.path(path2SP,"analysis/output/co_ocurrence.svg"),
+  facet_order = facet_order, 
+  height_mm = 475, 
+  width_mm = 300
+)
+
+
 
 ## =========================================================
 ## Heat-map DRM
@@ -197,7 +265,7 @@ psk_ad <- plot_sankey_advice(data = data_subset.df)
 
 ggsave(
   psk_ad,
-  filename = file.path(path2SP, "output/sankey_advice_representation.svg"),
+  filename = file.path(path2SP, "analysis/output/sankey_advice_representation.svg"),
   width    = 400,
   height   = 225, 
   units = "mm", scale = 0.75
@@ -213,7 +281,7 @@ psk_drm <- plot_sankey_drm(data = data_subset.df)
 
 ggsave(
   psk_drm,
-  filename = file.path(path2SP, "output/sankey_drm.svg"),
+  filename = file.path(path2SP, "analysis/output/sankey_drm.svg"),
   width    = 400,
   height   = 225, 
   units = "mm", scale = 0.75
@@ -244,7 +312,7 @@ network_chart <- network_graph(data = data2plot)
 
 ggsave(
   network_chart,
-  filename = file.path(path2SP, "output/network_graph.svg"),
+  filename = file.path(path2SP, "analysis/output/network_graph.svg"),
   width    = 17,
   height   = 17, 
   bg = "white"
