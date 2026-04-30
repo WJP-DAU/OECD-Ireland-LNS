@@ -823,9 +823,11 @@ plot_panel_indicators <- function(
   # space = "free_y" gives the single-bar National Average panel only 1/N of the panel
   # area, which is very small when N is large.  Adding 3 virtual bars to the count
   # ensures the top row always has enough room without distorting the other rows.
+  # The extra overhead (100 mm) covers plot margins, panel spacings, and the indicator
+  # label annotations that sit above the National Average bar (y = 1.75, clip = "off").
   if (is.null(height_mm)) {
     n_panels  <- length(row_order)
-    height_mm <- (length(levels_all) + 3L) * 12 + max(0L, n_panels - 1L) * 8 + 80
+    height_mm <- (length(levels_all) + 3L) * 12 + max(0L, n_panels - 1L) * 8 + 100
   }
 
   # Attach composite y_id and pivot to long format
@@ -939,7 +941,7 @@ plot_panel_indicators <- function(
       panel.grid            = element_blank(),
       panel.spacing         = grid::unit(8, "mm"),
       legend.position       = "none",
-      plot.margin           = margin(25, 5, 5, 5, "mm")
+      plot.margin           = margin(40, 5, 5, 5, "mm")
     )
 
   dir.create(dirname(filename), showWarnings = FALSE, recursive = TRUE)
