@@ -814,21 +814,22 @@ plot_panel_indicators <- function(
       levels_all <- c(levels_all, paste(disp_lab, rev(lv_use), sep = " | "))
   }
 
-  # " " (National Average) goes first = position 1 = bottom in ggplot y-axis;
-  # the " " facet row is first in row_order, so it appears at the TOP of the grid.
-  levels_all <- c(overall_strip, levels_all)
+  # "National Average" goes first = position 1 = bottom in ggplot y-axis;
+  # the " " facet row is first in row_order, so it renders at the TOP of the grid.
+  # Using the plain string (not overall_strip " ") lets scale_y_discrete show the label.
+  levels_all <- c("National Average", levels_all)
 
-  # Auto-size height: 10 mm per bar + 8 mm inter-panel gap × (panels - 1) + 30 mm overhead
+  # Auto-size height: 12 mm per bar + 8 mm inter-panel gap × (panels - 1) + 60 mm overhead
   if (is.null(height_mm)) {
     n_panels  <- length(row_order)
-    height_mm <- length(levels_all) * 10 + max(0L, n_panels - 1L) * 8 + 30
+    height_mm <- length(levels_all) * 12 + max(0L, n_panels - 1L) * 8 + 60
   }
 
   # Attach composite y_id and pivot to long format
   combined <- combined %>%
     dplyr::mutate(
       y_id = paste(as.character(grouping_disp), level, sep = " | "),
-      y_id = dplyr::if_else(as.character(grouping_disp) == overall_strip, overall_strip, y_id),
+      y_id = dplyr::if_else(as.character(grouping_disp) == overall_strip, "National Average", y_id),
       y_id = factor(y_id, levels = levels_all),
       primary   = mean,
       secondary = 1 - mean
@@ -845,18 +846,6 @@ plot_panel_indicators <- function(
       )
     )
 
-  # "National Average" annotation — one entry per indicator column so it appears in every panel
-  label_df <- tibble::tibble(
-    label_html    = "<span style='color:#575796;font-weight:700;font-style:italic;'><b><i>National Average</i></b></span>",
-    x             = 0,
-    y             = 1.75,
-    grouping_disp = factor(overall_strip, levels = row_order),
-    indicator_label = factor(
-      unname(indicator_labels[indicator_ids]),
-      levels = unname(indicator_labels[indicator_ids])
-    )
-  )
-
   p <- ggplot2::ggplot(combined,
                        ggplot2::aes(x = value * 100, y = y_id, fill = color)) +
     ggplot2::geom_col(
@@ -872,17 +861,6 @@ plot_panel_indicators <- function(
       hjust    = 0,
       size     = 4,
       na.rm    = TRUE
-    ) +
-    ggtext::geom_richtext(
-      data        = label_df,
-      ggplot2::aes(x = x, y = y, label = label_html),
-      inherit.aes = FALSE,
-      fill        = NA,
-      label.color = NA,
-      vjust       = 1.5,
-      hjust       = 1,
-      size        = 4,
-      family      = "inter"
     ) +
     ggplot2::facet_grid(
       rows   = ggplot2::vars(grouping_disp),
@@ -918,10 +896,10 @@ plot_panel_indicators <- function(
         size   = 12,
         color  = "#575796",
         hjust  = 1,
-        vjust  = 1,
+        vjust  = 0.5,
         family = "inter",
         face   = "bold",
-        margin = margin(-20, -35, 0, 55)
+        margin = margin(0, -35, 0, 55)
       ),
       strip.switch.pad.grid = grid::unit(-35, "mm"),
       strip.clip            = "off",
@@ -936,7 +914,8 @@ plot_panel_indicators <- function(
       ),
       panel.grid            = element_blank(),
       panel.spacing         = grid::unit(8, "mm"),
-      legend.position       = "none"
+      legend.position       = "none",
+      plot.margin           = margin(15, 5, 5, 5, "mm")
     )
 
   dir.create(dirname(filename), showWarnings = FALSE, recursive = TRUE)
