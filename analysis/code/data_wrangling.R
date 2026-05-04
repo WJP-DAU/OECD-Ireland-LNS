@@ -114,32 +114,20 @@ wrangle_ireland_lns <- function(master_data) {
       ),
       
       # Did not / needed assistance (ALL & professional)
-      no_need_assistance = case_when(
-        (AJR_noaction_1 == 1 | AJR_noaction_2 == 1 | AJR_noaction_6 == 1 | AJR_noaction_10 == 1 | AJR_noaction_12 == 1) &
-          (AJR_noaction_3 == 0 & AJR_noaction_4 == 0 & AJR_noaction_5 == 0 & AJR_noaction_7 == 0 &
-             AJR_noaction_8 == 0 & AJR_noaction_9 == 0 & AJR_noaction_11 == 0 & AJR_noaction_13 == 0) ~ 1,
-        AJR_action == 4 ~ 1,
-        had_dispute == 1 ~ 0
-      ),
-      needed_assistance = case_when(
-        (AJR_noaction_3 == 1 | AJR_noaction_4 == 1 | AJR_noaction_5 == 1 | AJR_noaction_7 == 1 |
-           AJR_noaction_8 == 1 | AJR_noaction_9 == 1 | AJR_noaction_11 == 1 | AJR_noaction_13 == 1) ~ 1,
-        had_dispute == 1 ~ 0
-      ),
+
       no_need_assistance_prof = case_when(
         (AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 &
            AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
            AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 &
-           AJD_adviser_13 == 2) &
-          (AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1) &
+           AJD_adviser_13 == 2) 
+        &
+          (AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1) 
+        &
           (AJD_noadvice_reason_1 == 1 | AJD_noadvice_reason_2 == 1 | AJD_noadvice_reason_3 == 1 |
-             AJD_noadvice_reason_4 == 1 | AJD_noadvice_reason_5 == 1 | AJD_noadvice_reason_6 == 1) &
-          (AJD_noadvice_reason_7 == 0 & AJD_noadvice_reason_8 == 0 & AJD_noadvice_reason_9 == 0 &
-             AJD_noadvice_reason_10 == 0 & AJD_noadvice_reason_11 == 0 & AJD_noadvice_reason_12 == 0 &
-             AJD_noadvice_reason_13 == 0 & AJD_noadvice_reason_14 == 0 & AJD_noadvice_reason_15 == 0 &
-             AJD_noadvice_reason_16 == 0) ~ 1,
+             AJD_noadvice_reason_4 == 1 | AJD_noadvice_reason_5 == 1 | AJD_noadvice_reason_6 == 1) ~ 1,
         had_dispute == 1 ~ 0
       ),
+      
       needed_assistance_prof = case_when(
         (AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 &
            AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
@@ -152,6 +140,23 @@ wrangle_ireland_lns <- function(master_data) {
              AJD_noadvice_reason_16 == 1) ~ 1,
         had_dispute == 1 ~ 0
       ),
+      
+      no_need_assistance = case_when(
+        (AJR_noaction_1 == 1 | AJR_noaction_2 == 1 | AJR_noaction_10 == 1 | AJR_noaction_12 == 1) 
+        &
+          (AJR_noaction_3 == 0 & AJR_noaction_4 == 0 & AJR_noaction_5 == 0 & AJR_noaction_6 == 0 &
+             AJR_noaction_7 == 0 & AJR_noaction_8 == 0 & AJR_noaction_9 == 0 & AJR_noaction_11 == 0 & 
+             AJR_noaction_13 == 0) ~ 1,
+        AJR_action == 4 ~ 1,
+        had_dispute == 1 ~ 0
+      ),
+      needed_assistance = case_when(
+        (AJR_noaction_3 == 0 & AJR_noaction_4 == 0 & AJR_noaction_5 == 0 & AJR_noaction_6 == 0 &
+           AJR_noaction_7 == 0 & AJR_noaction_8 == 0 & AJR_noaction_9 == 0 & AJR_noaction_11 == 0 & 
+           AJR_noaction_13 == 0) ~ 1,
+        had_dispute == 1 ~ 0
+      ),
+      
       unknown = case_when(
         (AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 &
            AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
@@ -195,10 +200,10 @@ wrangle_ireland_lns <- function(master_data) {
         .names = "{str_remove(.col, 'AJD_')}_bin"
       ),
       
-      # Barreras (prof help) - No need will prevail (as discussed with Daniela)
+      # Barreras (prof help) - No need will prevail (as discussed with Daniela) 
       reason_no_need = case_when(
         AJD_noadvice_reason_1 == 1 | AJD_noadvice_reason_2 == 1 | AJD_noadvice_reason_3 == 1 |
-          AJD_noadvice_reason_5 == 1 | AJD_noadvice_reason_6 == 1 ~ 1,
+          AJD_noadvice_reason_4==1 | AJD_noadvice_reason_5 == 1 | AJD_noadvice_reason_6 == 1 ~ 1,
         (AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 &
            AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
            AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 &
@@ -209,7 +214,7 @@ wrangle_ireland_lns <- function(master_data) {
         (AJD_noadvice_reason_7 == 1 | AJD_noadvice_reason_8 == 1 | AJD_noadvice_reason_9 == 1) 
         &
         (AJD_noadvice_reason_1 == 0 & AJD_noadvice_reason_2 == 0 & AJD_noadvice_reason_3 == 0 &
-           AJD_noadvice_reason_5 == 0 & AJD_noadvice_reason_6 == 0) ~ 1,
+         AJD_noadvice_reason_4==0 & AJD_noadvice_reason_5 == 0 & AJD_noadvice_reason_6 == 0) ~ 1,
         
         (AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 &
            AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
@@ -220,8 +225,8 @@ wrangle_ireland_lns <- function(master_data) {
       reason_psy = case_when(
         (AJD_noadvice_reason_10 == 1 | AJD_noadvice_reason_14 == 1)
         &
-          (AJD_noadvice_reason_1 == 0 & AJD_noadvice_reason_2 == 0 & AJD_noadvice_reason_3 == 0 &
-             AJD_noadvice_reason_5 == 0 & AJD_noadvice_reason_6 == 0) ~ 1,
+        (AJD_noadvice_reason_1 == 0 & AJD_noadvice_reason_2 == 0 & AJD_noadvice_reason_3 == 0 &
+         AJD_noadvice_reason_4==0 & AJD_noadvice_reason_5 == 0 & AJD_noadvice_reason_6 == 0) ~ 1,
         
         (AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 &
            AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
@@ -233,12 +238,24 @@ wrangle_ireland_lns <- function(master_data) {
         (AJD_noadvice_reason_11 == 1 | AJD_noadvice_reason_12 == 1)
         &
         (AJD_noadvice_reason_1 == 0 & AJD_noadvice_reason_2 == 0 & AJD_noadvice_reason_3 == 0 &
-            AJD_noadvice_reason_5 == 0 & AJD_noadvice_reason_6 == 0) ~ 1,
+             AJD_noadvice_reason_4==0 & AJD_noadvice_reason_5 == 0 & AJD_noadvice_reason_6 == 0) ~ 1,
         
         (AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 &
            AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
            AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 &
            AJD_adviser_13 == 2) ~ 0       
+      ),
+      
+      reason_info = case_when(
+        AJD_noadvice_reason_13 == 1 
+        &
+          (AJD_noadvice_reason_1 == 0 & AJD_noadvice_reason_2 == 0 & AJD_noadvice_reason_3 == 0 &
+             AJD_noadvice_reason_4==0 & AJD_noadvice_reason_5 == 0 & AJD_noadvice_reason_6 == 0) ~ 1,
+        
+        (AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 &
+           AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
+           AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 &
+           AJD_adviser_13 == 2) ~ 0    
       ),
       
       # Non-seekers’ intention (quienes NO acudieron a ningún advisor)
@@ -280,18 +297,35 @@ wrangle_ireland_lns <- function(master_data) {
         AJR_noaction_1 == 1 | AJR_noaction_2 == 1 | AJR_noaction_12 == 1 ~ 1,
         (AJR_action == 1 | AJR_action == 2 ) ~ 0
       ),
+      
       practical_action = case_when(
-        AJR_noaction_3 == 1 | AJR_noaction_5 == 1 ~ 1,
+        (AJR_noaction_3 == 1 | AJR_noaction_5 == 1) 
+        &
+        (AJR_noaction_1 == 0 & AJR_noaction_2 == 0 & AJR_noaction_12 == 0) ~ 1,
         (AJR_action == 1 | AJR_action == 2 ) ~ 0
       ),
+      
       psy_action = case_when(
-        AJR_noaction_4 == 1 | AJR_noaction_8 == 1 ~ 1,
+        (AJR_noaction_4 == 1 | AJR_noaction_8 == 1) 
+        &
+        (AJR_noaction_1 == 0 & AJR_noaction_2 == 0 & AJR_noaction_12 == 0) ~ 1,
         (AJR_action == 1 | AJR_action == 2 ) ~ 0
       ),
+      
       relation_action = case_when(
-        AJR_noaction_6 == 1 | AJR_noaction_7 == 1 ~ 1,
+        (AJR_noaction_6 == 1 | AJR_noaction_7 == 1) 
+        &
+        (AJR_noaction_1 == 0 & AJR_noaction_2 == 0 & AJR_noaction_12 == 0) ~ 1,
         (AJR_action == 1 | AJR_action == 2 ) ~ 0
       ),
+      
+      info_action = case_when(
+        (AJR_noaction_11 == 1) 
+        &
+        (AJR_noaction_1 == 0 & AJR_noaction_2 == 0 & AJR_noaction_12 == 0) ~ 1,
+        (AJR_action == 1 | AJR_action == 2 ) ~ 0
+      ),
+      
       
       # Contacted a DRM
       contacted_drm = case_when(
@@ -299,70 +333,54 @@ wrangle_ireland_lns <- function(master_data) {
         (AJR_drm_1_bin == 1 | AJR_drm_2_bin == 1 | AJR_drm_3_bin == 1 | AJR_drm_4_bin == 1 |
            AJR_drm_5_bin == 1 | AJR_drm_6_bin == 1 | AJR_drm_7_bin == 1 | AJR_drm_8_bin == 1 |
            AJR_drm_9_bin == 1 | AJR_drm_11_bin == 1) ~ 1,
+        
         (AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 &
            AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 &
            AJR_drm_9_bin == 0 & AJR_drm_11_bin == 0) ~ 0,
         had_dispute == 1 ~ 0
       ),
       
-      # Access to DRM (SDG 16.3.3) y derivados
+      # Access to DRM (SDG 16.3.3) 
       access2drm = case_when(
         contacted_drm == 1 ~ 1,
-        contacted_drm == 0 &
+        contacted_drm == 0 
+        &
           (AJR_noresol_reason_7 == 1 | AJR_noresol_reason_8 == 1 | AJR_noresol_reason_9 == 1 |
              AJR_noresol_reason_10 == 1 | AJR_noresol_reason_11 == 1 | AJR_noresol_reason_12 == 1 |
              AJR_noresol_reason_13 == 1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1) ~ 0
       ),
-      needed_drm = case_when(
-        had_dispute == 0 ~ NA_real_,
-        (AJR_noresol_reason_7 == 1 | AJR_noresol_reason_8 == 1 | AJR_noresol_reason_9 == 1 |
-           AJR_noresol_reason_10 == 1 | AJR_noresol_reason_11 == 1 | AJR_noresol_reason_12 == 1 |
-           AJR_noresol_reason_13 == 1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1) ~ 1,
-        (AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 &
-           AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 &
-           AJR_drm_9_bin == 0 & AJR_drm_11_bin == 0) ~ 0,
-        (AJR_noresol_reason_7 == 0 & AJR_noresol_reason_8 == 0 & AJR_noresol_reason_9 == 0 &
-           AJR_noresol_reason_10 == 0 & AJR_noresol_reason_11 == 0 & AJR_noresol_reason_12 == 0 &
-           AJR_noresol_reason_13 == 0 & AJR_noresol_reason_14 == 0 & AJR_noresol_reason_15 == 0) ~ 0
-      ),
+      
+      #Reasons for not seeking a DRM
       no_need_drm = case_when(
         had_dispute == 0 ~ NA_real_,
         (AJR_noresol_reason_1 == 1 | AJR_noresol_reason_2 == 1 | AJR_noresol_reason_3 == 1 |
-           AJR_noresol_reason_4 == 1 | AJR_noresol_reason_5 == 1 | AJR_noresol_reason_6 == 1) &
-          (AJR_noresol_reason_7 == 0 & AJR_noresol_reason_8 == 0 & AJR_noresol_reason_9 == 0 &
-             AJR_noresol_reason_10 == 0 & AJR_noresol_reason_11 == 0 & AJR_noresol_reason_12 == 0 &
-             AJR_noresol_reason_13 == 0 & AJR_noresol_reason_14 == 0 & AJR_noresol_reason_15 == 0) ~ 1,
-        (AJR_noresol_reason_7 == 1 | AJR_noresol_reason_8 == 1 | AJR_noresol_reason_9 == 1 |
-           AJR_noresol_reason_10 == 1 | AJR_noresol_reason_11 == 1 | AJR_noresol_reason_12 == 1 |
-           AJR_noresol_reason_13 == 1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1) ~ 0,
-        AJR_noresol_reason_16 == 1 ~ 0,
-        (AJR_noresol_reason_1 == 0 & AJR_noresol_reason_2 == 0 & AJR_noresol_reason_3 == 0 &
-           AJR_noresol_reason_4 == 0 & AJR_noresol_reason_5 == 0 & AJR_noresol_reason_6 == 0) ~ 0,
-        (AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 &
-           AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 &
-           AJR_drm_9_bin == 0 & AJR_drm_11_bin == 0) ~ 0
-      ),
-      unknown_drm = case_when(
-        had_dispute == 0 ~ NA_real_,
-        AJR_noresol_reason_16 == 1 &
-          (AJR_noresol_reason_7 == 0 & AJR_noresol_reason_8 == 0 & AJR_noresol_reason_9 == 0 &
-             AJR_noresol_reason_10 == 0 & AJR_noresol_reason_11 == 0 & AJR_noresol_reason_12 == 0 &
-             AJR_noresol_reason_13 == 0 & AJR_noresol_reason_14 == 0 & AJR_noresol_reason_15 == 0) ~ 1,
-        (AJR_noresol_reason_1 == 1 | AJR_noresol_reason_2 == 1 | AJR_noresol_reason_3 == 1 |
-           AJR_noresol_reason_4 == 1 | AJR_noresol_reason_5 == 1 | AJR_noresol_reason_6 == 1 |
-           AJR_noresol_reason_7 == 1 | AJR_noresol_reason_8 == 1 | AJR_noresol_reason_9 == 1 |
-           AJR_noresol_reason_10 == 1 | AJR_noresol_reason_11 == 1 | AJR_noresol_reason_12 == 1 |
-           AJR_noresol_reason_13 == 1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1) ~ 0,
+           AJR_noresol_reason_4 == 1 | AJR_noresol_reason_5 == 1 | AJR_noresol_reason_6 == 1) ~ 1,
+        
         (AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 &
            AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 &
            AJR_drm_9_bin == 0 & AJR_drm_11_bin == 0) ~ 0
       ),
       
+      needed_drm = case_when(
+        had_dispute == 0 ~ NA_real_,
+        (AJR_noresol_reason_7 == 1 | AJR_noresol_reason_8 == 1 | AJR_noresol_reason_9 == 1 |
+           AJR_noresol_reason_10 == 1 | AJR_noresol_reason_11 == 1 | AJR_noresol_reason_12 == 1 |
+           AJR_noresol_reason_13 == 1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1) 
+        &
+        (AJR_noresol_reason_1 == 0 & AJR_noresol_reason_2 == 0 & AJR_noresol_reason_3 == 0 &
+           AJR_noresol_reason_4 == 0 & AJR_noresol_reason_5 == 0 & AJR_noresol_reason_6 == 0) ~ 1,
+        
+        (AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 &
+           AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 &
+           AJR_drm_9_bin == 0 & AJR_drm_11_bin == 0) ~ 0,
+        ),
+      
+      
       #Fixing the denominator for the contacted mechanisms
       across(
         c(AJR_drm_1_bin, AJR_drm_2_bin, AJR_drm_3_bin, AJR_drm_4_bin, 
           AJR_drm_5_bin, AJR_drm_6_bin, AJR_drm_7_bin, AJR_drm_8_bin,
-          AJR_drm_9_bin, AJR_drm_11_bin
+          AJR_drm_9_bin,AJR_drm_10_bin, AJR_drm_11_bin
           ),
         ~ case_when(
           .x == 1 ~ 1,
@@ -622,7 +640,7 @@ wrangle_ireland_lns <- function(master_data) {
         age == 3 | (age >= 35 & age <= 44)  ~ "35-44",
         age == 4 | (age >= 45 & age <= 54)  ~ "45-54",
         age == 5 | (age >= 55 & age <= 64)  ~ "55-64",
-        age == 6 | (age >= 65 & age <= 100) ~ "65-100"
+        age == 6 | (age >= 65 & age <= 100) ~ "65+"
       ),
       edu_level = case_when(
         edu_2 == 1 ~ "Lower Education",
@@ -668,7 +686,24 @@ wrangle_ireland_lns <- function(master_data) {
         impact == 1 ~ "High impact",
         impact == 0 ~ "Low impact"
       ),
-      cooccurence_group = as.character(cooccurence_group)
+      cooccurence_group = as.character(cooccurence_group),
+      
+      rights = case_when(
+        legal_rights == 1 ~ "Yes", 
+        legal_rights == 0 ~ "No"
+        ),
+      info   = case_when(
+        access2info == 1 ~ "Yes",
+        access2info == 0 ~ "No"
+        ),
+      help   = case_when(
+        expert_help == 1 ~ "Yes",
+        expert_help == 0 ~ "No"
+      ),
+      fair_cap   = case_when(
+        fair_outcome == 1 ~ "Yes",
+        fair_outcome == 0 ~ "No"
+      )
     )
   
   # ============================================================================

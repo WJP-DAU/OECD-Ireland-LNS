@@ -23,7 +23,11 @@ groupbars_params <- function() {
     "cooccurence_group" = "Co-occurrence",
     "disability"        = "Disability",
     "category"          = "Problem Type",
-    "ethnic_majority"   = "Ethnicity"
+    "ethnic_majority"   = "Ethnicity",
+    "rights"            = "Legal Rights",
+    "info"              = "Good Information and Advice",
+    "help"              = "Expert Help",
+    "fair_cap"          = "Fair Outcome"
   )
   
   levels_map <- list(
@@ -89,13 +93,25 @@ groupbars_params <- function() {
       "cooccurence_group",
       "disability",
       "category",
-      "ethnic_majority"),
+      "ethnic_majority",
+      "rights",
+      "info",
+      "help",
+      "fair_cap"
+      ),
     problem = select_groups(
       full_group_cfg,
-      "category")
+      "category"),
+    legal_cap = select_groups(
+      full_group_cfg,
+      "rights",
+      "info",
+      "help",
+      "fair_cap"
     )
+  )
   
-  
+
   # Here you can add a new variable 
   
   measures <- list(
@@ -122,48 +138,71 @@ groupbars_params <- function() {
     add_measure("access2rep",    access2rep,    "extended"),
     add_measure("fairness",      fair,          "extended"),
     add_measure("outcome_done",  outcome_done,  "extended"),
+    
+    #Legal Cap analysis
+    add_measure("access2drm",   access2drm,   "legal_cap"),
+    add_measure("access2rep",    access2rep,    "legal_cap"),
+    
 
-    add_measure("AJD_adviser_14",  AJD_adviser_14,  "basic"),
-    add_measure("AJD_adviser_17",  AJD_adviser_17,  "basic"),
-    add_measure("AJD_adviser_12",  AJD_adviser_12,  "basic"),
-    add_measure("AJD_adviser_15",  AJD_adviser_15,  "basic"),
-    add_measure("AJD_adviser_7",   AJD_adviser_7,  "basic"),
-    add_measure("AJD_adviser_16",  AJD_adviser_16,  "basic"),
-    add_measure("AJD_adviser_4",   AJD_adviser_4,  "basic"),
+    #Type of advisers
+    add_measure("AJD_adviser_14",  AJD_adviser_14,  "extended"),
+    add_measure("AJD_adviser_17",  AJD_adviser_17,  "extended"),
+    add_measure("AJD_adviser_12",  AJD_adviser_12,  "extended"),
+    add_measure("AJD_adviser_15",  AJD_adviser_15,  "extended"),
+    add_measure("AJD_adviser_7",   AJD_adviser_7,   "extended"),
+
+    #Barriers for non-professional help
+    add_measure("reason_no_need"    ,reason_no_need, "extended"),
+    add_measure("reason_practical"  ,reason_practical, "extended"),
+    add_measure("reason_psy"        ,reason_psy,       "extended"),
+    add_measure("reason_relation"   ,reason_relation,  "extended"),
+    add_measure("reason_info"       ,reason_info,   "extended"),
     
-    add_measure("AJD_adviser_14_p",  AJD_adviser_14,  "problem"),
-    add_measure("AJD_adviser_17_p",  AJD_adviser_17,  "problem"),
-    add_measure("AJD_adviser_12_p",  AJD_adviser_12,  "problem"),
-    add_measure("AJD_adviser_15_p",  AJD_adviser_15,  "problem"),
-    add_measure("AJD_adviser_7_p",   AJD_adviser_7,  "problem"),
-    add_measure("AJD_adviser_16_p",  AJD_adviser_16,  "problem"),
-    add_measure("AJD_adviser_4_p",   AJD_adviser_4,  "problem"),
-  
-    #Reasons for non-professional help
-    add_measure("reason_practical", reason_practical, "extended"),
-    add_measure("reason_psy",       reason_psy,       "extended"),
-    add_measure("reason_relation",  reason_relation,  "extended"),
-    add_measure("reason_no_need",   reason_no_need,   "extended"),
-    add_measure("reason_information",AJD_noadvice_reason_13,   "extended"),
-    
-    add_measure("AJR_noaction_8",  AJR_noaction_8,  "extended"),
-    add_measure("AJR_noaction_4",  AJR_noaction_4,  "extended"),
-    add_measure("AJR_noaction_1",  AJR_noaction_1,  "extended"),
-    add_measure("AJR_noaction_5",  AJR_noaction_5,  "extended"),
-    add_measure("AJR_noaction_3",  AJR_noaction_3,  "extended"),
-    add_measure("AJR_noaction_9",  AJR_noaction_9,  "extended"),
-    
+    #Reasons for no action
+    add_measure("no_need_action"  , no_need_action, "extended"),
     add_measure("practical_action", practical_action, "extended"),
     add_measure("psy_action"      , psy_action,       "extended"),
     add_measure("relation_action" , relation_action,  "extended"),
-    add_measure("AJR_noaction_11" , AJR_noaction_11,  "extended"),
+    add_measure("info_action"     , info_action,  "extended"),
+    
 
+    #DRMs - extended
+    add_measure("AJR_drm_1_bin",  AJR_drm_1_bin,  "extended"),
+    add_measure("AJR_drm_2_bin",  AJR_drm_2_bin,  "extended"),
+    add_measure("AJR_drm_3_bin",  AJR_drm_3_bin,  "extended"),
+    add_measure("AJR_drm_4_bin",  AJR_drm_4_bin,  "extended"),
+    add_measure("AJR_drm_5_bin",  AJR_drm_5_bin,  "extended"),
+    add_measure("AJR_drm_6_bin",  AJR_drm_6_bin,  "extended"),
+    add_measure("AJR_drm_7_bin",  AJR_drm_7_bin,  "extended"),
+    add_measure("AJR_drm_8_bin",  AJR_drm_8_bin,  "extended"),
+    add_measure("AJR_drm_9_bin",  AJR_drm_9_bin,  "extended"),
+    add_measure("AJR_drm_10_bin",  AJR_drm_9_bin,  "extended"),
+    add_measure("AJR_drm_11_bin",  AJR_drm_11_bin,  "extended"),
+    
     add_measure("AJR_drm_6_bin_p",  AJR_drm_6_bin,  "problem"),
     add_measure("AJR_drm_7_bin_p",  AJR_drm_7_bin,  "problem"),
     add_measure("AJR_drm_4_bin_p",  AJR_drm_4_bin,  "problem"),
     add_measure("AJR_drm_11_bin_p",  AJR_drm_11_bin,  "problem"),
     add_measure("AJR_drm_8_bin_p",  AJR_drm_8_bin,  "problem"),
     
+    #Reasons for not going to a DRM
+    add_measure("no_need_drm",  no_need_drm,  "extended"),
+    add_measure("needed_drm" ,  needed_drm,   "extended"),
+    
+    #Affordability of DRMs
+    add_measure("drm_1_d_affordable_bin",  drm_1_d_affordable_bin,  "extended"),
+    add_measure("drm_2_d_affordable_bin",  drm_2_d_affordable_bin,  "extended"),
+    add_measure("drm_3_d_affordable_bin",  drm_3_d_affordable_bin,  "extended"),
+    add_measure("drm_4_d_affordable_bin",  drm_4_d_affordable_bin,  "extended"),
+    add_measure("drm_5_d_affordable_bin",  drm_5_d_affordable_bin,  "extended"),
+    add_measure("drm_6_d_affordable_bin",  drm_6_d_affordable_bin,  "extended"),
+    add_measure("drm_7_d_affordable_bin",  drm_7_d_affordable_bin,  "extended"),
+    add_measure("drm_8_d_affordable_bin",  drm_8_d_affordable_bin,  "extended"),
+    add_measure("drm_9_d_affordable_bin",  drm_9_d_affordable_bin,  "extended"),
+    add_measure("drm_11_d_affordable_bin",  drm_11_d_affordable_bin,  "extended"),
+    
+
+    #Impact
     add_measure("impact",        impact,        "basic"),
     add_measure("impact_p",  impact,  "problem"),
     add_measure("impact_1",  impact_1,  "basic"),
@@ -172,16 +211,28 @@ groupbars_params <- function() {
     add_measure("impact_4",  impact_4,  "basic"),
     add_measure("impact_5",  impact_5,  "basic"),
     
+    
+    #Hardships
     add_measure("had_hardship",  had_hardship,  "basic"),
+    add_measure("hardship_1_bin_p",   hardship_1_bin,  "problem"),
     add_measure("hardship_2_bin_p",   hardship_2_bin,  "problem"),
+    add_measure("hardship_3_bin_p",   hardship_3_bin,  "problem"),
+    add_measure("hardship_4_bin_p",   hardship_4_bin,  "problem"),
+    add_measure("hardship_5_bin_p",   hardship_5_bin,  "problem"),
+    add_measure("hardship_6_bin_p",   hardship_6_bin,  "problem"),
+    add_measure("hardship_7_bin_p",   hardship_7_bin,  "problem"),
     add_measure("hardship_8_bin_p",   hardship_8_bin,  "problem"),
-    add_measure("hardship_10_bin_p",  hardship_10_bin,  "problem"),
     add_measure("hardship_9_bin_p",   hardship_9_bin,  "problem"),
+    add_measure("hardship_10_bin_p",  hardship_10_bin,  "problem"),
+    add_measure("hardship_11_bin_p",  hardship_11_bin,  "problem"),
+    add_measure("hardship_12_bin_p",  hardship_12_bin,  "problem"),
+    add_measure("hardship_13_bin_p",  hardship_13_bin,  "problem"),
+    add_measure("hardship_14_bin_p",  hardship_14_bin,  "problem"),
     add_measure("hardship_15_bin_p",  hardship_15_bin,  "problem"),
     add_measure("hardship_16_bin_p",  hardship_16_bin,  "problem"),
-    add_measure("hardship_11_bin_p",  hardship_11_bin,  "problem"),
+
     
-    
+    #Legal capability
     add_measure("legal_rights",  legal_rights,  "basic"),
     add_measure("access2info2",  access2info,   "basic"),
     add_measure("expert_help",   expert_help,   "basic"),
@@ -405,26 +456,19 @@ build_bars_params <- function() {
       "problem_cat_money"       = "Money/debt",
       "problem_cat_employment"  = "Employment"
     ),
-    no_prof_help_test = c(
+    no_prof_help_group = c(
+      "reason_no_need"         = "Did not need help",
       "reason_practical"       = "Practical barriers (cost/time/access)",
       "reason_psy"             = "Psychological Barriers",
       "reason_relation"        = "Relational Barriers",
-      "reason_no_need"         = "No need / low severity",
-      "AJD_noadvice_reason_4"  = "Got all the help\nfrom others",
-      "AJD_noadvice_reason_13" = "Did not know where/how\nto find advice",
-      "AJD_noadvice_reason_15" = "Tried seeking help\nbefore and it\nwasn't helpful",
-      "AJD_noadvice_reason_16" = "Someone told me\nnot to get advice",
-      "AJD_noadvice_reason_17" = "Other reason"
+      "reason_info"            = "Information Barriers"
     ),
-    no_help_test = c(
+    no_help_group = c(
       "practical_action"       = "Practical barriers (cost/time)",
       "psy_action"             = "Psychological Barriers",
       "relation_action"        = "Relational Barriers",
-      "no_need_action"         = "No need / low severity",
-      "AJR_noaction_9"         = "Had bigger issues",
-      "AJR_noaction_10"        = "Were at fault",
-      "AJR_noaction_11"        = "Didn’t know\nwhat to do",
-      "AJR_noaction_13"        = "Other reason"
+      "no_need_action"         = "No need/was not needed",
+      "info_action"            = "Information Barriers",
     )
   )
   
@@ -502,21 +546,15 @@ build_bars_params <- function() {
       top_n = Inf
     ),
     add_mr_block(
-      id = "no_prof_help_test",
-      cols = c("reason_practical", "reason_psy", "reason_relation", "reason_no_need",
-               "AJD_noadvice_reason_4", "AJD_noadvice_reason_13", "AJD_noadvice_reason_15",
-               "AJD_noadvice_reason_16", "AJD_noadvice_reason_17"
-               ),
-      labels_map_id = "no_prof_help_test",
+      id = "no_prof_help_group",
+      cols = c("reason_practical", "reason_psy", "reason_relation", "reason_info", "reason_no_need"),
+      labels_map_id = "no_prof_help_group",
       top_n = Inf
     ),
     add_mr_block(
-      id = "no_help_test",
-      cols = c("practical_action", "psy_action", "relation_action", "no_need_action",
-               "AJR_noaction_9", "AJR_noaction_10", "AJR_noaction_11",
-               "AJR_noaction_13"
-      ),
-      labels_map_id = "no_help_test",
+      id = "no_help_group",
+      cols = c("practical_action", "psy_action", "relation_action", "info_action","no_need_action"),
+      labels_map_id = "no_help_group",
       top_n = Inf
     )
   )

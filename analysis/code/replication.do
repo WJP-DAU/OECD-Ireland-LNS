@@ -277,7 +277,7 @@ forvalues i=1/17{
 }
 
 *----- Barriers to accessing professional help (Reasons)
-/*
+
 gen reason_no_need = 0 if appropriate_adviser==0
 replace reason_no_need =1 if AJD_noadvice_reason_1 ==1 | AJD_noadvice_reason_2 ==1 | AJD_noadvice_reason_3 ==1 | AJD_noadvice_reason_5 ==1 | AJD_noadvice_reason_6 ==1
 

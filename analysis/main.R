@@ -100,55 +100,212 @@ params <- groupbars_params()
 tables <- compute_groupbars_tables(data_subset.df, params)
 
 
-## TEST
+## =========================================================
+## Panel Bars
+## =========================================================
 
+#Legal cap - grouped
 plot_panel_indicators(                                                                                                                                                   
   tables           = tables,
-  indicator_ids    = c("reason_practical", "reason_psy",                                                                                                                 
-                       "reason_relation", "reason_information"),
+  indicator_ids    = c("access2rep", 
+                       "access2drm"),
+  params          = params,                                                                                                                                              
+  group_filters    = c("Overall",
+                       "rights",
+                       "info",
+                       "help",
+                       "fair_cap"),                                                                                              
+  include_overall = TRUE,
+  filename        = file.path(path2SP, "analysis/output/legal_cap.svg"),
+  width_mm         = 600,
+  height_mm        = 250,  
+  scale    = 1
+)
+
+
+
+## Top advisers by problem type 
+plot_panel_indicators(                                                                                                                                                   
+  tables           = tables,
+  indicator_ids    = c("AJD_adviser_14", "AJD_adviser_17",                                                                                                                 
+                       "AJD_adviser_12", "AJD_adviser_15",
+                       "AJD_adviser_7"),
   indicator_labels = c(                                                                                                                                                  
-    reason_practical  = "Practical barriers\n(cost/time/access)",
-    reason_psy        = "Psychological\nBarriers",                                                                                                                       
-    reason_relation   = "Relational\nBarriers",
-    reason_information = "Did not know where/how\nto find advice"                                                                                                        
+    AJD_adviser_14 = "Online search",
+    AJD_adviser_17 = "Other person",                                                                                                                       
+    AJD_adviser_12 = "Non-legal\nprofessional or\norganisation",
+    AJD_adviser_15 = "Social media",  
+    AJD_adviser_7  = "Private solicitor\nor law office"
+  ),
+  params          = params,                                                                                                                                              
+  group_filters    = c("Overall", "level_impact", "cooccurence_group", "category"),                                                                                              
+  include_overall = TRUE,
+  filename        = file.path(path2SP, "analysis/output/advisers_grouped_prob.svg"),
+  scale    = 1
+)
+
+#Reasons for not seeking prof help - grouped
+plot_panel_indicators(                                                                                                                                                   
+  tables           = tables,
+  indicator_ids    = c("reason_no_need", "reason_psy", "reason_practical",                                                                                                                 
+                       "reason_relation", "reason_info"),
+  indicator_labels = c(
+    reason_no_need     = "No need/\nlow severity",
+    reason_psy         = "Psychological\nBarriers",
+    reason_practical   = "Practical barriers\n(cost/time/access)",
+    reason_relation    = "Relational\nBarriers",
+    reason_info        = "Information\nBarriers"                                                                                                        
   ),
   params          = params,                                                                                                                                              
   group_filters   = c("Overall", "gender", "age_group", "edu_level",
                       "income", "NUTS", "disability", "ethnic_majority"),                                                                                                
   include_overall = TRUE,
-  filename        = file.path(path2SP, "analysis/output/reasons_grouped_demos.svg"),                                                                                     
-  width_mm        = 400,
-  height_mm       = 700,
-  scale            = 0.75  
+  filename        = file.path(path2SP, "analysis/output/reasons_grouped_demos.svg"),
+  scale    = 1
 )
 
 plot_panel_indicators(                                                                                                                             
   tables           = tables,                              
-  indicator_ids    = c("reason_practical", "reason_psy",                                                                                                                 
-                       "reason_relation", "reason_information"),
-  indicator_labels = c(                                                                                                                                                  
-    reason_practical  = "Practical barriers\n(cost/time/access)",
-    reason_psy        = "Psychological\nBarriers",                                                                                                                       
-    reason_relation   = "Relational\nBarriers",
-    reason_information = "Did not know where/how\nto find advice"                                                                                                        
-  ),                                       
+  indicator_ids    = c("reason_no_need", "reason_psy", "reason_practical",                                                                                                                 
+                       "reason_relation", "reason_info"),
+  indicator_labels = c(
+    reason_no_need     = "No need/\nlow severity",
+    reason_psy         = "Psychological\nBarriers",
+    reason_practical   = "Practical barriers\n(cost/time/access)",
+    reason_relation    = "Relational\nBarriers",
+    reason_info        = "Information\nBarriers"                                                                                                        
+  ),                     
   params           = params,                                                                                                                       
   group_filters    = c("Overall", "level_impact", "cooccurence_group", "category"),
   
   include_overall  = TRUE,                                                                                                                         
   filename         = file.path(path2SP, "analysis/output/reasons_grouped_prob.svg"),
-  width_mm         = 400,                                                                                                                          
-  height_mm        = 700,
-  scale            = 0.75  
+  scale            = 1  
 )   
 
-
+#Reasons for not seeking ANY help - grouped
+plot_panel_indicators(                                                                                                                             
+  tables           = tables,                              
+  indicator_ids    = c("no_need_action", "psy_action", "practical_action",  "info_action", "relation_action"),
+  indicator_labels = c(no_need_action  = "No need/\nwas not needed",
+                       psy_action = "Psychological\nBarriers", 
+                       practical_action = "Practical barriers\n(cost/time)",  
+                       info_action = "Information\nBarriers",
+                       relation_action = "Relational\nBarriers"
+                       ),                                              
+  params           = params,                                                                                                                       
+  group_filters    = c(  "Overall", "gender", "age_group", "edu_level", "income", 
+                         "NUTS", "disability", "ethnic_majority"),
+  
+  include_overall  = TRUE,                                                                                                                         
+  filename         = file.path(path2SP, "analysis/output/no_help_demo.svg"),
+  width_mm         = 400,                                                                                                                          
+  height_mm        = 476                                                                                                                           
+)       
 
 plot_panel_indicators(                                                                                                                             
   tables           = tables,                              
+  indicator_ids    = c("no_need_action", "psy_action", "practical_action",  "info_action", "relation_action"),
+  indicator_labels = c(no_need_action  = "No need/\nwas not needed",
+                       psy_action = "Psychological\nBarriers", 
+                       practical_action = "Practical barriers\n(cost/time)",  
+                       info_action = "Information\nBarriers",
+                       relation_action = "Relational\nBarriers"
+  ),                                         
+  params           = params,                                                                                                                       
+  group_filters    = c("Overall", "level_impact", "cooccurence_group"),
+  
+  include_overall  = TRUE,                                                                                                                         
+  filename         = file.path(path2SP, "analysis/output/no_help_prob.svg"),
+  width_mm         = 400,                                                                                                                          
+  height_mm        = 250                                                                                                                           
+)     
+
+
+#No DRMs reasons - grouped
+plot_panel_indicators(                                                                                                                             
+  tables           = tables,                              
+  indicator_ids    = c("no_need_drm", "needed_drm"),
+  indicator_labels = c(no_need_drm = "Did not need a dispute\nresolution mechanism", 
+                       needed_drm = "Needed access to a dispute\nresolution mechanism but\ndid not have it"  
+                       ),                                             
+  params           = params,                                                                                                                       
+  group_filters    = c(  "Overall", "gender", "age_group", "edu_level", "income", 
+                         "NUTS", "disability", "ethnic_majority"),
+  
+  include_overall  = TRUE,                                                                                                                         
+  filename         = file.path(path2SP, "analysis/output/no_drm_demo.svg"),
+  height_mm        = 476                                                                                                                           
+)
+
+plot_panel_indicators(                                                                                                                             
+  tables           = tables,                              
+  indicator_ids    = c("no_need_drm", "needed_drm"),
+  indicator_labels = c(no_need_drm = "Did not need a dispute\nresolution mechanism", 
+                       needed_drm = "Needed access to a dispute\nresolution mechanism but\ndid not have it"  
+  ),                                             
+  params           = params,                                                                                                                       
+  group_filters    = c("Overall", "level_impact", "cooccurence_group", "category"),
+  include_overall  = TRUE,                                                                                                                         
+  filename         = file.path(path2SP, "analysis/output/no_drm_prob.svg"),
+  height_mm        = 476                                                                                                                           
+)  
+
+
+#Contacted DRMs - grouped 
+plot_panel_indicators(                                                                                                                             
+  tables           = tables,                              
+  indicator_ids    = c("AJR_drm_6_bin",
+                       "AJR_drm_7_bin",
+                       "AJR_drm_4_bin",
+                       "AJR_drm_11_bin",
+                       "AJR_drm_8_bin"
+  ),
+  indicator_labels = c(AJR_drm_6_bin  = "Lawyer or\nlaw office staff", 
+                       AJR_drm_7_bin  = "Gov. department\nor local council",
+                       AJR_drm_4_bin  = "Police or\nlaw enforcement",
+                       AJR_drm_11_bin = "Other professional\nor organisation",
+                       AJR_drm_8_bin  = "Community leader\nor person of\nstanding"
+  ),   
+  params           = params,                                                                                                                       
+  group_filters    = c("Overall", "level_impact", "cooccurence_group", "category"),
+  include_overall  = TRUE,                                                                                                                         
+  filename         = file.path(path2SP, "analysis/output/drm1_prob.svg"),
+  width_mm         = 400, 
+  height_mm        = 476                                                                                                                           
+)
+
+plot_panel_indicators(                                                                                                                             
+  tables           = tables,                              
+  indicator_ids    = c("AJR_drm_1_bin", 
+                       "AJR_drm_10_bin", 
+                       "AJR_drm_9_bin",
+                       "AJR_drm_5_bin",
+                       "AJR_drm_2_bin",
+                       "AJR_drm_3_bin"
+                       ),
+  indicator_labels = c(AJR_drm_1_bin  = "Court", 
+                       AJR_drm_10_bin = "Other person\n(friend, family,\netc.)",
+                       AJR_drm_9_bin  = "Other dispute\nresolution\nservice",
+                       AJR_drm_5_bin  = "Mediation or\nconciliation\nservice",
+                       AJR_drm_2_bin  = "Tribunal",
+                       AJR_drm_3_bin  = "Ombudsman"
+  ),                                             
+  params           = params,                                                                                                                       
+  group_filters    = c("Overall", "level_impact", "cooccurence_group", "category"),
+  include_overall  = TRUE,                                                                                                                         
+  filename         = file.path(path2SP, "analysis/output/drm2_prob.svg"),
+  width_mm         = 400, 
+  height_mm        = 476                                                                                                                           
+)
+
+  
+#Levels of impact grouped 
+plot_panel_indicators(                                                                                                                             
+  tables           = tables,                              
   indicator_ids    = c("impact_1", "impact_2", "impact_3", "impact_4", "impact_5"),
-  indicator_labels = c(impact_1 = "impact_1", impact_2 = "impact_2", impact_3 = "impact_3", 
-                       impact_4 = "impact_4", impact_5 = "impact_5"),                                              
+  indicator_labels = c(impact_1 = "None at all", impact_2 = "Slight", impact_3 = "Moderate", 
+                       impact_4 = "High", impact_5 = "Severe"),                                              
   params           = params,                                                                                                                       
   group_filters    = c(  "Overall", "gender", "age_group", "edu_level", "income", 
                          "NUTS", "disability", "ethnic_majority"),
@@ -158,6 +315,133 @@ plot_panel_indicators(
   width_mm         = 400,                                                                                                                          
   height_mm        = 476                                                                                                                           
 )                                                                                                                                                  
+
+
+#Hardships grouped
+plot_panel_indicators(
+  tables           = tables,
+  indicator_ids    = c( 
+                        "hardship_2_bin_p",
+                        "hardship_8_bin_p",
+                        "hardship_10_bin_p",
+                        "hardship_9_bin_p",
+                        "hardship_15_bin_p",
+                        "hardship_16_bin_p"
+                        ),
+  indicator_labels = c(hardship_2_bin_p  = "Stress or\nemotional\nstrain", 
+                       hardship_8_bin_p  = "Loss of\nmoney", 
+                       hardship_10_bin_p = "Deterioration\nin mental\nhealth", 
+                       hardship_9_bin_p  = "Loss of\nconfidence",
+                       hardship_15_bin_p = "Finding everyday\nactivities\ndifficult", 
+                       hardship_16_bin_p = "Less trust\nin public\ninstitutions"
+                       ),    
+  params           = params,
+  
+  group_filters    = c("Overall", "category"),
+  include_overall  = TRUE,
+  filename         = file.path(path2SP, "analysis/output/hardship1_prob.svg"),
+  width_mm         = 400,  
+  height_mm        = 250
+)
+
+plot_panel_indicators(
+  tables           = tables,
+  indicator_ids    = c( 
+                        "hardship_11_bin_p",
+                        "hardship_1_bin_p",
+                        "hardship_3_bin_p",
+                        "hardship_14_bin_p",
+                        "hardship_4_bin_p",
+                        "hardship_6_bin_p"
+                        ),
+  indicator_labels = c(hardship_11_bin_p  = "Feeling\nisolated", 
+                       hardship_1_bin_p   = "Health\ndifficulties\nor injury", 
+                       hardship_3_bin_p   = "Damage to\nrelationships", 
+                       hardship_14_bin_p  = "Disruption of\npublic services",
+                       hardship_4_bin_p   = "Being threatened\nor feeling\nunsafe",
+                       hardship_6_bin_p   = "Changes to\nhousing\nsituation"
+                       ),  
+  params           = params,
+  group_filters    = c("Overall", "category"),
+  include_overall  = TRUE,
+  filename         = file.path(path2SP, "analysis/output/hardship2_prob.svg"),
+  width_mm         = 400,  
+  height_mm        = 250
+)
+
+plot_panel_indicators(
+  tables           = tables,
+  indicator_ids    = c( 
+                        "hardship_5_bin_p",
+                        "hardship_13_bin_p",
+                        "hardship_7_bin_p",
+                        "hardship_12_bin_p"
+                        ),
+  indicator_labels = c(hardship_5_bin_p   = "Damage to property",
+                       hardship_13_bin_p  = "Disruption to\neducation", 
+                       hardship_7_bin_p   = "Loss of employment",
+                       hardship_12_bin_p  = "Use of substances"
+                       ),  
+  params           = params,
+  group_filters    = c("Overall", "category"),
+  include_overall  = TRUE,
+  filename         = file.path(path2SP, "analysis/output/hardship3_prob.svg"),
+  width_mm         = 400,  
+  height_mm        = 250
+)
+
+
+
+
+
+#Affordable mechanisms - grouped 
+plot_panel_indicators(
+  tables           = tables,
+  indicator_ids    = c( 
+                        "drm_1_d_affordable_bin",
+                        "drm_2_d_affordable_bin",
+                        "drm_3_d_affordable_bin",
+                        "drm_4_d_affordable_bin",
+                        "drm_5_d_affordable_bin"
+  ),
+  indicator_labels = c(drm_1_d_affordable_bin  = "Court",
+                       drm_2_d_affordable_bin  = "Tribunal", 
+                       drm_3_d_affordable_bin  = "Ombudsman",
+                       drm_4_d_affordable_bin  = "Police or\nlaw enforcement",
+                       drm_5_d_affordable_bin  = "Mediation or\nconciliation service"
+                         ),  
+  params           = params,
+  group_filters    = c(  "Overall", "gender", "age_group", "edu_level", "income", 
+                         "NUTS", "disability", "ethnic_majority"),
+  include_overall  = TRUE,
+  filename         = file.path(path2SP, "analysis/output/drm_afford1_demo.svg"),
+  width_mm         = 400,  
+  height_mm        = 250
+)
+
+plot_panel_indicators(
+  tables           = tables,
+  indicator_ids    = c( 
+                        "drm_6_d_affordable_bin",
+                        "drm_7_d_affordable_bin",
+                        "drm_8_d_affordable_bin",
+                        "drm_9_d_affordable_bin",
+                        "drm_11_d_affordable_bin"
+                        ),
+  indicator_labels = c(drm_6_d_affordable_bin  = "Lawyer or\nlaw office staff",
+                       drm_7_d_affordable_bin  = "Gov. department\nor local council", 
+                       drm_8_d_affordable_bin  = "Community leader\nor person of standing",
+                       drm_9_d_affordable_bin  = "Other dispute\nresolution service",
+                       drm_11_d_affordable_bin  = "Other professional\nor organisation"
+  ),  
+  params           = params,
+  group_filters    = c(  "Overall", "gender", "age_group", "edu_level", "income", 
+                         "NUTS", "disability", "ethnic_majority"),
+  include_overall  = TRUE,
+  filename         = file.path(path2SP, "analysis/output/drm_afford2_demo.svg"),
+  width_mm         = 400,  
+  height_mm        = 250
+)
 
 
 ## =========================================================

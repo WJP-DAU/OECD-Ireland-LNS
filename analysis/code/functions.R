@@ -827,7 +827,7 @@ plot_panel_indicators <- function(
   # label annotations that sit above the National Average bar (y = 1.75, clip = "off").
   if (is.null(height_mm)) {
     n_panels  <- length(row_order)
-    height_mm <- (length(levels_all) + 3L) * 12 + max(0L, n_panels - 1L) * 8 + 100
+    height_mm <- (length(levels_all) + 3L) * 4 + max(0L, n_panels - 1L) * 8 + 100
   }
 
   # Attach composite y_id and pivot to long format
@@ -845,7 +845,7 @@ plot_panel_indicators <- function(
     dplyr::mutate(
       label_value = dplyr::if_else(
         color == "primary",
-        dplyr::if_else(is.na(value), NA_character_,
+        dplyr::if_else(is.na(value), "N/A",
                        paste0(round(value * 100, 0), "%")),
         NA_character_
       )
@@ -857,13 +857,44 @@ plot_panel_indicators <- function(
   col_label_df <- tibble::tibble(
     label           = unname(indicator_labels[indicator_ids]),
     x               = 50,
-    y               = 1.75,
+    y               = 2.5,
     grouping_disp   = factor(overall_strip, levels = row_order),
     indicator_label = factor(
       unname(indicator_labels[indicator_ids]),
       levels = unname(indicator_labels[indicator_ids])
     )
   )
+
+  # "National Average" label — mirrors col_label_df structure exactly
+  # (factor facet vars + numeric y) so geom_text places it correctly.
+  na_label_df <- tibble::tibble(
+    x               = -2,
+    y               = 1,
+    grouping_disp   = factor(overall_strip, levels = row_order),
+    indicator_label = factor(
+      unname(indicator_labels[indicator_ids[1]]),
+      levels = unname(indicator_labels[indicator_ids])
+    ),
+    label = "National Average"
+  )
+
+  # Group strip labels — y = count of levels in that panel = top bar position.
+  group_label_df <- purrr::map_dfr(group_filters_clean, function(k) {
+    disp_lab <- params$full_group_cfg[[k]] %||% k
+    if (!disp_lab %in% groups_present) return(NULL)
+    group_y_ids <- levels_all[startsWith(levels_all, paste0(disp_lab, " | "))]
+    if (!length(group_y_ids)) return(NULL)
+    tibble::tibble(
+      grouping_disp   = factor(disp_lab, levels = row_order),
+      indicator_label = factor(
+        unname(indicator_labels[indicator_ids[1]]),
+        levels = unname(indicator_labels[indicator_ids])
+      ),
+      y     = length(group_y_ids) + 0.5,
+      x     = -10,
+      label = disp_lab
+    )
+  })
 
   p <- ggplot2::ggplot(combined,
                        ggplot2::aes(x = value * 100, y = y_id, fill = color)) +
@@ -872,15 +903,17 @@ plot_panel_indicators <- function(
       width    = 0.7,
       na.rm    = TRUE
     ) +
+    #Value labels
     ggplot2::geom_text(
       ggplot2::aes(x = 101, label = label_value),
       family   = "inter",
       fontface = "bold",
       color    = "#575796",
-      hjust    = 0,
+      hjust    = -0.1,
       size     = 4,
       na.rm    = TRUE
     ) +
+    #Variable label
     ggplot2::geom_text(
       data        = col_label_df,
       ggplot2::aes(x = x, y = y, label = label),
@@ -888,9 +921,36 @@ plot_panel_indicators <- function(
       color       = "#575796",
       fontface    = "bold",
       family      = "inter",
-      size        = 4.5,
+      size        = 5,
       hjust       = 0.5,
+      vjust       = 0.5,
+      lineheight  = 0.9,
+      na.rm       = TRUE
+    ) +
+    # "National Average" label
+    ggplot2::geom_text(
+      data        = na_label_df,
+      ggplot2::aes(x = x, y = y, label = label),
+      inherit.aes = FALSE,
+      hjust       = 1,
+      vjust       = 0.5,
+      color       = "#575796",
+      family      = "inter",
+      fontface    = "bold",
+      size        = 4.5,
+      na.rm       = TRUE
+    ) +
+    # Group label annotations
+    ggplot2::geom_text(
+      data        = group_label_df,
+      ggplot2::aes(x = x, y = y, label = label),
+      inherit.aes = FALSE,
+      hjust       = 1,
       vjust       = 0,
+      color       = "#575796",
+      family      = "inter",
+      fontface    = "bold",
+      size        = 4.5,
       na.rm       = TRUE
     ) +
     ggplot2::facet_grid(
@@ -906,10 +966,14 @@ plot_panel_indicators <- function(
     ggplot2::scale_x_continuous(
       expand   = c(0, 0),
       limits   = c(0, 115),
-      position = "top"
+      position = "top",
+      oob      = scales::oob_keep
     ) +
     ggplot2::scale_y_discrete(
-      labels = function(x) sub("^.* \\| ", "", x)
+      labels = function(x) {
+        lbl <- sub("^.* \\| ", "", x)
+        dplyr::if_else(lbl == "National Average", "", lbl)
+      }
     ) +
     ggplot2::coord_cartesian(clip = "off") +
     ggplot2::theme_minimal() +
@@ -917,17 +981,8 @@ plot_panel_indicators <- function(
       strip.placement       = "outside",
       strip.background      = element_blank(),
       strip.text.x          = element_blank(),
-      strip.text.y.left     = element_text(
-        angle  = 0,
-        size   = 12,
-        color  = "#575796",
-        hjust  = 1,
-        vjust  = 1,
-        family = "inter",
-        face   = "bold",
-        margin = margin(-20, -35, 0, 55)
-      ),
-      strip.switch.pad.grid = grid::unit(-35, "mm"),
+      strip.text.y.left     = element_blank(),
+      strip.switch.pad.grid = grid::unit(0, "mm"),
       strip.clip            = "off",
       axis.title            = element_blank(),
       axis.text.x           = element_blank(),
@@ -939,9 +994,9 @@ plot_panel_indicators <- function(
         color  = "#1a1a1a"
       ),
       panel.grid            = element_blank(),
-      panel.spacing         = grid::unit(8, "mm"),
+      panel.spacing         = grid::unit(6, "mm"),
       legend.position       = "none",
-      plot.margin           = margin(40, 5, 5, 5, "mm")
+      plot.margin           = margin(20, 5, 5, 5, "mm")
     )
 
   dir.create(dirname(filename), showWarnings = FALSE, recursive = TRUE)
