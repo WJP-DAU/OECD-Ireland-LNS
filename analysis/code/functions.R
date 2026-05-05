@@ -739,22 +739,23 @@ plot_panel_indicators <- function(
     filename,
     width_mm         = 300,
     height_mm        = NULL,
-    scale            = 0.75
+    scale            = 0.75,
+    left_margin_mm   = 40 
 ) {
   missing_ids <- setdiff(indicator_ids, names(tables))
   if (length(missing_ids)) {
     stop("IDs not found in tables: ", paste(missing_ids, collapse = ", "))
   }
-
+  
   if (is.null(indicator_labels)) {
     indicator_labels <- setNames(indicator_ids, indicator_ids)
   }
-
+  
   # Separate "Overall" from real group keys
   group_filters_clean <- setdiff(group_filters, "Overall")
   show_overall        <- include_overall || "Overall" %in% group_filters
   groupings_to_keep   <- c(if (show_overall) "Overall", group_filters_clean)
-
+  
   # Display labels and row order for facet strips (left side)
   overall_strip      <- " "
   group_strip_labels <- purrr::map_chr(
@@ -762,7 +763,7 @@ plot_panel_indicators <- function(
     ~ params$full_group_cfg[[.x]] %||% .x
   )
   row_order <- c(if (show_overall) overall_strip, group_strip_labels)
-
+  
   # Bind selected tables and filter
   combined <- purrr::map_dfr(indicator_ids, function(id) {
     tables[[id]] %>% dplyr::mutate(indicator = id)
@@ -777,7 +778,7 @@ plot_panel_indicators <- function(
       grouping_disp   = dplyr::recode(grouping_disp, !!!params$full_group_cfg),
       grouping_disp   = factor(grouping_disp, levels = row_order)
     )
-
+  
   # Build composite y_id factor levels.
   # National Average (" ") is placed at position 1 (bottom of the global y-axis), but its
   # facet row is first in row_order so it renders at the TOP of the panel grid.
@@ -787,12 +788,12 @@ plot_panel_indicators <- function(
   levels_cfg      <- params$levels_map
   groups_present  <- stats::na.omit(unique(as.character(combined$grouping_disp)))
   levels_all      <- character(0)
-
+  
   for (k in names(key2levels_name)) {
     if (k == "Overall" || !k %in% group_filters_clean) next
     disp_lab <- key2levels_name[[k]]
     if (!disp_lab %in% groups_present) next
-
+    
     if (k == "NUTS") {
       levels_region <- combined %>%
         dplyr::filter(grouping == k) %>%
@@ -803,7 +804,7 @@ plot_panel_indicators <- function(
         levels_all <- c(levels_all, paste(disp_lab, rev(levels_region), sep = " | "))
       next
     }
-
+    
     ordered_lvs  <- levels_cfg[[disp_lab]]
     present_vals <- combined %>%
       dplyr::filter(grouping == k) %>%
@@ -813,12 +814,12 @@ plot_panel_indicators <- function(
     if (length(lv_use))
       levels_all <- c(levels_all, paste(disp_lab, rev(lv_use), sep = " | "))
   }
-
+  
   # "National Average" goes first = position 1 = bottom in ggplot y-axis;
   # the " " facet row is first in row_order, so it renders at the TOP of the grid.
   # Using the plain string (not overall_strip " ") lets scale_y_discrete show the label.
   levels_all <- c("National Average", levels_all)
-
+  
   # Auto-size height.
   # space = "free_y" gives the single-bar National Average panel only 1/N of the panel
   # area, which is very small when N is large.  Adding 3 virtual bars to the count
@@ -829,7 +830,7 @@ plot_panel_indicators <- function(
     n_panels  <- length(row_order)
     height_mm <- (length(levels_all) + 3L) * 4 + max(0L, n_panels - 1L) * 8 + 100
   }
-
+  
   # Attach composite y_id and pivot to long format
   combined <- combined %>%
     dplyr::mutate(
@@ -850,7 +851,7 @@ plot_panel_indicators <- function(
         NA_character_
       )
     )
-
+  
   # Indicator labels — one per column, placed above the National Average bar.
   # y = 1.75 sits above position 1 ("National Average") in the " " facet row;
   # coord_cartesian(clip = "off") keeps it visible outside the panel boundary.
@@ -864,7 +865,7 @@ plot_panel_indicators <- function(
       levels = unname(indicator_labels[indicator_ids])
     )
   )
-
+  
   # "National Average" label — mirrors col_label_df structure exactly
   # (factor facet vars + numeric y) so geom_text places it correctly.
   na_label_df <- tibble::tibble(
@@ -877,7 +878,7 @@ plot_panel_indicators <- function(
     ),
     label = "National Average"
   )
-
+  
   # Group strip labels — y = count of levels in that panel = top bar position.
   group_label_df <- purrr::map_dfr(group_filters_clean, function(k) {
     disp_lab <- params$full_group_cfg[[k]] %||% k
@@ -895,7 +896,7 @@ plot_panel_indicators <- function(
       label = disp_lab
     )
   })
-
+  
   p <- ggplot2::ggplot(combined,
                        ggplot2::aes(x = value * 100, y = y_id, fill = color)) +
     ggplot2::geom_col(
@@ -996,9 +997,9 @@ plot_panel_indicators <- function(
       panel.grid            = element_blank(),
       panel.spacing         = grid::unit(6, "mm"),
       legend.position       = "none",
-      plot.margin           = margin(20, 5, 5, 5, "mm")
+      plot.margin           = margin(20, 5, 5, left_margin_mm, "mm")
     )
-
+  
   dir.create(dirname(filename), showWarnings = FALSE, recursive = TRUE)
   ggplot2::ggsave(
     filename = filename,
@@ -1008,7 +1009,7 @@ plot_panel_indicators <- function(
     units    = "mm",
     scale    = scale
   )
-
+  
   return(p)
 }
 

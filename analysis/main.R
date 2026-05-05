@@ -104,26 +104,6 @@ tables <- compute_groupbars_tables(data_subset.df, params)
 ## Panel Bars
 ## =========================================================
 
-#Legal cap - grouped
-plot_panel_indicators(                                                                                                                                                   
-  tables           = tables,
-  indicator_ids    = c("access2rep", 
-                       "access2drm"),
-  params          = params,                                                                                                                                              
-  group_filters    = c("Overall",
-                       "rights",
-                       "info",
-                       "help",
-                       "fair_cap"),                                                                                              
-  include_overall = TRUE,
-  filename        = file.path(path2SP, "analysis/output/legal_cap.svg"),
-  width_mm         = 600,
-  height_mm        = 250,  
-  scale    = 1
-)
-
-
-
 ## Top advisers by problem type 
 plot_panel_indicators(                                                                                                                                                   
   tables           = tables,
@@ -141,57 +121,69 @@ plot_panel_indicators(
   group_filters    = c("Overall", "level_impact", "cooccurence_group", "category"),                                                                                              
   include_overall = TRUE,
   filename        = file.path(path2SP, "analysis/output/advisers_grouped_prob.svg"),
+  left_margin_mm   = 5,    # minimal space needed    
   scale    = 1
 )
+
 
 #Reasons for not seeking prof help - grouped
 plot_panel_indicators(                                                                                                                                                   
   tables           = tables,
-  indicator_ids    = c("reason_no_need", "reason_psy", "reason_practical",                                                                                                                 
-                       "reason_relation", "reason_info"),
+  indicator_ids    = c("reason_no_need", "reason_legalcap", "reason_process",                                                                                                                 
+                       "reason_interpersonal","reason_other", "reason_prev"),
   indicator_labels = c(
-    reason_no_need     = "No need/\nlow severity",
-    reason_psy         = "Psychological\nBarriers",
-    reason_practical   = "Practical barriers\n(cost/time/access)",
-    reason_relation    = "Relational\nBarriers",
-    reason_info        = "Information\nBarriers"                                                                                                        
+    reason_no_need       = "No need/\nlow severity",
+    reason_legalcap      = "Legal Capability\nBarriers",
+    reason_process       = "Process barriers\n(cost/time/access)",
+    reason_interpersonal = "Interpersonal\nBarriers",
+    reason_other         = "Other reason",
+    reason_prev          = "Previous\nexperiences"
   ),
   params          = params,                                                                                                                                              
   group_filters   = c("Overall", "gender", "age_group", "edu_level",
                       "income", "NUTS", "disability", "ethnic_majority"),                                                                                                
   include_overall = TRUE,
   filename        = file.path(path2SP, "analysis/output/reasons_grouped_demos.svg"),
+  width_mm         = 400, 
+  left_margin_mm   = 5,    # minimal space needed     
   scale    = 1
 )
 
 plot_panel_indicators(                                                                                                                             
   tables           = tables,                              
-  indicator_ids    = c("reason_no_need", "reason_psy", "reason_practical",                                                                                                                 
-                       "reason_relation", "reason_info"),
+  indicator_ids    = c("reason_no_need", "reason_legalcap", "reason_process",                                                                                                                 
+                       "reason_interpersonal","reason_other", "reason_prev"),
   indicator_labels = c(
-    reason_no_need     = "No need/\nlow severity",
-    reason_psy         = "Psychological\nBarriers",
-    reason_practical   = "Practical barriers\n(cost/time/access)",
-    reason_relation    = "Relational\nBarriers",
-    reason_info        = "Information\nBarriers"                                                                                                        
-  ),                     
+    reason_no_need       = "No need/\nlow severity",
+    reason_legalcap      = "Legal Capability\nBarriers",
+    reason_process       = "Process barriers\n(cost/time/access)",
+    reason_interpersonal = "Interpersonal\nBarriers",
+    reason_other         = "Other reason",
+    reason_prev          = "Previous\nexperiences"
+  ),                  
   params           = params,                                                                                                                       
   group_filters    = c("Overall", "level_impact", "cooccurence_group", "category"),
   
   include_overall  = TRUE,                                                                                                                         
   filename         = file.path(path2SP, "analysis/output/reasons_grouped_prob.svg"),
+  width_mm         = 400, 
+  left_margin_mm   = 5,    # minimal space needed   
   scale            = 1  
-)   
+) 
+
 
 #Reasons for not seeking ANY help - grouped
+
 plot_panel_indicators(                                                                                                                             
   tables           = tables,                              
-  indicator_ids    = c("no_need_action", "psy_action", "practical_action",  "info_action", "relation_action"),
-  indicator_labels = c(no_need_action  = "No need/\nwas not needed",
-                       psy_action = "Psychological\nBarriers", 
-                       practical_action = "Practical barriers\n(cost/time)",  
-                       info_action = "Information\nBarriers",
-                       relation_action = "Relational\nBarriers"
+  indicator_ids    = c("no_need_action", "legalcap_action", "process_action", "interpersonal_action", 
+                       "bigger_action", "other_action"),
+  indicator_labels = c(no_need_action       = "No need/\nwas not needed",
+                       legalcap_action      = "Legal Capability\nBarriers", 
+                       process_action       = "Process barriers\n(cost/time)",  
+                       bigger_action        = "Had bigger\nproblems",
+                       interpersonal_action = "Interpersonal\nBarriers",
+                       other_action         = "Other reason"
                        ),                                              
   params           = params,                                                                                                                       
   group_filters    = c(  "Overall", "gender", "age_group", "edu_level", "income", 
@@ -199,57 +191,31 @@ plot_panel_indicators(
   
   include_overall  = TRUE,                                                                                                                         
   filename         = file.path(path2SP, "analysis/output/no_help_demo.svg"),
-  width_mm         = 400,                                                                                                                          
-  height_mm        = 476                                                                                                                           
+  width_mm         = 400,
+  left_margin_mm   = 5,    # minimal space needed    
+  scale            = 1  
 )       
 
 plot_panel_indicators(                                                                                                                             
   tables           = tables,                              
-  indicator_ids    = c("no_need_action", "psy_action", "practical_action",  "info_action", "relation_action"),
-  indicator_labels = c(no_need_action  = "No need/\nwas not needed",
-                       psy_action = "Psychological\nBarriers", 
-                       practical_action = "Practical barriers\n(cost/time)",  
-                       info_action = "Information\nBarriers",
-                       relation_action = "Relational\nBarriers"
-  ),                                         
+  indicator_ids    = c("no_need_action", "legalcap_action", "process_action", "interpersonal_action", 
+                       "bigger_action", "other_action"),
+  indicator_labels = c(no_need_action       = "No need/\nwas not needed",
+                       legalcap_action      = "Legal Capability\nBarriers", 
+                       process_action       = "Process barriers\n(cost/time)",  
+                       bigger_action        = "Had bigger\nproblems",
+                       interpersonal_action = "Interpersonal\nBarriers",
+                       other_action         = "Other reason"
+  ),                                            
   params           = params,                                                                                                                       
   group_filters    = c("Overall", "level_impact", "cooccurence_group"),
   
   include_overall  = TRUE,                                                                                                                         
   filename         = file.path(path2SP, "analysis/output/no_help_prob.svg"),
-  width_mm         = 400,                                                                                                                          
-  height_mm        = 250                                                                                                                           
+  width_mm         = 400,
+  left_margin_mm   = 5,    # minimal space needed    
+  scale            = 1  
 )     
-
-
-#No DRMs reasons - grouped
-plot_panel_indicators(                                                                                                                             
-  tables           = tables,                              
-  indicator_ids    = c("no_need_drm", "needed_drm"),
-  indicator_labels = c(no_need_drm = "Did not need a dispute\nresolution mechanism", 
-                       needed_drm = "Needed access to a dispute\nresolution mechanism but\ndid not have it"  
-                       ),                                             
-  params           = params,                                                                                                                       
-  group_filters    = c(  "Overall", "gender", "age_group", "edu_level", "income", 
-                         "NUTS", "disability", "ethnic_majority"),
-  
-  include_overall  = TRUE,                                                                                                                         
-  filename         = file.path(path2SP, "analysis/output/no_drm_demo.svg"),
-  height_mm        = 476                                                                                                                           
-)
-
-plot_panel_indicators(                                                                                                                             
-  tables           = tables,                              
-  indicator_ids    = c("no_need_drm", "needed_drm"),
-  indicator_labels = c(no_need_drm = "Did not need a dispute\nresolution mechanism", 
-                       needed_drm = "Needed access to a dispute\nresolution mechanism but\ndid not have it"  
-  ),                                             
-  params           = params,                                                                                                                       
-  group_filters    = c("Overall", "level_impact", "cooccurence_group", "category"),
-  include_overall  = TRUE,                                                                                                                         
-  filename         = file.path(path2SP, "analysis/output/no_drm_prob.svg"),
-  height_mm        = 476                                                                                                                           
-)  
 
 
 #Contacted DRMs - grouped 
@@ -271,6 +237,7 @@ plot_panel_indicators(
   group_filters    = c("Overall", "level_impact", "cooccurence_group", "category"),
   include_overall  = TRUE,                                                                                                                         
   filename         = file.path(path2SP, "analysis/output/drm1_prob.svg"),
+  left_margin_mm   = 5,    # minimal space needed 
   width_mm         = 400, 
   height_mm        = 476                                                                                                                           
 )
@@ -283,7 +250,7 @@ plot_panel_indicators(
                        "AJR_drm_5_bin",
                        "AJR_drm_2_bin",
                        "AJR_drm_3_bin"
-                       ),
+  ),
   indicator_labels = c(AJR_drm_1_bin  = "Court", 
                        AJR_drm_10_bin = "Other person\n(friend, family,\netc.)",
                        AJR_drm_9_bin  = "Other dispute\nresolution\nservice",
@@ -295,9 +262,57 @@ plot_panel_indicators(
   group_filters    = c("Overall", "level_impact", "cooccurence_group", "category"),
   include_overall  = TRUE,                                                                                                                         
   filename         = file.path(path2SP, "analysis/output/drm2_prob.svg"),
+  left_margin_mm   = 5,    # minimal space needed 
   width_mm         = 400, 
   height_mm        = 476                                                                                                                           
 )
+
+
+#No DRMs reasons - grouped
+
+plot_panel_indicators(                                                                                                                             
+  tables           = tables,                              
+  indicator_ids    = c("no_need_drm", "legalcap_drm", "process_drm", "legal_assis_drm", "trust_drm", 
+                       "interpersonal_drm", "other_drmr"),
+  indicator_labels = c(no_need_drm       = "Did not\nneed a DRM", 
+                       legalcap_drm      = "Legal Capability\nBarriers",
+                       legal_assis_drm   = "Could not\nobtain legal\nassistance",
+                       process_drm       = "Process barriers\n(cost/distance/\nconvenience)",
+                       trust_drm         = "Lack of trust\nof authorities",
+                       interpersonal_drm = "Interpersonal\nbarriers",
+                       other_drmr        = "Other reason"
+                       ),                                             
+  params           = params,                                                                                                                       
+  group_filters    = c(  "Overall", "gender", "age_group", "edu_level", "income", 
+                         "NUTS", "disability", "ethnic_majority"),
+  
+  include_overall  = TRUE,                                                                                                                         
+  filename         = file.path(path2SP, "analysis/output/no_drm_demo.svg"),
+  left_margin_mm   = 5,    # minimal space needed   
+  width_mm         = 430,
+  height_mm        = 400   
+)
+
+plot_panel_indicators(                                                                                                                             
+  tables           = tables,                              
+  indicator_ids    = c("no_need_drm", "legalcap_drm", "process_drm", "legal_assis_drm", "trust_drm", 
+                       "interpersonal_drm", "other_drmr"),
+  indicator_labels = c(no_need_drm       = "Did not\nneed a DRM", 
+                       legalcap_drm      = "Legal Capability\nBarriers",
+                       legal_assis_drm   = "Could not\nobtain legal\nassistance",
+                       process_drm       = "Process barriers\n(cost/distance/\nconvenience)",
+                       trust_drm         = "Lack of trust\nof authorities",
+                       interpersonal_drm = "Interpersonal\nbarriers",
+                       other_drmr        = "Other reason"
+  ),                                          
+  params           = params,                                                                                                                       
+  group_filters    = c("Overall", "level_impact", "cooccurence_group", "category"),
+  include_overall  = TRUE,                                                                                                                         
+  filename         = file.path(path2SP, "analysis/output/no_drm_prob.svg"),
+  left_margin_mm   = 5,    # minimal space needed   
+  width_mm         = 430,  
+  height_mm        = 476                                                                                                                           
+)  
 
   
 #Levels of impact grouped 
@@ -312,6 +327,7 @@ plot_panel_indicators(
 
   include_overall  = TRUE,                                                                                                                         
   filename         = file.path(path2SP, "analysis/output/impact_demo.svg"),
+  left_margin_mm   = 5,    # minimal space needed    
   width_mm         = 400,                                                                                                                          
   height_mm        = 476                                                                                                                           
 )                                                                                                                                                  
@@ -337,11 +353,12 @@ plot_panel_indicators(
                        ),    
   params           = params,
   
-  group_filters    = c("Overall", "category"),
+  group_filters    = c("Overall", "category", "cooccurence_group"),
   include_overall  = TRUE,
   filename         = file.path(path2SP, "analysis/output/hardship1_prob.svg"),
-  width_mm         = 400,  
-  height_mm        = 250
+  left_margin_mm   = 5,    # minimal space needed    
+  width_mm         = 420,  
+  height_mm        = 400
 )
 
 plot_panel_indicators(
@@ -362,10 +379,11 @@ plot_panel_indicators(
                        hardship_6_bin_p   = "Changes to\nhousing\nsituation"
                        ),  
   params           = params,
-  group_filters    = c("Overall", "category"),
+  group_filters    = c("Overall", "category", "cooccurence_group"),
   include_overall  = TRUE,
   filename         = file.path(path2SP, "analysis/output/hardship2_prob.svg"),
-  width_mm         = 400,  
+  left_margin_mm   = 5,    # minimal space needed    
+  width_mm         = 420,  
   height_mm        = 250
 )
 
@@ -383,15 +401,13 @@ plot_panel_indicators(
                        hardship_12_bin_p  = "Use of substances"
                        ),  
   params           = params,
-  group_filters    = c("Overall", "category"),
+  group_filters    = c("Overall", "category", "cooccurence_group"),
   include_overall  = TRUE,
   filename         = file.path(path2SP, "analysis/output/hardship3_prob.svg"),
-  width_mm         = 400,  
+  left_margin_mm   = 5,    # minimal space needed    
+  width_mm         = 420,  
   height_mm        = 250
 )
-
-
-
 
 
 #Affordable mechanisms - grouped 
@@ -441,6 +457,80 @@ plot_panel_indicators(
   filename         = file.path(path2SP, "analysis/output/drm_afford2_demo.svg"),
   width_mm         = 400,  
   height_mm        = 250
+)
+
+
+#Legal cap - grouped
+
+#Access2rep
+plot_panel_indicators(                                                                                                                                                   
+  tables           = tables,
+  indicator_ids    = c("access2rep2", "reason_no_need", "reason_legalcap", "reason_external"),
+  indicator_labels = c(                                                                                                                                                  
+    access2rep2     = "Access to Appropriate\nAssistance and\nRepresentation",
+    reason_no_need  = "Did not need\n the assistance",
+    reason_legalcap = "Legal Capability\nBarriers",
+    reason_external = "External\nbarriers"
+  ),
+  params          = params,                                                                                                                                              
+  group_filters    = c("Overall",
+                       "rights",
+                       "info",
+                       "help",
+                       "fair_cap"),                                                                                              
+  include_overall = TRUE,
+  filename        = file.path(path2SP, "analysis/output/legal_cap_access2rep.svg"),
+  width_mm         = 400,                                                                                                                          
+  height_mm        = 250,                                 
+  scale            = 1,
+  left_margin_mm   = 65    # reserve more space in the SVG
+)
+
+#Access2DRM
+plot_panel_indicators(                                                                                                                                                   
+  tables           = tables,
+  indicator_ids    = c("access2DRM2", "no_need_drm", "legalcap_drm", "external_bar_drm"),
+  indicator_labels = c(                                                                                                                                                  
+    access2DRM2      = "Access to DRM\n(SDG 16.3.3)",
+    no_need_drm      = "Did not\nneed a DRM", 
+    legalcap_drm     = "Legal Capability\nBarriers",
+    external_bar_drm = "External\nBarriers"
+    
+  ),
+  params          = params,                                                                                                                                              
+  group_filters    = c("Overall",
+                       "rights",
+                       "info",
+                       "help",
+                       "fair_cap"),                                                                                              
+  include_overall = TRUE,
+  filename        = file.path(path2SP, "analysis/output/legal_cap_drm.svg"),
+  width_mm         = 400,                                                                                                                          
+  height_mm        = 250,                                 
+  scale            = 1,
+  left_margin_mm   = 65    # reserve more space in the SVG
+)
+
+
+#Access to justice
+plot_panel_indicators(                                                                                                                                                   
+  tables           = tables,
+  indicator_ids    = c("access2info", "access2rep", "access2DRM", "fairness", "outcome_done"),
+  indicator_labels = c(
+    access2info    = "Awareness of\nSources of\nInformation",
+    access2rep     = "Access to Appropriate\nAssistance and\nRepresentation",
+    access2DRM     = "Access to DRM\n(SDG 16.3.3)",
+    fairness       = "Fair Outcome",
+    outcome_done   = "Finalized resolution\nprocess"
+  ),
+  params          = params,                                                                                                                                              
+  group_filters    = c(  "Overall", "gender", "age_group", "edu_level", "income", 
+                         "NUTS", "disability", "ethnic_majority"),                                                                                             
+  include_overall = TRUE,
+  filename        = file.path(path2SP, "analysis/output/a2j.svg"),
+  width_mm         = 400,                                                                                                                          
+  scale            = 1,
+  left_margin_mm   = 65    # reserve more space in the SVG
 )
 
 

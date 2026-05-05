@@ -25,7 +25,7 @@ groupbars_params <- function() {
     "category"          = "Problem Type",
     "ethnic_majority"   = "Ethnicity",
     "rights"            = "Legal Rights",
-    "info"              = "Good Information and Advice",
+    "info"              = "Information and Advice",
     "help"              = "Expert Help",
     "fair_cap"          = "Fair Outcome"
   )
@@ -140,8 +140,8 @@ groupbars_params <- function() {
     add_measure("outcome_done",  outcome_done,  "extended"),
     
     #Legal Cap analysis
-    add_measure("access2drm",   access2drm,   "legal_cap"),
-    add_measure("access2rep",    access2rep,    "legal_cap"),
+    add_measure("access2DRM2", access2drm, "legal_cap"),
+    add_measure("access2rep2", access2rep, "legal_cap"),
     
 
     #Type of advisers
@@ -152,18 +152,21 @@ groupbars_params <- function() {
     add_measure("AJD_adviser_7",   AJD_adviser_7,   "extended"),
 
     #Barriers for non-professional help
-    add_measure("reason_no_need"    ,reason_no_need, "extended"),
-    add_measure("reason_practical"  ,reason_practical, "extended"),
-    add_measure("reason_psy"        ,reason_psy,       "extended"),
-    add_measure("reason_relation"   ,reason_relation,  "extended"),
-    add_measure("reason_info"       ,reason_info,   "extended"),
+    add_measure("reason_no_need"       ,reason_no_need, "extended"),
+    add_measure("reason_process"       ,reason_process, "extended"),
+    add_measure("reason_legalcap"      ,reason_legalcap,  "extended"),
+    add_measure("reason_interpersonal" ,reason_interpersonal, "extended"),
+    add_measure("reason_prev"          ,reason_prev, "extended"),
+    add_measure("reason_other"         ,reason_other, "extended"),
+    add_measure("reason_external"      ,reason_external, "extended"),
     
     #Reasons for no action
-    add_measure("no_need_action"  , no_need_action, "extended"),
-    add_measure("practical_action", practical_action, "extended"),
-    add_measure("psy_action"      , psy_action,       "extended"),
-    add_measure("relation_action" , relation_action,  "extended"),
-    add_measure("info_action"     , info_action,  "extended"),
+    add_measure("no_need_action"       , no_need_action, "extended"),
+    add_measure("process_action"       , process_action, "extended"),
+    add_measure("legalcap_action"      , legalcap_action,  "extended"),
+    add_measure("interpersonal_action" , interpersonal_action,       "extended"),
+    add_measure("bigger_action"        , bigger_action,  "extended"),
+    add_measure("other_action"         , other_action,  "extended"),
     
 
     #DRMs - extended
@@ -186,9 +189,16 @@ groupbars_params <- function() {
     add_measure("AJR_drm_8_bin_p",  AJR_drm_8_bin,  "problem"),
     
     #Reasons for not going to a DRM
-    add_measure("no_need_drm",  no_need_drm,  "extended"),
-    add_measure("needed_drm" ,  needed_drm,   "extended"),
+    add_measure("no_need_drm"      , no_need_drm,  "extended"),
+    add_measure("legalcap_drm"     , legalcap_drm,   "extended"),
+    add_measure("legal_assis_drm"  , legal_assis_drm,   "extended"),
+    add_measure("process_drm"      , process_drm,   "extended"),
+    add_measure("trust_drm"        , trust_drm,   "extended"),
+    add_measure("interpersonal_drm", interpersonal_drm,   "extended"),
+    add_measure("other_drmr"       , other_drmr,   "extended"),
+    add_measure("external_bar_drm" , external_bar_drm,   "extended"),
     
+
     #Affordability of DRMs
     add_measure("drm_1_d_affordable_bin",  drm_1_d_affordable_bin,  "extended"),
     add_measure("drm_2_d_affordable_bin",  drm_2_d_affordable_bin,  "extended"),
@@ -214,22 +224,22 @@ groupbars_params <- function() {
     
     #Hardships
     add_measure("had_hardship",  had_hardship,  "basic"),
-    add_measure("hardship_1_bin_p",   hardship_1_bin,  "problem"),
-    add_measure("hardship_2_bin_p",   hardship_2_bin,  "problem"),
-    add_measure("hardship_3_bin_p",   hardship_3_bin,  "problem"),
-    add_measure("hardship_4_bin_p",   hardship_4_bin,  "problem"),
-    add_measure("hardship_5_bin_p",   hardship_5_bin,  "problem"),
-    add_measure("hardship_6_bin_p",   hardship_6_bin,  "problem"),
-    add_measure("hardship_7_bin_p",   hardship_7_bin,  "problem"),
-    add_measure("hardship_8_bin_p",   hardship_8_bin,  "problem"),
-    add_measure("hardship_9_bin_p",   hardship_9_bin,  "problem"),
-    add_measure("hardship_10_bin_p",  hardship_10_bin,  "problem"),
-    add_measure("hardship_11_bin_p",  hardship_11_bin,  "problem"),
-    add_measure("hardship_12_bin_p",  hardship_12_bin,  "problem"),
-    add_measure("hardship_13_bin_p",  hardship_13_bin,  "problem"),
-    add_measure("hardship_14_bin_p",  hardship_14_bin,  "problem"),
-    add_measure("hardship_15_bin_p",  hardship_15_bin,  "problem"),
-    add_measure("hardship_16_bin_p",  hardship_16_bin,  "problem"),
+    add_measure("hardship_1_bin_p",   hardship_1_bin,  "extended"),
+    add_measure("hardship_2_bin_p",   hardship_2_bin,  "extended"),
+    add_measure("hardship_3_bin_p",   hardship_3_bin,  "extended"),
+    add_measure("hardship_4_bin_p",   hardship_4_bin,  "extended"),
+    add_measure("hardship_5_bin_p",   hardship_5_bin,  "extended"),
+    add_measure("hardship_6_bin_p",   hardship_6_bin,  "extended"),
+    add_measure("hardship_7_bin_p",   hardship_7_bin,  "extended"),
+    add_measure("hardship_8_bin_p",   hardship_8_bin,  "extended"),
+    add_measure("hardship_9_bin_p",   hardship_9_bin,  "extended"),
+    add_measure("hardship_10_bin_p",  hardship_10_bin,  "extended"),
+    add_measure("hardship_11_bin_p",  hardship_11_bin,  "extended"),
+    add_measure("hardship_12_bin_p",  hardship_12_bin,  "extended"),
+    add_measure("hardship_13_bin_p",  hardship_13_bin,  "extended"),
+    add_measure("hardship_14_bin_p",  hardship_14_bin,  "extended"),
+    add_measure("hardship_15_bin_p",  hardship_15_bin,  "extended"),
+    add_measure("hardship_16_bin_p",  hardship_16_bin,  "extended"),
 
     
     #Legal capability
