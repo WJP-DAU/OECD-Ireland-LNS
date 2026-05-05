@@ -133,8 +133,14 @@ summarize_by_vars <- function(data,
     dplyr::filter(grouping != "Overall") %>%
     dplyr::select(grouping, level, mean) %>%
     dplyr::left_join(check, by = c("grouping", "level")) %>%
-    dplyr::mutate(final = mean - test_mean)
-  
+    dplyr::mutate(
+      # Treat NaN == NaN as a match (both are NaN because n=0, which is expected)
+      final = dplyr::case_when(
+        is.nan(mean) & is.nan(test_mean) ~ 0,
+        TRUE ~ mean - test_mean
+      )
+    )
+
   tol <- 1e-9
   ok <- all(abs(tidyr::replace_na(comp$final, Inf)) < tol)
   print(if (ok) "DONE ✅" else "MISMATCH ❌")
@@ -150,7 +156,7 @@ summarize_by_vars <- function(data,
 
 compute_groupbars_tables <- function(data, params) {
   stopifnot(is.list(params), !is.null(params$measures))
-  
+
   tbls <- map(params$measures, function(m) {
     summarize_by_vars(
       data      = data,
