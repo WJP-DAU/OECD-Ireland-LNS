@@ -357,8 +357,8 @@ plot_panel_indicators(
   include_overall  = TRUE,
   filename         = file.path(path2SP, "analysis/output/hardship1_prob.svg"),
   left_margin_mm   = 5,    # minimal space needed    
-  width_mm         = 420,  
-  height_mm        = 400
+  width_mm         = 430,  
+  height_mm        = 300
 )
 
 plot_panel_indicators(
@@ -383,8 +383,8 @@ plot_panel_indicators(
   include_overall  = TRUE,
   filename         = file.path(path2SP, "analysis/output/hardship2_prob.svg"),
   left_margin_mm   = 5,    # minimal space needed    
-  width_mm         = 420,  
-  height_mm        = 250
+  width_mm         = 430,  
+  height_mm        = 300
 )
 
 plot_panel_indicators(
@@ -405,8 +405,8 @@ plot_panel_indicators(
   include_overall  = TRUE,
   filename         = file.path(path2SP, "analysis/output/hardship3_prob.svg"),
   left_margin_mm   = 5,    # minimal space needed    
-  width_mm         = 420,  
-  height_mm        = 250
+  width_mm         = 430,  
+  height_mm        = 300
 )
 
 
@@ -530,7 +530,7 @@ plot_panel_indicators(
   filename        = file.path(path2SP, "analysis/output/a2j.svg"),
   width_mm         = 400,                                                                                                                          
   scale            = 1,
-  left_margin_mm   = 65    # reserve more space in the SVG
+  left_margin_mm   = 5    # reserve more space in the SVG
 )
 
 
