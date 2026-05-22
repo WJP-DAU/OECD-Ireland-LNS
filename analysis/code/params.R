@@ -175,7 +175,7 @@ groupbars_params <- function() {
     add_measure("AJR_drm_7_bin",  AJR_drm_7_bin,  "extended"),
     add_measure("AJR_drm_8_bin",  AJR_drm_8_bin,  "extended"),
     add_measure("AJR_drm_9_bin",  AJR_drm_9_bin,  "extended"),
-    add_measure("AJR_drm_10_bin",  AJR_drm_9_bin,  "extended"),
+    add_measure("AJR_drm_10_bin",  AJR_drm_10_bin,  "extended"),
     add_measure("AJR_drm_11_bin",  AJR_drm_11_bin,  "extended"),
     
     add_measure("AJR_drm_6_bin_p",  AJR_drm_6_bin,  "problem"),
