@@ -383,7 +383,7 @@ AJR_noresol_reason_11 == 1 | AJR_noresol_reason_12 == 1 | AJR_noresol_reason_14 
 *----- Fixing the denominator for the contacted mechanisms
 forvalues i=1/11 {
 	gen drm_`i' = .
-	replace drm_`i' = 0 if contacted_drm==0 & (AJR_noresol_reason_7 == 1 | AJR_noresol_reason_8 ==1 | AJR_noresol_reason_9 == 1  | AJR_noresol_reason_10 == 1 | AJR_noresol_reason_11 ==1 | AJR_noresol_reason_12 ==1 | AJR_noresol_reason_13 ==1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1 )
+	replace drm_`i' = 0 if contacted_drm==0 & (AJR_noresol_reason_7 == 1 | AJR_noresol_reason_8 ==1 | AJR_noresol_reason_9 == 1  | AJR_noresol_reason_10 == 1 | AJR_noresol_reason_11 ==1 | AJR_noresol_reason_12 ==1 | AJR_noresol_reason_13 ==1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1 | AJR_noresol_reason_16 == 1)
 	replace drm_`i' = 1 if AJR_drm_`i'==1
 }
 
@@ -516,6 +516,8 @@ gen level_impact = .
 replace level_impact = 0 if AJE_impact == 1 | AJE_impact == 2
 replace level_impact = 1 if AJE_impact == 3 | AJE_impact == 4 | AJE_impact ==5 
 	
+tab AJE_impact, g(AJE_impact_)	
+	
 
 *----- Hardships
 forvalues i=1/16 {
@@ -624,24 +626,32 @@ do "${path2dos}\globals.do"
 *----- Country level  
 
 preserve
-collapse (mean) had_dispute $a2j (count) had_dispute_n $a2j_n 
+collapse (mean) had_dispute $a2j level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 (count) had_dispute_n $a2j_n level_impact_n AJE_impact_1_n AJE_impact_2_n AJE_impact_3_n AJE_impact_4_n AJE_impact_5_n
 
 *Removing low counts: Less than 30
-foreach v in had_dispute $a2j {
+foreach v in had_dispute $a2j level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 {
 	replace `v' = . if `v'_n<30
 }
 
-drop $a2j_n had_dispute_n
+drop $a2j_n had_dispute_n level_impact_n AJE_impact_1_n AJE_impact_2_n AJE_impact_3_n AJE_impact_4_n AJE_impact_5_n
 
 label var had_dispute "Prevalence"
+label var level_impact "Problem Impact"
+label var AJE_impact_1 "Impact - None at all"
+label var AJE_impact_2 "Impact - Slight"
+label var AJE_impact_3 "Impact - Moderate" 
+label var AJE_impact_4 "Impact - High"
+label var AJE_impact_5 "Impact - Severe"
+
+
 do "${path2dos}\labels.do"
 
 export excel using "${path2SP}\data\reports_replication.xlsx", replace firstrow(varl) sheet("Overall")
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Overall") modify
-putexcel A2:JB2, overwri nformat("0%") 
+putexcel A2:JN2, overwri nformat("0%") 
 putexcel B2:B10, overwri nformat("0")
 putexcel IA2:IA10, overwri nformat("0")
-putexcel A1:JB1, overwri bold hcenter txtwrap
+putexcel A1:JN1, overwri bold hcenter txtwrap
 
 restore
 
@@ -650,18 +660,24 @@ restore
 
 preserve
 
-collapse (mean) had_dispute $a2j (count) had_dispute_n $a2j_n  , by(gend2)
+collapse (mean) had_dispute $a2j level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 (count) had_dispute_n $a2j_n level_impact_n AJE_impact_1_n AJE_impact_2_n AJE_impact_3_n AJE_impact_4_n AJE_impact_5_n, by(gend2)
 
 drop if gend2==.
 
 *Removing low counts: Less than 30
-foreach v in had_dispute $a2j {
+foreach v in had_dispute $a2j level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 {
 	replace `v' = . if `v'_n<30
 }
 
-drop $a2j_n had_dispute_n
+drop $a2j_n had_dispute_n level_impact_n AJE_impact_1_n AJE_impact_2_n AJE_impact_3_n AJE_impact_4_n AJE_impact_5_n
 
 label var had_dispute "Prevalence"
+label var level_impact "Problem Impact"
+label var AJE_impact_1 "Impact - None at all"
+label var AJE_impact_2 "Impact - Slight"
+label var AJE_impact_3 "Impact - Moderate" 
+label var AJE_impact_4 "Impact - High"
+label var AJE_impact_5 "Impact - Severe"
 do "${path2dos}\labels.do"
 
 label define gend2 1 "Male" 2 "Female"
@@ -669,10 +685,10 @@ label values gend2 gend2
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Gender") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Gender") modify
-putexcel B2:JC210, overwri nformat("0%") 
+putexcel B2:JO20, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
 putexcel IB2:IB10, overwri nformat("0")
-putexcel A1:JC1, overwri bold hcenter txtwrap
+putexcel A1:JO1, overwri bold hcenter txtwrap
 
 restore
 
@@ -681,16 +697,22 @@ restore
 
 preserve
 
-collapse (mean) had_dispute $a2j (count) had_dispute_n $a2j_n , by(age_g)
+collapse (mean) had_dispute $a2j level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 (count) had_dispute_n $a2j_n level_impact_n AJE_impact_1_n AJE_impact_2_n AJE_impact_3_n AJE_impact_4_n AJE_impact_5_n, by(age_g)
 
 *Removing low counts: Less than 30
-foreach v in had_dispute $a2j {
+foreach v in had_dispute $a2j level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 {
 	replace `v' = . if `v'_n<30
 }
 
-drop had_dispute_n $a2j_n
+drop $a2j_n had_dispute_n level_impact_n AJE_impact_1_n AJE_impact_2_n AJE_impact_3_n AJE_impact_4_n AJE_impact_5_n
 
 label var had_dispute "Prevalence"
+label var level_impact "Problem Impact"
+label var AJE_impact_1 "Impact - None at all"
+label var AJE_impact_2 "Impact - Slight"
+label var AJE_impact_3 "Impact - Moderate" 
+label var AJE_impact_4 "Impact - High"
+label var AJE_impact_5 "Impact - Severe"
 do "${path2dos}\labels.do"
 
 label define age 1 "18-24" 2 "25-34" 3 "35-44" 4 "45-54" 5 "55-64" 6 "+65"
@@ -698,10 +720,10 @@ label values age_g age
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Age") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Age") modify
-putexcel B2:JC210, overwri nformat("0%") 
+putexcel B2:JO20, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
 putexcel IB2:IB10, overwri nformat("0")
-putexcel A1:JC1, overwri bold hcenter txtwrap
+putexcel A1:JO1, overwri bold hcenter txtwrap
 
 restore
 
@@ -710,25 +732,31 @@ restore
 
 preserve
 
-collapse (mean) had_dispute $a2j (count) had_dispute_n $a2j_n , by(edu_2)
+collapse (mean) had_dispute $a2j level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 (count) had_dispute_n $a2j_n level_impact_n AJE_impact_1_n AJE_impact_2_n AJE_impact_3_n AJE_impact_4_n AJE_impact_5_n, by(edu_2)
 
 *Removing low counts: Less than 30
-foreach v in had_dispute $a2j {
+foreach v in had_dispute $a2j level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 {
 	replace `v' = . if `v'_n<30
 }
 
-drop had_dispute_n $a2j_n
+drop $a2j_n had_dispute_n level_impact_n AJE_impact_1_n AJE_impact_2_n AJE_impact_3_n AJE_impact_4_n AJE_impact_5_n
 
 label var had_dispute "Prevalence"
+label var level_impact "Problem Impact"
+label var AJE_impact_1 "Impact - None at all"
+label var AJE_impact_2 "Impact - Slight"
+label var AJE_impact_3 "Impact - Moderate" 
+label var AJE_impact_4 "Impact - High"
+label var AJE_impact_5 "Impact - Severe"
 do "${path2dos}\labels.do"
 
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Edu") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Edu") modify
-putexcel B2:JC210, overwri nformat("0%") 
+putexcel B2:JO20, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
 putexcel IB2:IB10, overwri nformat("0")
-putexcel A1:JC1, overwri bold hcenter txtwrap
+putexcel A1:JO1, overwri bold hcenter txtwrap
 
 restore
 
@@ -737,29 +765,35 @@ restore
 
 preserve
 
-collapse (mean) had_dispute $a2j (count) had_dispute_n $a2j_n , by(income2)
+collapse (mean) had_dispute $a2j level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 (count) had_dispute_n $a2j_n level_impact_n AJE_impact_1_n AJE_impact_2_n AJE_impact_3_n AJE_impact_4_n AJE_impact_5_n, by(income2)
 
 drop if income2==.
 
 *Removing low counts: Less than 30
-foreach v in had_dispute $a2j {
+foreach v in had_dispute $a2j level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 {
 	replace `v' = . if `v'_n<30
 }
 
-drop had_dispute_n $a2j_n
+drop $a2j_n had_dispute_n level_impact_n AJE_impact_1_n AJE_impact_2_n AJE_impact_3_n AJE_impact_4_n AJE_impact_5_n
 
 label define income2 1 "< €30k a year" 2 "€30k – €70 a year" 3 "€70k – €120k a year" 4 "> €120k a year"
 label values income2 income2  
 
 label var had_dispute "Prevalence"
+label var level_impact "Problem Impact"
+label var AJE_impact_1 "Impact - None at all"
+label var AJE_impact_2 "Impact - Slight"
+label var AJE_impact_3 "Impact - Moderate" 
+label var AJE_impact_4 "Impact - High"
+label var AJE_impact_5 "Impact - Severe"
 do "${path2dos}\labels.do"
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Income") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Income") modify
-putexcel B2:JC210, overwri nformat("0%") 
+putexcel B2:JO20, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
 putexcel IB2:IB10, overwri nformat("0")
-putexcel A1:JC1, overwri bold hcenter txtwrap
+putexcel A1:JO1, overwri bold hcenter txtwrap
 
 restore
 
@@ -768,24 +802,30 @@ restore
 
 preserve
 
-collapse (mean) had_dispute $a2j (count) had_dispute_n $a2j_n , by(region)
+collapse (mean) had_dispute $a2j level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 (count) had_dispute_n $a2j_n level_impact_n AJE_impact_1_n AJE_impact_2_n AJE_impact_3_n AJE_impact_4_n AJE_impact_5_n, by(region)
 
 *Removing low counts: Less than 30
-foreach v in had_dispute $a2j {
+foreach v in had_dispute $a2j level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 {
 	replace `v' = . if `v'_n<30
 }
 
-drop had_dispute_n $a2j_n
+drop $a2j_n had_dispute_n level_impact_n AJE_impact_1_n AJE_impact_2_n AJE_impact_3_n AJE_impact_4_n AJE_impact_5_n
 
 label var had_dispute "Prevalence"
+label var level_impact "Problem Impact"
+label var AJE_impact_1 "Impact - None at all"
+label var AJE_impact_2 "Impact - Slight"
+label var AJE_impact_3 "Impact - Moderate" 
+label var AJE_impact_4 "Impact - High"
+label var AJE_impact_5 "Impact - Severe"
 do "${path2dos}\labels.do"
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Region") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Region") modify
-putexcel B2:JC210, overwri nformat("0%") 
+putexcel B2:JO20, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
 putexcel IB2:IB10, overwri nformat("0")
-putexcel A1:JC1, overwri bold hcenter txtwrap
+putexcel A1:JO1, overwri bold hcenter txtwrap
 
 restore
 
@@ -794,26 +834,32 @@ restore
 
 preserve
 
-collapse (mean) had_dispute $a2j (count) had_dispute_n $a2j_n , by(disability2)
+collapse (mean) had_dispute $a2j level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 (count) had_dispute_n $a2j_n level_impact_n AJE_impact_1_n AJE_impact_2_n AJE_impact_3_n AJE_impact_4_n AJE_impact_5_n, by(disability2)
 
 drop if disability2==""
 
 *Removing low counts: Less than 30
-foreach v in had_dispute $a2j {
+foreach v in had_dispute $a2j level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 {
 	replace `v' = . if `v'_n<30
 }
 
-drop had_dispute_n $a2j_n
+drop $a2j_n had_dispute_n level_impact_n AJE_impact_1_n AJE_impact_2_n AJE_impact_3_n AJE_impact_4_n AJE_impact_5_n
 
 label var had_dispute "Prevalence"
+label var level_impact "Problem Impact"
+label var AJE_impact_1 "Impact - None at all"
+label var AJE_impact_2 "Impact - Slight"
+label var AJE_impact_3 "Impact - Moderate" 
+label var AJE_impact_4 "Impact - High"
+label var AJE_impact_5 "Impact - Severe"
 do "${path2dos}\labels.do"
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Disability") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Disability") modify
-putexcel B2:JC210, overwri nformat("0%") 
+putexcel B2:JO20, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
 putexcel IB2:IB10, overwri nformat("0")
-putexcel A1:JC1, overwri bold hcenter txtwrap
+putexcel A1:JO1, overwri bold hcenter txtwrap
 restore
 
 
@@ -821,26 +867,32 @@ restore
 
 preserve
 
-collapse (mean) had_dispute $a2j (count) had_dispute_n $a2j_n , by(ethnic_majority)
+collapse (mean) had_dispute $a2j level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 (count) had_dispute_n $a2j_n level_impact_n AJE_impact_1_n AJE_impact_2_n AJE_impact_3_n AJE_impact_4_n AJE_impact_5_n, by(ethnic_majority)
 
 drop if ethnic_majority==""
 
 *Removing low counts: Less than 30
-foreach v in had_dispute $a2j {
+foreach v in had_dispute $a2j level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 {
 	replace `v' = . if `v'_n<30
 }
 
-drop had_dispute_n $a2j_n
+drop $a2j_n had_dispute_n level_impact_n AJE_impact_1_n AJE_impact_2_n AJE_impact_3_n AJE_impact_4_n AJE_impact_5_n
 
 label var had_dispute "Prevalence"
+label var level_impact "Problem Impact"
+label var AJE_impact_1 "Impact - None at all"
+label var AJE_impact_2 "Impact - Slight"
+label var AJE_impact_3 "Impact - Moderate" 
+label var AJE_impact_4 "Impact - High"
+label var AJE_impact_5 "Impact - Severe"
 do "${path2dos}\labels.do"
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Ethnicity") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Ethnicity") modify
-putexcel B2:JC210, overwri nformat("0%") 
+putexcel B2:JO20, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
 putexcel IB2:IB10, overwri nformat("0")
-putexcel A1:JC1, overwri bold hcenter txtwrap
+putexcel A1:JO1, overwri bold hcenter txtwrap
 
 restore
 
@@ -867,10 +919,10 @@ do "${path2dos}\labels.do"
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Level of impact") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Level of impact") modify
-putexcel B2:JB210, overwri nformat("0%") 
+putexcel B2:JN20, overwri nformat("0%") 
 putexcel B2:B20, overwri nformat("0")
 putexcel IA2:IA20, overwri nformat("0")
-putexcel A1:JB1, overwri bold hcenter txtwrap
+putexcel A1:JN1, overwri bold hcenter txtwrap
 
 restore
 
@@ -879,28 +931,35 @@ restore
 
 preserve
 
-collapse (mean) $a2j (count) $a2j_n , by(cooccurence_group)
+collapse (mean) $a2j level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 (count) $a2j_n level_impact_n AJE_impact_1_n AJE_impact_2_n AJE_impact_3_n AJE_impact_4_n AJE_impact_5_n, by(cooccurence_group)
 
 drop if cooccurence_group==.
 
 *Removing low counts: Less than 30
-foreach v in $a2j {
+foreach v in $a2j level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 {
 	replace `v' = . if `v'_n<30
 }
 
-drop $a2j_n
+drop $a2j_n level_impact_n AJE_impact_1_n AJE_impact_2_n AJE_impact_3_n AJE_impact_4_n AJE_impact_5_n
 
 label define cooccurence_group 1 "1 problem" 2 "2-3 problems" 3 "4-5 problems" 4 "5 or more problems"
 label values cooccurence_group cooccurence_group
+label var level_impact "Problem Impact"
+label var AJE_impact_1 "Impact - None at all"
+label var AJE_impact_2 "Impact - Slight"
+label var AJE_impact_3 "Impact - Moderate" 
+label var AJE_impact_4 "Impact - High"
+label var AJE_impact_5 "Impact - Severe"
+
 
 do "${path2dos}\labels.do"
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Co-occurrance") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Co-occurrance") modify
-putexcel B2:JB210, overwri nformat("0%") 
+putexcel B2:JN20, overwri nformat("0%") 
 putexcel B2:B20, overwri nformat("0")
 putexcel IA2:IA20, overwri nformat("0")
-putexcel A1:JB1, overwri bold hcenter txtwrap
+putexcel A1:JN1, overwri bold hcenter txtwrap
 
 restore
 
@@ -909,27 +968,33 @@ restore
 
 preserve
 
-collapse (mean) $a2j (count) $a2j_n , by(AJP_cat_selected)
+collapse (mean) $a2j level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 (count) $a2j_n level_impact_n AJE_impact_1_n AJE_impact_2_n AJE_impact_3_n AJE_impact_4_n AJE_impact_5_n, by(AJP_cat_selected)
 
 drop if AJP_cat_selected == .
 
 *Removing low counts: Less than 30
-foreach v in $a2j {
+foreach v in $a2j level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 {
 	replace `v' = . if `v'_n<30
 }
 
-drop $a2j_n
+drop $a2j_n level_impact_n AJE_impact_1_n AJE_impact_2_n AJE_impact_3_n AJE_impact_4_n AJE_impact_5_n
 
 do "${path2dos}\labels.do"
 
 label var AJP_cat_selected "Problem Category"
+label var level_impact "Problem Impact"
+label var AJE_impact_1 "Impact - None at all"
+label var AJE_impact_2 "Impact - Slight"
+label var AJE_impact_3 "Impact - Moderate" 
+label var AJE_impact_4 "Impact - High"
+label var AJE_impact_5 "Impact - Severe"
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Problem Category") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Problem Category") modify
-putexcel B2:JB210, overwri nformat("0%") 
+putexcel B2:JO20, overwri nformat("0%") 
 putexcel B2:B20, overwri nformat("0")
 putexcel IA2:IA20, overwri nformat("0")
-putexcel A1:JB1, overwri bold hcenter txtwrap
+putexcel A1:JO1, overwri bold hcenter txtwrap
 
 restore
 
@@ -1573,6 +1638,8 @@ putexcel A1:IH1, overwri bold hcenter txtwrap
 restore
 
 
+
+
 /*
 *----- Breakdown by problems
 
@@ -1603,5 +1670,5 @@ putexcel A2:AX13, overwri nformat("0%")
 putexcel A1:AX1, overwri bold hcenter txtwrap
 
 restore
-
+*/
 
