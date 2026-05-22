@@ -52,7 +52,7 @@ legal_rights infosource expert_help fair_outcome
 
 
 *----- Create vars for sample sizes
-foreach v in had_dispute $a2j {
+foreach v in had_dispute level_impact AJE_impact_1 AJE_impact_2 AJE_impact_3 AJE_impact_4 AJE_impact_5 $a2j  {
 	g `v'_n = `v'
 }
 
