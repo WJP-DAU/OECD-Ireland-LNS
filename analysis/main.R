@@ -411,53 +411,6 @@ plot_panel_indicators(
 
 
 #Affordable mechanisms - grouped 
-plot_panel_indicators(
-  tables           = tables,
-  indicator_ids    = c( 
-                        "drm_1_d_affordable_bin",
-                        "drm_2_d_affordable_bin",
-                        "drm_3_d_affordable_bin",
-                        "drm_4_d_affordable_bin",
-                        "drm_5_d_affordable_bin"
-  ),
-  indicator_labels = c(drm_1_d_affordable_bin  = "Court",
-                       drm_2_d_affordable_bin  = "Tribunal", 
-                       drm_3_d_affordable_bin  = "Ombudsman",
-                       drm_4_d_affordable_bin  = "Police or\nlaw enforcement",
-                       drm_5_d_affordable_bin  = "Mediation or\nconciliation service"
-                         ),  
-  params           = params,
-  group_filters    = c(  "Overall", "gender", "age_group", "edu_level", "income", 
-                         "NUTS", "disability", "ethnic_majority"),
-  include_overall  = TRUE,
-  filename         = file.path(path2SP, "analysis/output/drm_afford1_demo.svg"),
-  width_mm         = 400,  
-  height_mm        = 250
-)
-
-plot_panel_indicators(
-  tables           = tables,
-  indicator_ids    = c( 
-                        "drm_6_d_affordable_bin",
-                        "drm_7_d_affordable_bin",
-                        "drm_8_d_affordable_bin",
-                        "drm_9_d_affordable_bin",
-                        "drm_11_d_affordable_bin"
-                        ),
-  indicator_labels = c(drm_6_d_affordable_bin  = "Lawyer or\nlaw office staff",
-                       drm_7_d_affordable_bin  = "Gov. department\nor local council", 
-                       drm_8_d_affordable_bin  = "Community leader\nor person of standing",
-                       drm_9_d_affordable_bin  = "Other dispute\nresolution service",
-                       drm_11_d_affordable_bin  = "Other professional\nor organisation"
-  ),  
-  params           = params,
-  group_filters    = c(  "Overall", "gender", "age_group", "edu_level", "income", 
-                         "NUTS", "disability", "ethnic_majority"),
-  include_overall  = TRUE,
-  filename         = file.path(path2SP, "analysis/output/drm_afford2_demo.svg"),
-  width_mm         = 400,  
-  height_mm        = 250
-)
 
 
 #Legal cap - grouped
@@ -635,15 +588,15 @@ p <- plot_drm_heatmap2(data2drm2)
 
 # ------------------------------------------------------------
 
-psk_ad <- plot_sankey_advice(data = data_subset.df)
+#psk_ad <- plot_sankey_advice(data = data_subset.df)
 
-ggsave(
-  psk_ad,
-  filename = file.path(path2SP, "analysis/output/sankey_advice_representation.svg"),
-  width    = 400,
-  height   = 225, 
-  units = "mm", scale = 0.75
-)
+#ggsave(
+#  psk_ad,
+#  filename = file.path(path2SP, "analysis/output/sankey_advice_representation.svg"),
+#  width    = 400,
+#  height   = 225, 
+#  units = "mm", scale = 0.75
+#)
 
 ## =========================================================
 ## Sankey DRM
@@ -651,15 +604,15 @@ ggsave(
 
 # ------------------------------------------------------------
 
-psk_drm <- plot_sankey_drm(data = data_subset.df)
+#psk_drm <- plot_sankey_drm(data = data_subset.df)
 
-ggsave(
-  psk_drm,
-  filename = file.path(path2SP, "analysis/output/sankey_drm.svg"),
-  width    = 400,
-  height   = 225, 
-  units = "mm", scale = 0.75
-)
+#ggsave(
+#  psk_drm,
+#  filename = file.path(path2SP, "analysis/output/sankey_drm.svg"),
+#  width    = 400,
+#  height   = 225, 
+#  units = "mm", scale = 0.75
+#)
 
 ## =========================================================
 ## Network graph co-ocurrence

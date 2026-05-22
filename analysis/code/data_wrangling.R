@@ -114,25 +114,8 @@ wrangle_ireland_lns <- function(master_data) {
       ),
       
       
-      # Did not / needed assistance (ALL & professional)
+      # Needed the assistance (ALL & professional)
       #5/4: No need prevails over barriers
-
-      no_need_assistance_prof = case_when(
-        (AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 &
-           AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
-           AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 &
-           AJD_adviser_13 == 2) 
-        &
-          (AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1) 
-        &
-          (AJD_noadvice_reason_1 == 1 | 
-             AJD_noadvice_reason_2 == 1 | 
-             AJD_noadvice_reason_3 == 1 |
-             AJD_noadvice_reason_4 == 1 | 
-             AJD_noadvice_reason_5 == 1 | 
-             AJD_noadvice_reason_6 == 1) ~ 1,
-        had_dispute == 1 ~ 0
-      ),
       
       needed_assistance_prof = case_when(
         (AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 &
@@ -152,12 +135,6 @@ wrangle_ireland_lns <- function(master_data) {
         had_dispute == 1 ~ 0
       ),
       
-      no_need_assistance = case_when(
-        (AJR_noaction_1 == 1 | AJR_noaction_2 == 1 | AJR_noaction_10 == 1 | AJR_noaction_12 == 1)  ~ 1,
-        (AJR_action == 3 | AJR_action == 4) ~ 1,
-        had_dispute == 1 ~ 0
-      ),
-      
       needed_assistance = case_when(
         (AJR_noaction_3 == 1 | AJR_noaction_4 == 1 | AJR_noaction_5 == 1 | AJR_noaction_6 == 1 |
            AJR_noaction_7 == 1 | AJR_noaction_8 == 1 | AJR_noaction_9 == 1 | AJR_noaction_11 == 1 | 
@@ -169,24 +146,6 @@ wrangle_ireland_lns <- function(master_data) {
         had_dispute == 1 ~ 0
       ),
       
-    # unknown = case_when(
-    #    (AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 &
-    #      AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
-    #      AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 &
-    #      AJD_adviser_13 == 2) &
-    #     (AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1) &
-    #     (AJD_noadvice_reason_1 == 0 & AJD_noadvice_reason_2 == 0 & AJD_noadvice_reason_3 == 0 &
-    #        AJD_noadvice_reason_4 == 0 & AJD_noadvice_reason_5 == 0 & AJD_noadvice_reason_6 == 0 &
-    #        AJD_noadvice_reason_7 == 0 & AJD_noadvice_reason_8 == 0 & AJD_noadvice_reason_9 == 0 &
-    #        AJD_noadvice_reason_10 == 0 & AJD_noadvice_reason_11 == 0 & AJD_noadvice_reason_12 == 0 &
-    #        AJD_noadvice_reason_13 == 0 & AJD_noadvice_reason_14 == 0 & AJD_noadvice_reason_15 == 0 &
-    #        AJD_noadvice_reason_16 == 0) &
-    #     AJD_noadvice_reason_17 == 1 ~ 1,
-    #   AJR_action == 3 ~ 1,
-    #   had_dispute == 1 ~ 0
-    # ),
-      
-    
       # Access to assistance & representation (compuesto) 
       # 5/4: As discussed with Daniela, no_need will prevail over the barriers.
       # We are also removing autogestion (no_need) from the denominator
@@ -194,9 +153,6 @@ wrangle_ireland_lns <- function(master_data) {
       access2rep = case_when(
         needed_assistance == 1 ~ 0,
         needed_assistance_prof == 1 ~ 0,
-        #unknown == 1 ~ 0,
-        #no_need_assistance_prof == 1 ~ 1,
-        #no_need_assistance == 1 ~ 1,
         appropriate_adviser == 1 ~ 1
       ),
       
@@ -220,6 +176,7 @@ wrangle_ireland_lns <- function(master_data) {
       reason_no_need = case_when(
         (AJD_noadvice_reason_1 == 1 | AJD_noadvice_reason_2 == 1 | AJD_noadvice_reason_3 == 1 |
           AJD_noadvice_reason_4==1 | AJD_noadvice_reason_5 == 1 | AJD_noadvice_reason_6 == 1) ~ 1,
+        
         (AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 &
            AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 &
            AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 == 2 &
@@ -346,41 +303,41 @@ wrangle_ireland_lns <- function(master_data) {
       # No actions - reasons (5/4: As discussed with Daniela, no need prevails over the barriers)
       no_need_action = case_when(
         (AJR_noaction_1 == 1 | AJR_noaction_2 == 1 | AJR_noaction_10 ==1 | AJR_noaction_12 == 1) ~ 1,
-        (AJR_action == 1 | AJR_action == 2 ) ~ 0
+        (AJR_action == 1 | AJR_action == 2) ~ 0
       ),
       
       process_action = case_when(
         (AJR_noaction_3 == 1 | AJR_noaction_5 == 1) 
         &
         (AJR_noaction_1 == 0 & AJR_noaction_2 == 0 & AJR_noaction_10 == 0 | AJR_noaction_12 == 0) ~ 1,
-        (AJR_action == 1 | AJR_action == 2 ) ~ 0
+        (AJR_action == 1 | AJR_action == 2) ~ 0
       ),
       
       legalcap_action = case_when(
         (AJR_noaction_4 == 1 | AJR_noaction_8 == 1 | AJR_noaction_11 == 1) 
         &
         (AJR_noaction_1 == 0 & AJR_noaction_2 == 0 & AJR_noaction_10 == 0 | AJR_noaction_12 == 0) ~ 1,
-        (AJR_action == 1 | AJR_action == 2 ) ~ 0
+        (AJR_action == 1 | AJR_action == 2) ~ 0
       ),
       
       interpersonal_action = case_when(
         (AJR_noaction_6 == 1 | AJR_noaction_7 == 1) 
         &
         (AJR_noaction_1 == 0 & AJR_noaction_2 == 0 & AJR_noaction_10 == 0 | AJR_noaction_12 == 0) ~ 1,
-        (AJR_action == 1 | AJR_action == 2 ) ~ 0
+        (AJR_action == 1 | AJR_action == 2) ~ 0
       ),
       
       bigger_action = case_when(
         AJR_noaction_9 == 1 
         &
         (AJR_noaction_1 == 0 & AJR_noaction_2 == 0 & AJR_noaction_10 == 0 | AJR_noaction_12 == 0) ~ 1,
-        (AJR_action == 1 | AJR_action == 2 ) ~ 0   
+        (AJR_action == 1 | AJR_action == 2) ~ 0   
       ),
       other_action = case_when(
         AJR_noaction_13 == 1 
         &
         (AJR_noaction_1 == 0 & AJR_noaction_2 == 0 & AJR_noaction_10 == 0 | AJR_noaction_12 == 0) ~ 1,
-        (AJR_action == 1 | AJR_action == 2 ) ~ 0   
+        (AJR_action == 1 | AJR_action == 2) ~ 0   
       ),
 
       

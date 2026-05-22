@@ -34,7 +34,7 @@ else {
 
 *-------- Defining path to Data and DoFiles:
 *global path2data "${path2SP}/Merged Files/Merged Final Files"
-global path2dos  "${path2SP}/code"
+global path2dos  "${path2SP}\analysis\code"
 
 	
 /*=================================================================================================================
@@ -151,79 +151,48 @@ replace no_contact_adviser = 1 if contact_adviser==0
 replace no_contact_adviser = 0 if contact_adviser==1
 
 
+*----- Professional adviser
+egen appropriate_adviser_n = rowtotal(AJD_adviser_1_bin AJD_adviser_2_bin AJD_adviser_3_bin AJD_adviser_4_bin AJD_adviser_5_bin AJD_adviser_6_bin AJD_adviser_7_bin AJD_adviser_8_bin AJD_adviser_9_bin AJD_adviser_10_bin AJD_adviser_11_bin AJD_adviser_12_bin AJD_adviser_13_bin)
+
+gen appropriate_adviser = appropriate_adviser_n >0
+replace appropriate_adviser = . if had_dispute==0
+
+
 *----- Access to appropriate assistance and representation (indicator)
 gen access2rep = .
 
-//** ACCESS
 
-*Went to a professional adviser
-replace access2rep = 1 if AJD_adviser_1 ==1 | AJD_adviser_2 == 1 | AJD_adviser_3 == 1 | AJD_adviser_4 == 1 | AJD_adviser_5 == 1 | AJD_adviser_6 == 1 | AJD_adviser_7 == 1 | AJD_adviser_8 == 1 | AJD_adviser_9 == 1 | AJD_adviser_10 == 1 | AJD_adviser_11 == 1 | AJD_adviser_12 ==1 | AJD_adviser_13 == 1
-
-*Did not need the access - ALL advisers (reasons for no action = opting out)
-replace access2rep = 1 if ///
-(AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 & AJD_adviser_17 == 2) & ///
-(AJR_noaction_1 == 1 | AJR_noaction_2 ==1 | AJR_noaction_6 ==1 | AJR_noaction_10 ==1 | AJR_noaction_12 ==1) & ///
-(AJR_noaction_3 ==0 & AJR_noaction_4 ==0 &  AJR_noaction_5 ==0 &  AJR_noaction_7 ==0 & AJR_noaction_8 ==0 &  AJR_noaction_9 ==0 &  AJR_noaction_11 ==0 & AJR_noaction_13 ==0 )
-
-*Did not need the access - non-appropriate advisers (reasons for not going to a prof adviser = opting out)
-replace access2rep = 1 if (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2) & ///
-(AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1 ) & ///
-(AJD_noadvice_reason_1 ==1 | AJD_noadvice_reason_2==1 | AJD_noadvice_reason_3==1 | AJD_noadvice_reason_4==1 | AJD_noadvice_reason_5==1 | AJD_noadvice_reason_6==1 ) & ///
-(AJD_noadvice_reason_7== 0 & AJD_noadvice_reason_8== 0 & AJD_noadvice_reason_9== 0 & AJD_noadvice_reason_10== 0 & AJD_noadvice_reason_11== 0 & AJD_noadvice_reason_12== 0 & AJD_noadvice_reason_13== 0 & AJD_noadvice_reason_14== 0 &  AJD_noadvice_reason_15== 0 & AJD_noadvice_reason_16 == 0)
-
-*Categorization of AJR_action == 4 (No, as it has resolved itself or is no longer an issue) as "Opting out"
-replace access2rep = 1 if (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 & AJD_adviser_17 == 2) & AJR_action == 4
-
-
-//** NO ACCESS
-
-*Unknown reasons (Did not go to a professional adviser, but went to other advisers. In the reasons for no contact a prof adviser: Other reason )
-replace access2rep = 0 if (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2) & ///
-(AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1 ) & ///
-(AJD_noadvice_reason_1 ==0 & AJD_noadvice_reason_2==0 &  AJD_noadvice_reason_3==0 &  AJD_noadvice_reason_4==0 &  AJD_noadvice_reason_5==0 &  AJD_noadvice_reason_6==0 & AJD_noadvice_reason_7== 0 & AJD_noadvice_reason_8== 0 & AJD_noadvice_reason_9== 0 & AJD_noadvice_reason_10== 0 & AJD_noadvice_reason_11== 0 & AJD_noadvice_reason_12== 0 & AJD_noadvice_reason_13== 0 & AJD_noadvice_reason_14== 0 &  AJD_noadvice_reason_15== 0 & AJD_noadvice_reason_16 == 0 ) & ///
-AJD_noadvice_reason_17 == 1
-
-*Unknown reasons (AJR_action == 3, "Have done something")
-replace access2rep = 0 if (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 & AJD_adviser_17 == 2) & AJR_action == 3
-
-*Needed access and did not get it - ALL advisers (reasons for no action = barriers)
-replace access2rep = 0 if ///
-(AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 & AJD_adviser_17 == 2) & ///
-(AJR_noaction_3 ==1 | AJR_noaction_4 ==1 | AJR_noaction_5 ==1 | AJR_noaction_7 ==1 | AJR_noaction_8 ==1 | AJR_noaction_9 ==1 | AJR_noaction_11 ==1 | AJR_noaction_13 ==1)
-
-*Needed access and did not get it - professional advisers (reasons for not going to a professional adviser and needing access)
+*5/4: As discussed with Daniela, no need prevails over the other reasons
+//Needed access and did not get it - professional advisers (reasons for not going to a professional adviser and needing access)
 replace access2rep = 0 if (AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1 ) & ///
-(AJD_noadvice_reason_7== 1 | AJD_noadvice_reason_8== 1 | AJD_noadvice_reason_9== 1 | AJD_noadvice_reason_10== 1 | AJD_noadvice_reason_11== 1 | AJD_noadvice_reason_12== 1 | AJD_noadvice_reason_13== 1 | AJD_noadvice_reason_14== 1 |  AJD_noadvice_reason_15== 1 | AJD_noadvice_reason_16 == 1 )
+(AJD_adviser_1 == 2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & ///
+AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & ///
+AJD_adviser_11 == 2 & AJD_adviser_12 == 2 & AJD_adviser_13 == 2) & ///
+(AJD_noadvice_reason_7== 1 | AJD_noadvice_reason_8== 1 | AJD_noadvice_reason_9== 1 | AJD_noadvice_reason_10== 1 | ///
+AJD_noadvice_reason_11== 1 | AJD_noadvice_reason_12== 1 | AJD_noadvice_reason_13== 1 | AJD_noadvice_reason_14== 1 |  ///
+AJD_noadvice_reason_15== 1 | AJD_noadvice_reason_16 == 1 | AJD_noadvice_reason_17== 1) & ///
+(AJD_noadvice_reason_1 == 0 & AJD_noadvice_reason_2 == 0 & AJD_noadvice_reason_3 == 0 & AJD_noadvice_reason_4 == 0 & ///
+AJD_noadvice_reason_5 == 0 & AJD_noadvice_reason_6 == 0)
+
+
+//Needed access and did not get it - ALL advisers (reasons for no action = barriers)
+replace access2rep = 0 if ///
+(AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & /// 
+AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & ///
+AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & ///
+ AJD_adviser_16 == 2 & AJD_adviser_17 == 2) & ///
+(AJR_noaction_3 ==1 | AJR_noaction_4 ==1 | AJR_noaction_5 ==1 | AJR_noaction_6 == 1 | AJR_noaction_7 ==1 | ///
+AJR_noaction_8 ==1 | AJR_noaction_9 ==1 | AJR_noaction_11 ==1 | AJR_noaction_13 ==1) & ///
+(AJR_noaction_1 == 0 & AJR_noaction_2 == 0 & AJR_noaction_10 == 0 & AJR_noaction_12 == 0) & ///
+(AJR_action == 1 | AJR_action == 2)
+
+//Went to a professional adviser
+replace access2rep = 1 if AJD_adviser_1 ==1 | AJD_adviser_2 == 1 | AJD_adviser_3 == 1 | AJD_adviser_4 == 1 | AJD_adviser_5 == 1 | AJD_adviser_6 == 1 | AJD_adviser_7 == 1 | AJD_adviser_8 == 1 | AJD_adviser_9 == 1 | AJD_adviser_10 == 1 | AJD_adviser_11 == 1 | AJD_adviser_12 ==1 | AJD_adviser_13 == 1
 
 
 *Make missing people with no disputes
 replace access2rep = . if had_dispute==0
 
-
-*----- Professional adviser
-egen appropriate_adviser_n = rowtotal(AJD_adviser_1_bin AJD_adviser_2_bin AJD_adviser_3_bin AJD_adviser_4_bin AJD_adviser_5_bin AJD_adviser_6_bin AJD_adviser_7_bin AJD_adviser_8_bin AJD_adviser_9_bin AJD_adviser_10_bin AJD_adviser_11_bin AJD_adviser_12_bin AJD_adviser_13_bin)
-
-gen appropriate_adviser = appropriate_adviser_n >0
-*replace appropriate_adviser = . if contact_adviser ==0
-replace appropriate_adviser = . if had_dispute==0
-
-
-*----- Non-professional advisor
-gen no_appropriate_adviser = .
-replace no_appropriate_adviser = 0 if had_dispute==1
-replace no_appropriate_adviser = 1 if (AJD_adviser_14==1 | AJD_adviser_15==1 | AJD_adviser_16==1 | AJD_adviser_17==1) & appropriate_adviser==0
-
-
-*----- NON-Professional advisers breakdown
-
-*Did not need assistance : NO to ALL prof advisers (YES to a non-professional), opted out from going to a prof adviser
-gen no_need_assistance_prof = .
-replace no_need_assistance_prof = 0 if had_dispute == 1
-
-replace no_need_assistance_prof = 1 if (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2) & ///
-(AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1 ) & ///
-(AJD_noadvice_reason_1 ==1 | AJD_noadvice_reason_2==1 | AJD_noadvice_reason_3==1 | AJD_noadvice_reason_4==1 | AJD_noadvice_reason_5==1 | AJD_noadvice_reason_6==1 ) & ///
-(AJD_noadvice_reason_7== 0 & AJD_noadvice_reason_8== 0 & AJD_noadvice_reason_9== 0 & AJD_noadvice_reason_10== 0 & AJD_noadvice_reason_11== 0 & AJD_noadvice_reason_12== 0 & AJD_noadvice_reason_13== 0 & AJD_noadvice_reason_14== 0 &  AJD_noadvice_reason_15== 0 & AJD_noadvice_reason_16 == 0)
 
 *Needed access and did not go to a professional adviser: NO to ALL prof advisers (YES to a non-professional), reasons = barriers
 gen needed_assistance_prof = . 
@@ -231,43 +200,18 @@ replace needed_assistance_prof = 0 if had_dispute == 1
 
 replace needed_assistance_prof = 1 if (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2) & ///
 (AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1 ) & ///
-(AJD_noadvice_reason_7== 1 | AJD_noadvice_reason_8== 1 | AJD_noadvice_reason_9== 1 | AJD_noadvice_reason_10== 1 | AJD_noadvice_reason_11== 1 | AJD_noadvice_reason_12== 1 | AJD_noadvice_reason_13== 1 | AJD_noadvice_reason_14== 1 |  AJD_noadvice_reason_15== 1 | AJD_noadvice_reason_16 == 1)
+(AJD_noadvice_reason_7== 1 | AJD_noadvice_reason_8== 1 | AJD_noadvice_reason_9== 1 | AJD_noadvice_reason_10== 1 | AJD_noadvice_reason_11== 1 | AJD_noadvice_reason_12== 1 | AJD_noadvice_reason_13== 1 | AJD_noadvice_reason_14== 1 |  AJD_noadvice_reason_15== 1 | AJD_noadvice_reason_16 == 1 | AJD_noadvice_reason_17 == 1) & /// 
+(AJD_noadvice_reason_1 == 0 & AJD_noadvice_reason_2 == 0 & AJD_noadvice_reason_3 == 0 & AJD_noadvice_reason_4 == 0 & AJD_noadvice_reason_5 == 0 & AJD_noadvice_reason_6 == 0) 
 
-*Unknown reason for prof assistance (but yes to other non-prof assistance)
-gen unknown_prof = . 
-replace unknown_prof = 0 if had_dispute == 1
-
-replace unknown_prof = 1 if (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2) & ///
-(AJD_adviser_14 == 1 | AJD_adviser_15 == 1 | AJD_adviser_16 == 1 | AJD_adviser_17 == 1 ) & ///
-(AJD_noadvice_reason_1 ==0 & AJD_noadvice_reason_2==0 &  AJD_noadvice_reason_3==0 &  AJD_noadvice_reason_4==0 &  AJD_noadvice_reason_5==0 &  AJD_noadvice_reason_6==0 & AJD_noadvice_reason_7== 0 & AJD_noadvice_reason_8== 0 & AJD_noadvice_reason_9== 0 & AJD_noadvice_reason_10== 0 & AJD_noadvice_reason_11== 0 & AJD_noadvice_reason_12== 0 & AJD_noadvice_reason_13== 0 & AJD_noadvice_reason_14== 0 &  AJD_noadvice_reason_15== 0 & AJD_noadvice_reason_16 == 0 ) & ///
-AJD_noadvice_reason_17 == 1
-
-
-*----- NO to CONTACTED an adviser breakdown
-
-**Did not need assistance: NO to ALL advisers (reasons for no action = opting out)
-gen no_need_assistance =.
-replace no_need_assistance = 0 if had_dispute == 1
-
-replace no_need_assistance = 1 if (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 & AJD_adviser_17 == 2) & ///
-(AJR_noaction_1 == 1 | AJR_noaction_2 ==1 | AJR_noaction_6 ==1 | AJR_noaction_10 ==1 | AJR_noaction_12 ==1) & ///
-(AJR_noaction_3 ==0 & AJR_noaction_4 ==0 &  AJR_noaction_5 ==0 &  AJR_noaction_7 ==0 & AJR_noaction_8 ==0 &  AJR_noaction_9 ==0 &  AJR_noaction_11 ==0 & AJR_noaction_13 ==0)
-
-replace no_need_assistance = 1 if (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 & AJD_adviser_17 == 2) & AJR_action ==4 
 
 **Needed access and did not get it : NO to ALL advisers (reasons for no action = barriers)
 gen needed_assistance = .
 replace needed_assistance = 0 if had_dispute == 1
 
 replace needed_assistance = 1 if (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 & AJD_adviser_17 == 2) & ///
-(AJR_noaction_3 ==1 | AJR_noaction_4 ==1 | AJR_noaction_5 ==1 | AJR_noaction_7 ==1 | AJR_noaction_8 ==1 | AJR_noaction_9 ==1 | AJR_noaction_11 ==1 | AJR_noaction_13 ==1 )
+(AJR_noaction_3 ==1 | AJR_noaction_4 ==1 | AJR_noaction_5 ==1 | AJR_noaction_6 == 1 | AJR_noaction_7 ==1 | AJR_noaction_8 ==1 | AJR_noaction_9 ==1 | AJR_noaction_11 ==1 | AJR_noaction_13 ==1 ) & ///
+(AJR_noaction_1 == 0 & AJR_noaction_2 == 0 & AJR_noaction_10 == 0 & AJR_noaction_12 == 0) 
 
-**Unknown reasons for no contact
-gen unknown = . 
-replace unknown = 0 if had_dispute == 1
-
-*NO to ALL advisers AND AJR_action = No, as it has resolved itself or is no longer an issue)
-replace unknown = 1 if (AJD_adviser_1 ==2 & AJD_adviser_2 == 2 & AJD_adviser_3 == 2 & AJD_adviser_4 == 2 & AJD_adviser_5 == 2 & AJD_adviser_6 == 2 & AJD_adviser_7 == 2 & AJD_adviser_8 == 2 & AJD_adviser_9 == 2 & AJD_adviser_10 == 2 & AJD_adviser_11 == 2 & AJD_adviser_12 ==2 & AJD_adviser_13 == 2 & AJD_adviser_14 == 2 & AJD_adviser_15 == 2 & AJD_adviser_16 == 2 & AJD_adviser_17 == 2) & AJR_action ==3
 
 
 *----- Helpfulness by adviser
@@ -276,41 +220,80 @@ forvalues i=1/17{
 	recode adviser_help_`i' (1 2 = 0) (3 4 = 1) (5 6 = .)
 }
 
+
 *----- Barriers to accessing professional help (Reasons)
+*5/4: As discussed, no need prevails over the other reasons
 
 gen reason_no_need = 0 if appropriate_adviser==0
-replace reason_no_need =1 if AJD_noadvice_reason_1 ==1 | AJD_noadvice_reason_2 ==1 | AJD_noadvice_reason_3 ==1 | AJD_noadvice_reason_5 ==1 | AJD_noadvice_reason_6 ==1
+replace reason_no_need =1 if (AJD_noadvice_reason_1 ==1 | AJD_noadvice_reason_2 ==1 | AJD_noadvice_reason_3 ==1 | AJD_noadvice_reason_4 ==1 | AJD_noadvice_reason_5 ==1 | AJD_noadvice_reason_6 ==1)
 
-gen reason_had_help = 0 if appropriate_adviser==0
-replace reason_had_help =1 if AJD_noadvice_reason_4 ==1 | AJD_noadvice_reason_7 ==1 | AJD_noadvice_reason_8 ==1 | AJD_noadvice_reason_9 ==1
+gen reason_process = 0 if appropriate_adviser==0
+replace reason_process = 1 if (AJD_noadvice_reason_7 == 1 | AJD_noadvice_reason_8 == 1 | AJD_noadvice_reason_9 == 1) & ///
+(AJD_noadvice_reason_1 == 0 & AJD_noadvice_reason_2 == 0 & AJD_noadvice_reason_3 == 0 & ///
+AJD_noadvice_reason_4==0 & AJD_noadvice_reason_5 == 0 & AJD_noadvice_reason_6 == 0)
 
-gen reason_info_bar = 0 if appropriate_adviser==0
-replace reason_info_bar = 1 if AJD_noadvice_reason_13 ==1 
+gen reason_legalcap = 0 if appropriate_adviser==0
+replace reason_legalcap = 1 if (AJD_noadvice_reason_10 == 1 | AJD_noadvice_reason_13==1 | AJD_noadvice_reason_14 == 1 | /// 
+AJD_noadvice_reason_16 == 1) & ///
+(AJD_noadvice_reason_1 == 0 & AJD_noadvice_reason_2 == 0 & AJD_noadvice_reason_3 == 0 & ///
+AJD_noadvice_reason_4==0 & AJD_noadvice_reason_5 == 0 & AJD_noadvice_reason_6 == 0)
 
-gen reason_relation_bar = 0 if appropriate_adviser==0 
-replace reason_relation_bar =1 if AJD_noadvice_reason_11 ==1 | AJD_noadvice_reason_12 ==1
+gen reason_interpersonal = 0 if appropriate_adviser==0
+replace reason_interpersonal = 1 if (AJD_noadvice_reason_11 == 1 | AJD_noadvice_reason_12 == 1) & ///
+(AJD_noadvice_reason_1 == 0 & AJD_noadvice_reason_2 == 0 & AJD_noadvice_reason_3 == 0 & ///
+AJD_noadvice_reason_4==0 & AJD_noadvice_reason_5 == 0 & AJD_noadvice_reason_6 == 0)
 
-gen reason_psycho_bar = 0 if appropriate_adviser==0
-replace reason_psycho_bar =1 if AJD_noadvice_reason_10==1 | AJD_noadvice_reason_14 ==1
-
-gen reason_prior = 0 if appropriate_adviser==0
-replace reason_prior = 1 if AJD_noadvice_reason_15==1
-
-gen reason_social = 0 if appropriate_adviser==0
-replace reason_social = 1 if AJD_noadvice_reason_16==1
+gen reason_prev = 0 if appropriate_adviser==0
+replace reason_prev = 1 if AJD_noadvice_reason_15 == 1 & ///
+(AJD_noadvice_reason_1 == 0 & AJD_noadvice_reason_2 == 0 & AJD_noadvice_reason_3 == 0 & ///
+AJD_noadvice_reason_4==0 & AJD_noadvice_reason_5 == 0 & AJD_noadvice_reason_6 == 0)
 
 gen reason_other = 0 if appropriate_adviser==0
-replace reason_other = 1 if AJD_noadvice_reason_17==1
-*/
+replace reason_other =1 if AJD_noadvice_reason_17 == 1 & ///
+(AJD_noadvice_reason_1 == 0 & AJD_noadvice_reason_2 == 0 & AJD_noadvice_reason_3 == 0 & ///
+AJD_noadvice_reason_4==0 & AJD_noadvice_reason_5 == 0 & AJD_noadvice_reason_6 == 0)
+
+
+*For the legal capability exercise
+gen reason_external = 0 if appropriate_adviser==0
+replace reason_external = 1 if (AJD_noadvice_reason_7 ==1 | AJD_noadvice_reason_8 ==1 | ///
+AJD_noadvice_reason_9 ==1 | AJD_noadvice_reason_11 ==1 | AJD_noadvice_reason_12 ==1 | ///
+AJD_noadvice_reason_15 ==1 | AJD_noadvice_reason_17 ==1 ) & ///
+(AJD_noadvice_reason_1 == 0 & AJD_noadvice_reason_2 == 0 & AJD_noadvice_reason_3 == 0 & ///
+AJD_noadvice_reason_4==0 & AJD_noadvice_reason_5 == 0 & AJD_noadvice_reason_6 == 0)
+
+
 
 *----- Non-seekers' actions/intentions
 tab AJR_action, g(AJR_action_)
 
 
 *----- Reasons for not seeking help (NO to ALL advisers)
-*These are variables AJR_noaction_1-AJR_noaction_13. No need to do extra calculations 
-	
+//No need prevails over the other barriers
+gen no_need_action = 0 if (AJR_action == 1 | AJR_action == 2)
+replace no_need_action = 1 if (AJR_noaction_1 == 1 | AJR_noaction_2 == 1 | AJR_noaction_10 ==1 | AJR_noaction_12 == 1)
 
+gen process_action = 0 if (AJR_action == 1 | AJR_action == 2)
+replace process_action = 1 if (AJR_noaction_3 == 1 | AJR_noaction_5 == 1) & ///
+(AJR_noaction_1 == 0 & AJR_noaction_2 == 0 & AJR_noaction_10 == 0 | AJR_noaction_12 == 0)
+
+gen legalcap_action = 0 if (AJR_action == 1 | AJR_action == 2)
+replace legalcap_action = 1 if (AJR_noaction_4 == 1 | AJR_noaction_8 == 1 | AJR_noaction_11 == 1) & ///
+(AJR_noaction_1 == 0 & AJR_noaction_2 == 0 & AJR_noaction_10 == 0 | AJR_noaction_12 == 0)
+
+gen interpersonal_action = 0 if (AJR_action == 1 | AJR_action == 2)
+replace interpersonal_action = 1 if (AJR_noaction_6 == 1 | AJR_noaction_7 == 1) & ///
+(AJR_noaction_1 == 0 & AJR_noaction_2 == 0 & AJR_noaction_10 == 0 | AJR_noaction_12 == 0)
+
+gen bigger_action = 0 if (AJR_action == 1 | AJR_action == 2)
+replace bigger_action = 1 if AJR_noaction_9 == 1 & ///
+(AJR_noaction_1 == 0 & AJR_noaction_2 == 0 & AJR_noaction_10 == 0 | AJR_noaction_12 == 0)
+
+gen other_action = 0 if (AJR_action == 1 | AJR_action == 2)
+replace other_action = 1 if AJR_noaction_13 == 1 & ///
+(AJR_noaction_1 == 0 & AJR_noaction_2 == 0 & AJR_noaction_10 == 0 | AJR_noaction_12 == 0)
+
+	
 *----- Contacted a DRM
 
 egen contacted_drm_n = rowtotal(AJR_drm_1_bin AJR_drm_2_bin AJR_drm_3_bin AJR_drm_4_bin AJR_drm_5_bin AJR_drm_6_bin AJR_drm_7_bin AJR_drm_8_bin AJR_drm_9_bin AJR_drm_11_bin)
@@ -322,31 +305,79 @@ replace contacted_drm = . if had_dispute==0
 *----- Access to a DRM
 gen access2drm =.
 replace access2drm = 0 if contacted_drm==0 & ///
-(AJR_noresol_reason_7 == 1 | AJR_noresol_reason_8 ==1 | AJR_noresol_reason_9 == 1  | AJR_noresol_reason_10 == 1 | AJR_noresol_reason_11 ==1 | AJR_noresol_reason_12 ==1 | AJR_noresol_reason_13 ==1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1 )
+(AJR_noresol_reason_7 == 1 | AJR_noresol_reason_8 ==1 | AJR_noresol_reason_9 == 1  | AJR_noresol_reason_10 == 1 | AJR_noresol_reason_11 ==1 | AJR_noresol_reason_12 ==1 | AJR_noresol_reason_13 ==1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1 | AJR_noresol_reason_16 == 1)
 
 replace access2drm = 1 if contacted_drm==1
 
-*----- Needed but didn't have access to a DRM
-gen needed_drm = . 
-replace needed_drm = 0 if contacted_drm==0
-replace needed_drm = 1 if (AJR_noresol_reason_7 == 1 | AJR_noresol_reason_8 ==1 | AJR_noresol_reason_9 == 1  | AJR_noresol_reason_10 == 1 | AJR_noresol_reason_11 ==1 | AJR_noresol_reason_12 ==1 | AJR_noresol_reason_13 ==1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1 ) 
-
-
-*----- Did not need to turn to a DRM
-gen no_need_drm = .
-replace no_need_drm = 0 if contacted_drm==0
-replace no_need_drm = 1 if (AJR_noresol_reason_1 == 1 | AJR_noresol_reason_2== 1 | AJR_noresol_reason_3== 1 | AJR_noresol_reason_4== 1 | AJR_noresol_reason_5== 1 | AJR_noresol_reason_6== 1) & ///
-(AJR_noresol_reason_7 == 0  & AJR_noresol_reason_8 == 0 & AJR_noresol_reason_9 == 0  & AJR_noresol_reason_10 == 0 & AJR_noresol_reason_11 ==0 & AJR_noresol_reason_12 ==0  & AJR_noresol_reason_13 ==0 & AJR_noresol_reason_14 == 0 & AJR_noresol_reason_15 == 0 )
-
-
-*----- Unknown reason DRMs
-gen unknown_drm = .
-replace unknown_drm = 0 if contacted_drm==0
-replace unknown_drm = 1 if AJR_noresol_reason_16 ==1 & (AJR_noresol_reason_7 == 0  & AJR_noresol_reason_8 == 0 & AJR_noresol_reason_9 == 0  & AJR_noresol_reason_10 == 0 & AJR_noresol_reason_11 ==0 & AJR_noresol_reason_12 ==0  & AJR_noresol_reason_13 ==0 & AJR_noresol_reason_14 == 0 & AJR_noresol_reason_15 == 0 )
-
 	
 *----- Reasons for not accessing DRMs	
-*These are AJR_noresol_reason_1- AJR_noresol_reason_16. No further calculations needed
+*No need prevails
+
+gen no_need_drm = 0 if (AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 & ///
+AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 & AJR_drm_9_bin == 0 & ///
+AJR_drm_11_bin == 0)
+
+replace no_need_drm = 1 if (AJR_noresol_reason_1 == 1 | AJR_noresol_reason_2 == 1 | AJR_noresol_reason_3 == 1 | ///
+AJR_noresol_reason_4 == 1 | AJR_noresol_reason_5 == 1 | AJR_noresol_reason_6 == 1) 
+
+gen legalcap_drm = 0 if (AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 & ///
+AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 & AJR_drm_9_bin == 0 & ///
+AJR_drm_11_bin == 0)
+replace legalcap_drm = 1 if (AJR_noresol_reason_7 == 1 | AJR_noresol_reason_13 == 1 | AJR_noresol_reason_15 == 1) & ///
+(AJR_noresol_reason_1 == 0 & AJR_noresol_reason_2 == 0 & AJR_noresol_reason_3 == 0 & AJR_noresol_reason_4 == 0 & ///
+ AJR_noresol_reason_5 == 0 & AJR_noresol_reason_6 == 0)
+
+
+gen legal_assis_drm = 0 if (AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 & ///
+AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 & AJR_drm_9_bin == 0 & ///
+AJR_drm_11_bin == 0)
+replace legal_assis_drm = 1 if AJR_noresol_reason_8 == 1 & ///
+(AJR_noresol_reason_1 == 0 & AJR_noresol_reason_2 == 0 & AJR_noresol_reason_3 == 0 & AJR_noresol_reason_4 == 0 & ///
+ AJR_noresol_reason_5 == 0 & AJR_noresol_reason_6 == 0)
+
+
+gen process_drm = 0 if (AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 & ///
+AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 & AJR_drm_9_bin == 0 & ///
+AJR_drm_11_bin == 0)
+replace process_drm = 1 if (AJR_noresol_reason_9 == 1 | AJR_noresol_reason_10 == 1 | AJR_noresol_reason_11 == 1) & ///
+(AJR_noresol_reason_1 == 0 & AJR_noresol_reason_2 == 0 & AJR_noresol_reason_3 == 0 & AJR_noresol_reason_4 == 0 & ///
+ AJR_noresol_reason_5 == 0 & AJR_noresol_reason_6 == 0)
+
+
+gen trust_drm = 0 if (AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 & ///
+AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 & AJR_drm_9_bin == 0 & ///
+AJR_drm_11_bin == 0) 
+replace trust_drm = 1 if AJR_noresol_reason_12 == 1 & ///
+(AJR_noresol_reason_1 == 0 & AJR_noresol_reason_2 == 0 & AJR_noresol_reason_3 == 0 & AJR_noresol_reason_4 == 0 & ///
+ AJR_noresol_reason_5 == 0 & AJR_noresol_reason_6 == 0)
+ 
+
+gen interpersonal_drm = 0 if (AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 & ///
+AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 & AJR_drm_9_bin == 0 & ///
+AJR_drm_11_bin == 0)
+replace interpersonal_drm = 1 if AJR_noresol_reason_14 == 1 & ///
+(AJR_noresol_reason_1 == 0 & AJR_noresol_reason_2 == 0 & AJR_noresol_reason_3 == 0 & AJR_noresol_reason_4 == 0 & ///
+ AJR_noresol_reason_5 == 0 & AJR_noresol_reason_6 == 0)
+ 
+
+gen other_drmr = 0 if (AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 & ///
+AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 & AJR_drm_9_bin == 0 & ///
+AJR_drm_11_bin == 0)
+replace other_drmr = 1 if AJR_noresol_reason_16 == 1 & ///
+(AJR_noresol_reason_1 == 0 & AJR_noresol_reason_2 == 0 & AJR_noresol_reason_3 == 0 & AJR_noresol_reason_4 == 0 & ///
+ AJR_noresol_reason_5 == 0 & AJR_noresol_reason_6 == 0)
+
+
+
+*For legal cap analysis
+gen external_bar_drm = 0 if (AJR_drm_1_bin == 0 & AJR_drm_2_bin == 0 & AJR_drm_3_bin == 0 & AJR_drm_4_bin == 0 & ///
+AJR_drm_5_bin == 0 & AJR_drm_6_bin == 0 & AJR_drm_7_bin == 0 & AJR_drm_8_bin == 0 & AJR_drm_9_bin == 0 & ///
+AJR_drm_11_bin == 0)
+replace external_bar_drm = 1 if (AJR_noresol_reason_8 == 1 | AJR_noresol_reason_9 == 1 | AJR_noresol_reason_10 == 1 | ///
+AJR_noresol_reason_11 == 1 | AJR_noresol_reason_12 == 1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_16 == 1) & ///
+(AJR_noresol_reason_1 == 0 & AJR_noresol_reason_2 == 0 & AJR_noresol_reason_3 == 0 & AJR_noresol_reason_4 == 0 & ///
+ AJR_noresol_reason_5 == 0 & AJR_noresol_reason_6 == 0)
+
 
 
 *----- Fixing the denominator for the contacted mechanisms
@@ -557,8 +588,29 @@ replace disability2 = "Without disability" if disability == 3
 *Income
 gen income2 = income
 recode income2 (5=.)
-  
+ 
+*Legal cap analysis
+gen rights     = 1 if legal_rights == 1
+replace rights = 0 if legal_rights == 0 
 
+gen info     = 1 if access2info == 1 
+replace info = 0 if access2info == 0 
+
+gen help     = 1 if expert_help == 1 
+replace help = 0 if expert_help == 0 
+
+gen fair_cap     = 1 if fair_outcome == 1 
+replace fair_cap = 0 if fair_outcome == 0 
+
+label var gend2 "Gender"
+label var age_g "Age group"
+label var income2 "Income groups" 
+label var region "Region"
+label var disability2 "Disability"
+label var level_impact "Impact"
+label var cooccurence_group "Co-occurance" 
+label var ethnic_majority "Ethnicity"
+	
 	
 /*=====================================================================================================================================
 					3. Export data
@@ -572,23 +624,24 @@ do "${path2dos}\globals.do"
 *----- Country level  
 
 preserve
-collapse (mean) $a2j (count) $a2j_n 
+collapse (mean) had_dispute $a2j (count) had_dispute_n $a2j_n 
 
 *Removing low counts: Less than 30
-foreach v in $a2j {
+foreach v in had_dispute $a2j {
 	replace `v' = . if `v'_n<30
 }
 
-drop $a2j_n
+drop $a2j_n had_dispute_n
 
+label var had_dispute "Prevalence"
 do "${path2dos}\labels.do"
 
 export excel using "${path2SP}\data\reports_replication.xlsx", replace firstrow(varl) sheet("Overall")
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Overall") modify
-putexcel A2:IG2, overwri nformat("0%") 
+putexcel A2:JB2, overwri nformat("0%") 
 putexcel B2:B10, overwri nformat("0")
-putexcel HF2:HF10, overwri nformat("0")
-putexcel A1:IG1, overwri bold hcenter txtwrap
+putexcel IA2:IA10, overwri nformat("0")
+putexcel A1:JB1, overwri bold hcenter txtwrap
 
 restore
 
@@ -597,17 +650,18 @@ restore
 
 preserve
 
-collapse (mean) $a2j (count) $a2j_n  , by(gend2)
+collapse (mean) had_dispute $a2j (count) had_dispute_n $a2j_n  , by(gend2)
 
 drop if gend2==.
 
 *Removing low counts: Less than 30
-foreach v in $a2j {
+foreach v in had_dispute $a2j {
 	replace `v' = . if `v'_n<30
 }
 
-drop $a2j_n
+drop $a2j_n had_dispute_n
 
+label var had_dispute "Prevalence"
 do "${path2dos}\labels.do"
 
 label define gend2 1 "Male" 2 "Female"
@@ -615,10 +669,10 @@ label values gend2 gend2
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Gender") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Gender") modify
-putexcel B2:IH210, overwri nformat("0%") 
+putexcel B2:JC210, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel HG2:HG10, overwri nformat("0")
-putexcel A1:IH1, overwri bold hcenter txtwrap
+putexcel IB2:IB10, overwri nformat("0")
+putexcel A1:JC1, overwri bold hcenter txtwrap
 
 restore
 
@@ -627,15 +681,16 @@ restore
 
 preserve
 
-collapse (mean) $a2j (count) $a2j_n , by(age_g)
+collapse (mean) had_dispute $a2j (count) had_dispute_n $a2j_n , by(age_g)
 
 *Removing low counts: Less than 30
-foreach v in $a2j {
+foreach v in had_dispute $a2j {
 	replace `v' = . if `v'_n<30
 }
 
-drop $a2j_n
+drop had_dispute_n $a2j_n
 
+label var had_dispute "Prevalence"
 do "${path2dos}\labels.do"
 
 label define age 1 "18-24" 2 "25-34" 3 "35-44" 4 "45-54" 5 "55-64" 6 "+65"
@@ -643,10 +698,10 @@ label values age_g age
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Age") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Age") modify
-putexcel B2:IH10, overwri nformat("0%") 
+putexcel B2:JC210, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel HG2:HG10, overwri nformat("0")
-putexcel A1:IH1, overwri bold hcenter txtwrap
+putexcel IB2:IB10, overwri nformat("0")
+putexcel A1:JC1, overwri bold hcenter txtwrap
 
 restore
 
@@ -655,24 +710,25 @@ restore
 
 preserve
 
-collapse (mean) $a2j (count) $a2j_n , by(edu_2)
+collapse (mean) had_dispute $a2j (count) had_dispute_n $a2j_n , by(edu_2)
 
 *Removing low counts: Less than 30
-foreach v in $a2j {
+foreach v in had_dispute $a2j {
 	replace `v' = . if `v'_n<30
 }
 
-drop $a2j_n
+drop had_dispute_n $a2j_n
 
+label var had_dispute "Prevalence"
 do "${path2dos}\labels.do"
 
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Edu") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Edu") modify
-putexcel B2:IH10, overwri nformat("0%") 
+putexcel B2:JC210, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel HG2:HG10, overwri nformat("0")
-putexcel A1:IH1, overwri bold hcenter txtwrap
+putexcel IB2:IB10, overwri nformat("0")
+putexcel A1:JC1, overwri bold hcenter txtwrap
 
 restore
 
@@ -681,28 +737,29 @@ restore
 
 preserve
 
-collapse (mean) $a2j (count) $a2j_n , by(income2)
+collapse (mean) had_dispute $a2j (count) had_dispute_n $a2j_n , by(income2)
 
 drop if income2==.
 
 *Removing low counts: Less than 30
-foreach v in $a2j {
+foreach v in had_dispute $a2j {
 	replace `v' = . if `v'_n<30
 }
 
-drop $a2j_n
+drop had_dispute_n $a2j_n
 
 label define income2 1 "< €30k a year" 2 "€30k – €70 a year" 3 "€70k – €120k a year" 4 "> €120k a year"
 label values income2 income2  
 
+label var had_dispute "Prevalence"
 do "${path2dos}\labels.do"
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Income") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Income") modify
-putexcel B2:IH10, overwri nformat("0%") 
+putexcel B2:JC210, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel HG2:HG10, overwri nformat("0")
-putexcel A1:IH1, overwri bold hcenter txtwrap
+putexcel IB2:IB10, overwri nformat("0")
+putexcel A1:JC1, overwri bold hcenter txtwrap
 
 restore
 
@@ -711,23 +768,24 @@ restore
 
 preserve
 
-collapse (mean) $a2j (count) $a2j_n , by(region)
+collapse (mean) had_dispute $a2j (count) had_dispute_n $a2j_n , by(region)
 
 *Removing low counts: Less than 30
-foreach v in $a2j {
+foreach v in had_dispute $a2j {
 	replace `v' = . if `v'_n<30
 }
 
-drop $a2j_n
+drop had_dispute_n $a2j_n
 
+label var had_dispute "Prevalence"
 do "${path2dos}\labels.do"
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Region") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Region") modify
-putexcel B2:IH10, overwri nformat("0%") 
+putexcel B2:JC210, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel HG2:HG10, overwri nformat("0")
-putexcel A1:IH1, overwri bold hcenter txtwrap
+putexcel IB2:IB10, overwri nformat("0")
+putexcel A1:JC1, overwri bold hcenter txtwrap
 
 restore
 
@@ -736,25 +794,53 @@ restore
 
 preserve
 
-collapse (mean) $a2j (count) $a2j_n , by(disability2)
+collapse (mean) had_dispute $a2j (count) had_dispute_n $a2j_n , by(disability2)
 
 drop if disability2==""
 
 *Removing low counts: Less than 30
-foreach v in $a2j {
+foreach v in had_dispute $a2j {
 	replace `v' = . if `v'_n<30
 }
 
-drop $a2j_n
+drop had_dispute_n $a2j_n
 
+label var had_dispute "Prevalence"
 do "${path2dos}\labels.do"
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Disability") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Disability") modify
-putexcel B2:IH10, overwri nformat("0%") 
+putexcel B2:JC210, overwri nformat("0%") 
 putexcel C2:C10, overwri nformat("0")
-putexcel HG2:HG10, overwri nformat("0")
-putexcel A1:IH1, overwri bold hcenter txtwrap
+putexcel IB2:IB10, overwri nformat("0")
+putexcel A1:JC1, overwri bold hcenter txtwrap
+restore
+
+
+*----- Ethnicity
+
+preserve
+
+collapse (mean) had_dispute $a2j (count) had_dispute_n $a2j_n , by(ethnic_majority)
+
+drop if ethnic_majority==""
+
+*Removing low counts: Less than 30
+foreach v in had_dispute $a2j {
+	replace `v' = . if `v'_n<30
+}
+
+drop had_dispute_n $a2j_n
+
+label var had_dispute "Prevalence"
+do "${path2dos}\labels.do"
+
+export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Ethnicity") 
+putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Ethnicity") modify
+putexcel B2:JC210, overwri nformat("0%") 
+putexcel C2:C10, overwri nformat("0")
+putexcel IB2:IB10, overwri nformat("0")
+putexcel A1:JC1, overwri bold hcenter txtwrap
 
 restore
 
@@ -781,10 +867,10 @@ do "${path2dos}\labels.do"
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Level of impact") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Level of impact") modify
-putexcel B2:IH10, overwri nformat("0%") 
-putexcel C2:C10, overwri nformat("0")
-putexcel HG2:HG10, overwri nformat("0")
-putexcel A1:IH1, overwri bold hcenter txtwrap
+putexcel B2:JB210, overwri nformat("0%") 
+putexcel B2:B20, overwri nformat("0")
+putexcel IA2:IA20, overwri nformat("0")
+putexcel A1:JB1, overwri bold hcenter txtwrap
 
 restore
 
@@ -811,21 +897,21 @@ do "${path2dos}\labels.do"
 
 export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Co-occurrance") 
 putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Co-occurrance") modify
-putexcel B2:IH10, overwri nformat("0%") 
-putexcel C2:C10, overwri nformat("0")
-putexcel HG2:HG10, overwri nformat("0")
-putexcel A1:IH1, overwri bold hcenter txtwrap
+putexcel B2:JB210, overwri nformat("0%") 
+putexcel B2:B20, overwri nformat("0")
+putexcel IA2:IA20, overwri nformat("0")
+putexcel A1:JB1, overwri bold hcenter txtwrap
 
 restore
 
 
-*----- Ethnicity
+*----- Problem disaggregation
 
 preserve
 
-collapse (mean) $a2j (count) $a2j_n , by(ethnic_majority)
+collapse (mean) $a2j (count) $a2j_n , by(AJP_cat_selected)
 
-drop if ethnic_majority==""
+drop if AJP_cat_selected == .
 
 *Removing low counts: Less than 30
 foreach v in $a2j {
@@ -836,14 +922,167 @@ drop $a2j_n
 
 do "${path2dos}\labels.do"
 
-export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Ethnicity") 
-putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Ethnicity") modify
+label var AJP_cat_selected "Problem Category"
+
+export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Problem Category") 
+putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Problem Category") modify
+putexcel B2:JB210, overwri nformat("0%") 
+putexcel B2:B20, overwri nformat("0")
+putexcel IA2:IA20, overwri nformat("0")
+putexcel A1:JB1, overwri bold hcenter txtwrap
+
+restore
+
+
+*----- High legal capability
+
+* Legal rights
+preserve
+
+collapse (mean) access2rep reason_no_need reason_legalcap reason_external access2drm no_need_drm legalcap_drm external_bar_drm (count) access2rep_n reason_no_need_n reason_legalcap_n reason_external_n access2drm_n no_need_drm_n legalcap_drm_n external_bar_drm_n, by(rights)
+
+*Removing low counts: Less than 30
+foreach v in access2rep reason_no_need reason_legalcap reason_external access2drm no_need_drm legalcap_drm external_bar_drm {
+	replace `v' = . if `v'_n<30
+}
+
+drop access2rep_n reason_no_need_n reason_legalcap_n reason_external_n access2drm_n no_need_drm_n legalcap_drm_n external_bar_drm_n
+
+label define yes 0 "No" 1 "Yes"
+label values rights yes
+
+label var rights "People know their legal rights and responsibilities"
+
+label var access2rep "Access to representation"
+label var reason_no_need "Reasons for not seeking professional help - No need"
+label var reason_legalcap "Reasons for not seeking professional help - Legal capability barriers"
+label var reason_external "Reasons for not seeking professional help - External reasons (composite)"
+
+label var access2drm "Access to DRM (SDG 16.3.3)"
+label var no_need_drm "Reasons for not turning to a DRM - No need"
+label var legalcap_drm "Reasons for not turning to a DRM - Legal Capability barriers"
+label var external_bar_drm "Reasons for not turning to a DRM - External barriers (composite)"
+
+export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Legal Rights") 
+putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Legal Rights") modify
 putexcel B2:IH10, overwri nformat("0%") 
-putexcel C2:C10, overwri nformat("0")
-putexcel HG2:HG10, overwri nformat("0")
 putexcel A1:IH1, overwri bold hcenter txtwrap
 
 restore
+
+
+*Information and advice
+preserve
+
+collapse (mean) access2rep reason_no_need reason_legalcap reason_external access2drm no_need_drm legalcap_drm external_bar_drm (count) access2rep_n reason_no_need_n reason_legalcap_n reason_external_n access2drm_n no_need_drm_n legalcap_drm_n external_bar_drm_n, by(info)
+
+*Removing low counts: Less than 30
+foreach v in access2rep reason_no_need reason_legalcap reason_external access2drm no_need_drm legalcap_drm external_bar_drm {
+	replace `v' = . if `v'_n<30
+}
+
+drop access2rep_n reason_no_need_n reason_legalcap_n reason_external_n access2drm_n no_need_drm_n legalcap_drm_n external_bar_drm_n
+
+label define yes 0 "No" 1 "Yes"
+label values info yes
+
+label var info "People know where to get good information and advice"
+
+label var access2rep "Access to representation"
+label var reason_no_need "Reasons for not seeking professional help - No need"
+label var reason_legalcap "Reasons for not seeking professional help - Legal capability barriers"
+label var reason_external "Reasons for not seeking professional help - External reasons (composite)"
+
+label var access2drm "Access to DRM (SDG 16.3.3)"
+label var no_need_drm "Reasons for not turning to a DRM - No need"
+label var legalcap_drm "Reasons for not turning to a DRM - Legal Capability barriers"
+label var external_bar_drm "Reasons for not turning to a DRM - External barriers (composite)"
+
+export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Info and advice") 
+putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Info and advice") modify
+putexcel B2:IH10, overwri nformat("0%") 
+putexcel A1:IH1, overwri bold hcenter txtwrap
+
+restore
+
+
+*Expert help
+preserve
+
+collapse (mean) access2rep reason_no_need reason_legalcap reason_external access2drm no_need_drm legalcap_drm external_bar_drm (count) access2rep_n reason_no_need_n reason_legalcap_n reason_external_n access2drm_n no_need_drm_n legalcap_drm_n external_bar_drm_n, by(help)
+
+*Removing low counts: Less than 30
+foreach v in access2rep reason_no_need reason_legalcap reason_external access2drm no_need_drm legalcap_drm external_bar_drm {
+	replace `v' = . if `v'_n<30
+}
+
+drop access2rep_n reason_no_need_n reason_legalcap_n reason_external_n access2drm_n no_need_drm_n legalcap_drm_n external_bar_drm_n
+
+label define yes 0 "No" 1 "Yes"
+label values help yes
+
+label var help "People were able to get all the expert help they needed"
+
+label var access2rep "Access to representation"
+label var reason_no_need "Reasons for not seeking professional help - No need"
+label var reason_legalcap "Reasons for not seeking professional help - Legal capability barriers"
+label var reason_external "Reasons for not seeking professional help - External reasons (composite)"
+
+label var access2drm "Access to DRM (SDG 16.3.3)"
+label var no_need_drm "Reasons for not turning to a DRM - No need"
+label var legalcap_drm "Reasons for not turning to a DRM - Legal Capability barriers"
+label var external_bar_drm "Reasons for not turning to a DRM - External barriers (composite)"
+
+export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Expert help") 
+putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Expert help") modify
+putexcel B2:IH10, overwri nformat("0%") 
+putexcel A1:IH1, overwri bold hcenter txtwrap
+
+restore
+
+
+*Fair outcome
+preserve
+
+collapse (mean) access2rep reason_no_need reason_legalcap reason_external access2drm no_need_drm legalcap_drm external_bar_drm (count) access2rep_n reason_no_need_n reason_legalcap_n reason_external_n access2drm_n no_need_drm_n legalcap_drm_n external_bar_drm_n, by(fair_cap)
+
+*Removing low counts: Less than 30
+foreach v in access2rep reason_no_need reason_legalcap reason_external access2drm no_need_drm legalcap_drm external_bar_drm {
+	replace `v' = . if `v'_n<30
+}
+
+drop access2rep_n reason_no_need_n reason_legalcap_n reason_external_n access2drm_n no_need_drm_n legalcap_drm_n external_bar_drm_n
+
+label define yes 0 "No" 1 "Yes"
+label values fair_cap yes
+
+label var fair_cap "People were confident they could achieve a fair outcome"
+
+label var access2rep "Access to representation"
+label var reason_no_need "Reasons for not seeking professional help - No need"
+label var reason_legalcap "Reasons for not seeking professional help - Legal capability barriers"
+label var reason_external "Reasons for not seeking professional help - External reasons (composite)"
+
+label var access2drm "Access to DRM (SDG 16.3.3)"
+label var no_need_drm "Reasons for not turning to a DRM - No need"
+label var legalcap_drm "Reasons for not turning to a DRM - Legal Capability barriers"
+label var external_bar_drm "Reasons for not turning to a DRM - External barriers (composite)"
+
+export excel using "${path2SP}\data\reports_replication.xlsx", firstrow(varl) sheet("Fair outcome") 
+putexcel set "${path2SP}\data\reports_replication.xlsx", sheet("Fair outcome") modify
+putexcel B2:IH10, overwri nformat("0%") 
+putexcel A1:IH1, overwri bold hcenter txtwrap
+
+restore
+
+
+
+
+
+
+
+
+
 
 
 /*=====================================================================================================================================
@@ -1334,7 +1573,7 @@ putexcel A1:IH1, overwri bold hcenter txtwrap
 restore
 
 
-
+/*
 *----- Breakdown by problems
 
 gen level_impact2=level_impact

@@ -1,4 +1,3 @@
-label var had_dispute "Prevalence"
 label var ndisputes "Co-occurrence"
 
 label var land "Problem category - land"
@@ -74,12 +73,18 @@ label var AJD_noadvice_reason_15 "I had tried seeking help before and it wasn't 
 label var AJD_noadvice_reason_16 "Someone told me not to get advice or information"
 label var AJD_noadvice_reason_17 "Other reason"
 
+label var reason_no_need "Reasons for not seeking professional help - No need"
+label var reason_process "Reasons for not seeking professional help - Process barriers"
+label var reason_legalcap "Reasons for not seeking professional help - Legal capability barriers"
+label var reason_interpersonal "Reasons for not seeking professional help - Interpersonal barriers"
+label var reason_prev "Reasons for not seeking professional help - Previous experience"
+label var reason_other "Reasons for not seeking professional help - Other"
+label var reason_external "Reasons for not seeking professional help - External reasons (composite)"
 
 label var AJR_action_1 "Haven't done / I didn't do anything and don't expect to"
 label var AJR_action_2 "Nothing yet but expect to"
 label var AJR_action_3 "Have done something (please specify briefly)"
 label var AJR_action_4 "No, as it has resolved itself or is no longer an issue"
-
 
 label var AJR_noaction_1 "It wasn't very important"
 label var AJR_noaction_2 "It was resolved quickly"
@@ -94,6 +99,14 @@ label var AJR_noaction_10 "You were at fault or there was no dispute"
 label var AJR_noaction_11 "You didn't know what to do"
 label var AJR_noaction_12 "You didn't need information or advice"
 label var AJR_noaction_13 "Other reason"
+
+label var no_need_action "Reasons for not seeking any help - No need"
+label var process_action "Reasons for not seeking any help - Process barriers"
+label var legalcap_action "Reasons for not seeking any help = Legal Capability barriers"
+label var interpersonal_action "Reasons for not seeking any help - Interpersonal barriers"
+label var bigger_action "Reasons for not seeking any help - Had bigger problems"
+label var other_action "Reasons for not seeking any help - Other"
+
 
 label var access2drm "Access to DRM (SDG 16.3.3)"
 
@@ -127,6 +140,15 @@ label var AJR_noresol_reason_13 "I did not think they could help"
 label var AJR_noresol_reason_14 "I was afraid of the consequences for me/my family"
 label var AJR_noresol_reason_15 "I did not know it was possible to turn somewhere to resolve the issue"
 label var AJR_noresol_reason_16 "Other reason"
+
+label var no_need_drm "Reasons for not turning to a DRM - No need"
+label var legalcap_drm "Reasons for not turning to a DRM - Legal Capability barriers"
+label var legal_assis_drm "Reasons for not turning to a DRM - Lack of legal assistance"
+label var process_drm "Reasons for not turning to a DRM - Process barriers"
+label var trust_drm "Reasons for not turning to a DRM - Lack of trust on authorities"
+label var interpersonal_drm "Reasons for not turning to a DRM - Interpersonal barriers"
+label var other_drmr "Reasons for not turning to a DRM - Other"
+label var external_bar_drm "Reasons for not turning to a DRM - External barriers (composite)"
 
 
 label var drm_1_eff "Efficiency - A court (small claims court, District Circuit, High Court, Court of Appeal, Supreme Court, Europe etc)"

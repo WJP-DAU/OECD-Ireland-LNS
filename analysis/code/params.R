@@ -93,11 +93,7 @@ groupbars_params <- function() {
       "cooccurence_group",
       "disability",
       "category",
-      "ethnic_majority",
-      "rights",
-      "info",
-      "help",
-      "fair_cap"
+      "ethnic_majority"
       ),
     problem = select_groups(
       full_group_cfg,
@@ -198,23 +194,10 @@ groupbars_params <- function() {
     add_measure("other_drmr"       , other_drmr,   "extended"),
     add_measure("external_bar_drm" , external_bar_drm,   "extended"),
     
-
-    #Affordability of DRMs
-    add_measure("drm_1_d_affordable_bin",  drm_1_d_affordable_bin,  "extended"),
-    add_measure("drm_2_d_affordable_bin",  drm_2_d_affordable_bin,  "extended"),
-    add_measure("drm_3_d_affordable_bin",  drm_3_d_affordable_bin,  "extended"),
-    add_measure("drm_4_d_affordable_bin",  drm_4_d_affordable_bin,  "extended"),
-    add_measure("drm_5_d_affordable_bin",  drm_5_d_affordable_bin,  "extended"),
-    add_measure("drm_6_d_affordable_bin",  drm_6_d_affordable_bin,  "extended"),
-    add_measure("drm_7_d_affordable_bin",  drm_7_d_affordable_bin,  "extended"),
-    add_measure("drm_8_d_affordable_bin",  drm_8_d_affordable_bin,  "extended"),
-    add_measure("drm_9_d_affordable_bin",  drm_9_d_affordable_bin,  "extended"),
-    add_measure("drm_11_d_affordable_bin",  drm_11_d_affordable_bin,  "extended"),
     
-
     #Impact
-    add_measure("impact",        impact,        "basic"),
-    add_measure("impact_p",  impact,  "problem"),
+    add_measure("impact",    impact,    "basic"),
+    add_measure("impact_p",  impact,    "problem"),
     add_measure("impact_1",  impact_1,  "basic"),
     add_measure("impact_2",  impact_2,  "basic"),
     add_measure("impact_3",  impact_3,  "basic"),
@@ -465,20 +448,6 @@ build_bars_params <- function() {
       "problem_cat_services"    = "Services",
       "problem_cat_money"       = "Money/debt",
       "problem_cat_employment"  = "Employment"
-    ),
-    no_prof_help_group = c(
-      "reason_no_need"         = "Did not need help",
-      "reason_practical"       = "Practical barriers (cost/time/access)",
-      "reason_psy"             = "Psychological Barriers",
-      "reason_relation"        = "Relational Barriers",
-      "reason_info"            = "Information Barriers"
-    ),
-    no_help_group = c(
-      "practical_action"       = "Practical barriers (cost/time)",
-      "psy_action"             = "Psychological Barriers",
-      "relation_action"        = "Relational Barriers",
-      "no_need_action"         = "No need/was not needed",
-      "info_action"            = "Information Barriers",
     )
   )
   
@@ -553,18 +522,6 @@ build_bars_params <- function() {
         "problem_cat_products","problem_cat_services","problem_cat_money","problem_cat_employment"
       ),
       labels_map_id = "problems",
-      top_n = Inf
-    ),
-    add_mr_block(
-      id = "no_prof_help_group",
-      cols = c("reason_practical", "reason_psy", "reason_relation", "reason_info", "reason_no_need"),
-      labels_map_id = "no_prof_help_group",
-      top_n = Inf
-    ),
-    add_mr_block(
-      id = "no_help_group",
-      cols = c("practical_action", "psy_action", "relation_action", "info_action","no_need_action"),
-      labels_map_id = "no_help_group",
       top_n = Inf
     )
   )
