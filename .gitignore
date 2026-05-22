@@ -14,3 +14,7 @@ tables_outline.xlsx
 *.xlsx
 *.xlsx
 /data
+data/reports_replication_high.xlsx
+data/reports_replication.xlsx
+data/problems_breakdown.xlsx
+data/prevalence_high.xlsx
