@@ -478,7 +478,8 @@ wrangle_ireland_lns <- function(master_data) {
           contacted_drm == 0 &
           (AJR_noresol_reason_7 == 1 | AJR_noresol_reason_8 == 1 | AJR_noresol_reason_9 == 1 |
            AJR_noresol_reason_10 == 1 | AJR_noresol_reason_11 == 1 | AJR_noresol_reason_12 == 1 |
-           AJR_noresol_reason_13 == 1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1
+           AJR_noresol_reason_13 == 1 | AJR_noresol_reason_14 == 1 | AJR_noresol_reason_15 == 1 |
+           AJR_noresol_reason_16 == 1 
            ) ~ 0
           )
       ),
