@@ -13,3 +13,4 @@ data/reports_replication_high.xlsx
 tables_outline.xlsx
 *.xlsx
 *.xlsx
+/data
