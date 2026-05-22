@@ -6,3 +6,7 @@
 *.xlsx
 *.xlsx
 *.xlsx
+*.xlsx
+data/prevalence_high.xlsx
+data/reports_replication.xlsx
+data/reports_replication_high.xlsx
