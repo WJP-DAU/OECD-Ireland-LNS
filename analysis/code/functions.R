@@ -1268,8 +1268,8 @@ plot_coocurrence_bars <- function(tables,
 plot_cooccurrence_table <- function(
   data,
   filename = file.path(path2SP, "analysis/output/co-ocurrence_table.svg"),
-  width_mm = 320,
-  height_mm = 285
+  width_mm = 370,
+  height_mm = 235
 ) {
   problem_cols <- c(
     "problem_cat_land", "problem_cat_neighbors", "problem_cat_housing", "problem_cat_family",
@@ -1281,11 +1281,11 @@ plot_cooccurrence_table <- function(
     problem_cat_land = "Land",
     problem_cat_neighbors = "Neighbors",
     problem_cat_housing = "Housing",
-    problem_cat_family = "Family/relationship",
+    problem_cat_family = "Family",
     problem_cat_injury = "Injury",
     problem_cat_citizen = "Citizenship",
     problem_cat_gov = "Government\nbenefits",
-    problem_cat_public = "Public\nservices",
+    problem_cat_public = "Public services",
     problem_cat_products = "Products",
     problem_cat_services = "Services",
     problem_cat_money = "Money/debt",
@@ -1411,7 +1411,13 @@ plot_cooccurrence_table <- function(
     ggplot2::theme_minimal() +
     ggplot2::theme(
       legend.position = "none",
-      axis.text.x.top = ggplot2::element_text(family = "inter", face = "bold", size = 9.5, color = "#1a1a1a"),
+      axis.text.x.top = ggplot2::element_text(
+        family = "inter",
+        face = "bold",
+        size = 9,
+        lineheight = 0.95,
+        color = "#1a1a1a"
+      ),
       axis.text.y = ggplot2::element_text(family = "inter", face = "bold", size = 10, color = "#1a1a1a"),
       plot.caption = ggplot2::element_text(family = "inter", size = 12, color = "#1a1a1a", lineheight = 1.2, hjust = 0),
       plot.caption.position = "plot",

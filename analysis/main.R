@@ -582,7 +582,9 @@ plot_coocurrence_bars(
 
 plot_cooccurrence_table(
   data = data_subset.df,
-  filename = file.path(path2SP, "analysis/output/co-ocurrence_table.svg")
+  filename = file.path(path2SP, "analysis/output/co-ocurrence_table.svg"),
+  width_mm = 370,
+  height_mm = 235
 )
 
 
